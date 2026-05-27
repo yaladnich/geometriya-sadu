@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 100" width="320" height="100" fill="none">
+
+  <path d="M68 30 L88 72 L48 72 Z" fill="#1FA362" opacity="0.35"></path>
+  <path d="M52 18 L78 72 L26 72 Z" fill="#1FA362" opacity="0.65"></path>
+  <path d="M32 38 L52 72 L12 72 Z" fill="#1FA362"></path>
+  <path d="M6 82 H94" stroke="#1FA362" stroke-width="2.5" stroke-linecap="round"></path>
+
+  <g transform="translate(118 0)" font-family="Manrope, system-ui, sans-serif">
+    <text x="0" y="48" font-weight="800" font-size="32" fill="#FFFFFF" letter-spacing="-0.6">Геометрія</text>
+    <text x="0" y="78" font-weight="600" font-size="14" fill="#1FA362" letter-spacing="3.2">САДУ</text>
+  </g>
+</svg>
