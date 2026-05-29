@@ -284,7 +284,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-footer-contact:hover{color:var(--fg-1);}
 .gs-footer-bottom{padding-top:24px;border-top:1px solid var(--border-soft);display:flex;justify-content:space-between;font-size:13px;color:var(--fg-3);flex-wrap:wrap;gap:12px;}
 
-.gs-fab-stack{position:fixed;right:24px;bottom:24px;z-index:60;display:flex;flex-direction:column;gap:10px;}
+.gs-fab-stack{position:fixed;right:24px;bottom:24px;z-index:60;display:flex;flex-direction:column;align-items:center;gap:12px;}
 .gs-fab{position:relative;overflow:hidden;isolation:isolate;width:54px;height:54px;border-radius:999px;display:grid;place-items:center;border:1px solid var(--border);background:var(--bg-2);cursor:pointer;color:var(--fg-1);transition:color 0.38s var(--ease-in-out),border-color 0.38s var(--ease-in-out);}
 .gs-fab .ti{font-size:22px;line-height:1;}
 .gs-fab:not(.gs-fab-primary)::before{content:'';position:absolute;bottom:0;left:-5%;width:110%;height:115%;background:var(--accent);border-radius:50% 50% 0 0/20px 20px 0 0;transform:translateY(110%);transition:transform 0.45s var(--ease-in-out);z-index:-1;}
@@ -292,6 +292,18 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-fab:not(.gs-fab-primary):hover{color:#fff;border-color:var(--accent);}
 .gs-fab-primary{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:var(--shadow-cta);}
 .gs-fab-primary:hover{background:var(--accent-bright);border-color:var(--accent-bright);}
+
+/* Віджет, що розкривається */
+.gs-fab-actions{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.gs-fab-actions .gs-fab{opacity:0;transform:translateY(20px) scale(0.5);pointer-events:none;transition:opacity 0.3s var(--ease-out),transform 0.35s var(--ease-out),color 0.38s var(--ease-in-out),border-color 0.38s var(--ease-in-out);box-shadow:0 8px 24px -10px rgba(0,0,0,0.6);}
+.gs-fab-stack.is-open .gs-fab-actions .gs-fab{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+.gs-fab-stack.is-open .gs-fab-actions .gs-fab:nth-child(4){transition-delay:0.04s;}
+.gs-fab-stack.is-open .gs-fab-actions .gs-fab:nth-child(3){transition-delay:0.09s;}
+.gs-fab-stack.is-open .gs-fab-actions .gs-fab:nth-child(2){transition-delay:0.14s;}
+.gs-fab-stack.is-open .gs-fab-actions .gs-fab:nth-child(1){transition-delay:0.19s;}
+.gs-fab-toggle .ti{transition:transform 0.4s var(--ease-in-out);}
+.gs-fab-stack.is-open .gs-fab-toggle .ti{transform:rotate(135deg);}
+
 @media(max-width:700px){.gs-fab-stack{right:16px;bottom:16px}.gs-fab{width:48px;height:48px;}}
 
 .gs-modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;padding:24px;overflow-y:auto;animation:gs-fade-in 200ms ease-out;}
@@ -936,19 +948,24 @@ html,body{overflow-x:hidden;max-width:100%;}
   </div>
 </footer>
 
-<div class="gs-fab-stack" aria-label="Швидкі контакти">
-  <a class="gs-fab gs-fab-primary" href="tel:+380683782003" aria-label="Подзвонити">
-    <i class="ti ti-phone"></i>
-  </a>
-  <button class="gs-fab" type="button" onclick="openModal()" aria-label="Відкрити форму">
-    <i class="ti ti-clipboard-text"></i>
+<div class="gs-fab-stack" id="gs-fab-stack" aria-label="Швидкі контакти">
+  <div class="gs-fab-actions">
+    <a class="gs-fab" href="viber://chat?number=%2B380683782003" aria-label="Viber" tabindex="-1">
+      <i class="ti ti-brand-viber"></i>
+    </a>
+    <a class="gs-fab" href="#" aria-label="Telegram" tabindex="-1">
+      <i class="ti ti-brand-telegram"></i>
+    </a>
+    <button class="gs-fab" type="button" onclick="openModal()" aria-label="Залишити заявку" tabindex="-1">
+      <i class="ti ti-clipboard-text"></i>
+    </button>
+    <a class="gs-fab" href="tel:+380683782003" aria-label="Подзвонити" tabindex="-1">
+      <i class="ti ti-phone"></i>
+    </a>
+  </div>
+  <button class="gs-fab gs-fab-primary gs-fab-toggle" id="gs-fab-toggle" type="button" aria-label="Зв'язатися з нами" aria-expanded="false">
+    <i class="ti ti-messages" id="gs-fab-ico"></i>
   </button>
-  <a class="gs-fab" href="viber://chat?number=%2B380683782003" aria-label="Viber">
-    <i class="ti ti-brand-viber"></i>
-  </a>
-  <a class="gs-fab" href="#" aria-label="Telegram">
-    <i class="ti ti-brand-telegram"></i>
-  </a>
 </div>
 
 <div class="gs-modal-overlay" id="gs-modal-overlay" hidden>
@@ -1917,6 +1934,37 @@ updateHeaderAndProgress();
     link.addEventListener('click', closeMenu);
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+})();
+
+// Віджет контактів (розкривний FAB)
+(function initFabWidget() {
+  const stack = document.getElementById('gs-fab-stack');
+  const toggle = document.getElementById('gs-fab-toggle');
+  const ico = document.getElementById('gs-fab-ico');
+  if (!stack || !toggle) return;
+  const actions = stack.querySelectorAll('.gs-fab-actions .gs-fab');
+  function open() {
+    stack.classList.add('is-open');
+    toggle.setAttribute('aria-expanded', 'true');
+    ico.classList.replace('ti-messages', 'ti-x');
+    actions.forEach(a => a.setAttribute('tabindex', '0'));
+  }
+  function close() {
+    stack.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+    ico.classList.replace('ti-x', 'ti-messages');
+    actions.forEach(a => a.setAttribute('tabindex', '-1'));
+  }
+  toggle.addEventListener('click', e => {
+    e.stopPropagation();
+    stack.classList.contains('is-open') ? close() : open();
+  });
+  // Закрити при кліку по дії або поза віджетом
+  actions.forEach(a => a.addEventListener('click', close));
+  document.addEventListener('click', e => {
+    if (stack.classList.contains('is-open') && !stack.contains(e.target)) close();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
 })();
 </script>
 </body>
