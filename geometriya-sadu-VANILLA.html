@@ -81,12 +81,9 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-section-orange{background:#F28D1B;color:#fff;position:relative;overflow:hidden;}
 .gs-section-orange::before{display:none;}
 .gs-why-sketch{position:absolute;inset:-20%;width:140%;height:140%;background:url('images/why-sketch%202.webp') center/cover no-repeat;filter:grayscale(1) contrast(1.1);mix-blend-mode:multiply;opacity:1;z-index:0;will-change:transform;}
-/* Зелений дуотон + градієнтний blur зверху сильніший */
-.gs-why-glass{position:absolute;inset:0;z-index:1;}
-.gs-why-glass::before{content:'';position:absolute;inset:0;background:#196A3F;mix-blend-mode:screen;opacity:0.82;}
-.gs-why-glass::after{content:'';position:absolute;inset:0;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);mask-image:linear-gradient(to bottom,black 0%,black 30%,transparent 75%);-webkit-mask-image:linear-gradient(to bottom,black 0%,black 30%,transparent 75%);}
-/* Слабкий blur знизу */
-.gs-why-glass-soft{position:absolute;inset:0;z-index:1;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);mask-image:linear-gradient(to bottom,transparent 40%,black 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 40%,black 100%);pointer-events:none;}
+/* Зелений шар для тіній через screen */
+.gs-why-glass{position:absolute;inset:0;z-index:1;background:#196A3F;mix-blend-mode:screen;opacity:0.82;}
+.gs-why-glass-soft{display:none;}
 .gs-section-orange>.gs-container{position:relative;z-index:2;}
 .gs-section-orange .eyebrow{color:rgba(255,255,255,0.65);}
 .gs-section-orange .eyebrow .eb-dash{color:#196A3F;}
