@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Картки послуг — фото-стиль</title>
+<style>
+:root{
+  --bg-1:#0A0B0A;--accent:#257c4d;--accent-bright:#2e9d5f;
+  --fg-1:#fff;--fg-2:rgba(255,255,255,0.72);--fg-3:rgba(255,255,255,0.48);
+  --r-lg:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg-1);color:var(--fg-1);font-family:"Onest",system-ui,sans-serif;padding:60px 24px;}
+.eyebrow{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg-3);margin-bottom:16px;}
+.eyebrow::before{content:"— ";color:var(--accent);}
+h1{font-weight:800;font-size:clamp(32px,5.5vw,64px);margin:0 0 48px;letter-spacing:-0.02em;line-height:1;}
+h1 span{color:var(--accent);}
+.inner{max-width:1400px;margin:0 auto;}
+
+/* === GRID === */
+.svc-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+@media(max-width:1000px){.svc-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.svc-grid{grid-template-columns:1fr;}}
+
+/* === CARD === */
+.svc-card{
+  position:relative;
+  aspect-ratio:3/4;
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  cursor:pointer;
+  display:flex;
+}
+
+/* перша картка ширша */
+.svc-card:first-child{
+  grid-row:span 1;
+}
+
+/* фото-фон */
+.svc-card-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.svc-card:hover .svc-card-img{
+  transform:scale(1.05);
+}
+
+/* placeholder замість фото */
+.svc-card-placeholder{
+  position:absolute;
+  inset:0;
+  transition:transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.svc-card:hover .svc-card-placeholder{transform:scale(1.05);}
+
+/* темний градієнт знизу */
+.svc-card-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.05) 0%,
+    rgba(0,0,0,0.15) 40%,
+    rgba(0,0,0,0.75) 75%,
+    rgba(0,0,0,0.90) 100%
+  );
+  z-index:1;
+}
+
+/* вертикальна категорія збоку */
+.svc-card-cat{
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+}
+.svc-card-cat span{
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  transform:rotate(180deg);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.55);
+}
+
+/* контент знизу */
+.svc-card-body{
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:2;
+  padding:24px 22px 28px 40px;
+}
+.svc-card-label{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--accent-bright);
+  margin-bottom:10px;
+}
+.svc-card-title{
+  font-weight:800;
+  font-size:clamp(20px,2.2vw,28px);
+  line-height:1.1;
+  letter-spacing:-0.01em;
+  color:#fff;
+  margin-bottom:8px;
+}
+.svc-card-sub{
+  font-size:13px;
+  color:rgba(255,255,255,0.55);
+  line-height:1.4;
+}
+
+/* стрілка */
+.svc-card-arrow{
+  position:absolute;
+  top:20px;
+  right:20px;
+  z-index:2;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.2);
+  display:grid;
+  place-items:center;
+  color:#fff;
+  font-size:16px;
+  transition:background 0.25s, border-color 0.25s;
+}
+.svc-card:hover .svc-card-arrow{
+  background:var(--accent);
+  border-color:var(--accent);
+}
+
+/* COMING SOON */
+.svc-card.coming-soon .svc-card-placeholder,
+.svc-card.coming-soon .svc-card-img{
+  filter:blur(6px) brightness(0.6);
+}
+.svc-card-coming-label{
+  display:none;
+  position:absolute;
+  inset:0;
+  z-index:3;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:8px;
+}
+.svc-card.coming-soon .svc-card-coming-label{display:flex;}
+.svc-card-coming-label .badge{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.5);
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius:999px;
+  padding:4px 14px;
+  margin-bottom:4px;
+}
+.svc-card-coming-label .ctitle{
+  font-size:clamp(20px,2.5vw,30px);
+  font-weight:800;
+  letter-spacing:-0.02em;
+  text-align:center;
+  padding:0 20px;
+}
+
+/* PLACEHOLDER COLORS — різні для кожного */
+.c1{background:linear-gradient(135deg,#1a3d2b 0%,#0d2018 100%);}
+.c2{background:linear-gradient(135deg,#1e3520 0%,#0a1a0d 100%);}
+.c3{background:linear-gradient(135deg,#162b1e 0%,#0c1c13 100%);}
+.c4{background:linear-gradient(135deg,#1b3326 0%,#0d1f18 100%);}
+.c5{background:linear-gradient(135deg,#223d2a 0%,#0f1f14 100%);}
+.c6{background:linear-gradient(135deg,#152a1f 0%,#0a1812 100%);}
+.c7{background:linear-gradient(135deg,#1a3027 0%,#0c1c16 100%);}
+.c8{background:linear-gradient(135deg,#1f3822 0%,#0f2012 100%);}
+
+/* декоративний SVG у плейсхолдері */
+.ph-svg{
+  position:absolute;
+  right:-20px;
+  bottom:-20px;
+  width:55%;
+  opacity:0.12;
+  color:var(--accent-bright);
+}
+</style>
+</head>
+<body>
+<div class="inner">
+  <p class="eyebrow">Що ми робимо</p>
+  <h1>Послуги ландшафтного<br><span>дизайну</span></h1>
+
+  <div class="svc-grid">
+
+    <!-- 01 -->
+    <div class="svc-card">
+      <div class="svc-card-placeholder c1">
+        <svg class="ph-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M50 90V40M50 40C50 20 30 10 10 15M50 40C50 20 70 10 90 15M50 40C40 55 20 58 5 50M50 40C60 55 80 58 95 50"/>
+        </svg>
+      </div>
+      <div class="svc-card-overlay"></div>
+      <div class="svc-card-cat"><span>ПРОЄКТИ</span></div>
+      <span class="svc-card-arrow">↗</span>
+      <div class="svc-card-body">
+        <div class="svc-card-label">індивідуально</div>
+        <h3 class="svc-card-title">Ландшафтне проєктування</h3>
+        <p class="svc-card-sub">Ескіз, генплан, 3D-візуалізація</p>
+      </div>
+    </div>
+
+    <!-- 02 -->
+    <div class="svc-card">
+      <div class="svc-card-placeholder c2">
+        <svg class="ph-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="50" cy="35" r="22"/><path d="M50 57v28M35 85h30"/>
+          <path d="M28 25c-8-4-14 2-12 10M72 25c8-4 14 2 12 10"/>
+        </svg>
+      </div>
+      <div class="svc-card-overlay"></div>
+      <div class="svc-card-cat"><span>ОЗЕЛЕНЕННЯ</span></div>
+      <span class="svc-card-arrow">↗</span>
+      <div class="svc-card-body">
+        <div class="svc-card-label">індивідуально</div>
+        <h3 class="svc-card-title">Озеленення та благоустрій</h3>
+        <p class="svc-card-sub">Висадка дерев, кущів, квіткових композицій</p>
+      </div>
+    </div>
+
+    <!-- 03 -->
+    <div class="svc-card">
+      <div class="svc-card-placeholder c3">
+        <svg class="ph-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <rect x="5" y="60" width="90" height="8" rx="2"/>
+          <path d="M15 60V40M25 60V35M35 60V42M45 60V38M55 60V44M65 60V36M75 60V41M85 60V38"/>
+        </svg>
+      </div>
+      <div class="svc-card-overlay"></div>
+      <div class="svc-card-cat"><span>ГАЗОН</span></div>
+      <span class="svc-card-arrow">↗</span>
+      <div class="svc-card-body">
+        <div class="svc-card-label">від 70 грн/м²</div>
+        <h3 class="svc-card-title">Рулонний газон</h3>
+        <p class="svc-card-sub">Продаж та укладання, підготовка ґрунту</p>
+      </div>
+    </div>
+
+    <!-- 04 -->
+    <div class="svc-card">
+      <div class="svc-card-placeholder c4">
+        <svg class="ph-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M20 80L15 40l20-10 15 20 15-20 20 10L80 80z"/>
+          <path d="M30 80V55h40v25"/>
+        </svg>
+      </div>
+      <div class="svc-card-overlay"></div>
+      <div class="svc-card-cat"><span>ЗЕМЛЯНІ</span></div>
+      <span class="svc-card-arrow">↗</span>
+      <div class="svc-card-body">
+        <div class="svc-card-label">від 50 грн/м²</div>
+        <h3 class="svc-card-title">Земляні роботи</h3>
+        <p class="svc-card-sub">Зняття ґрунту, траншеї, планування</p>
+      </div>
+    </div>
+
+    <!-- 05 -->
+    <div class="svc-card">
+      <div class="svc-card-placeholder c5">
+        <svg class="ph-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="50" cy="30" r="15" stroke-dasharray="4 3"/>
+          <path d="M50 45v20M38 55c-8 8-8 20 0 25M62 55c8 8 8 20 0 25"/>
+          <path d="M30 80h40"/>
+        </svg>
+      </div>
+      <div class="svc-card-overlay"></div>
+      <div class="svc-card-cat"><span>ПОЛИВ</span></div>
+      <span class="svc-card-arrow">↗</span>
+      <div class="svc-card-body">
+        <div class="svc-card-label">індивідуально</div>
+        <h3 class="svc-card-title">Монтаж автополиву</h3>
+        <p class="svc-card-sub">Проєктування та монтаж Hunter, Rain Bird</p>
+      </div>
+    </div>
+
+    <!-- 06 coming soon -->
+    <div class="svc-card coming-soon">
+      <div class="svc-card-placeholder c6">
+        <svg class="ph-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M50 20 Q70 40 50 60 Q30 40 50 20z"/>
+          <path d="M30 50 Q50 70 70 50"/>
+          <path d="M20 70h60"/>
+        </svg>
+      </div>
+      <div class="svc-card-overlay"></div>
+      <div class="svc-card-coming-label">
+        <span class="badge">В ПРОЄКТІ</span>
+        <span class="ctitle">Консервація автополиву</span>
+      </div>
+    </div>
+
+    <!-- 07 -->
+    <div class="svc-card">
+      <div class="svc-card-placeholder c7">
+        <svg class="ph-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M50 85V40M50 40C35 20 15 22 10 35M50 40C65 20 85 22 90 35M50 40C50 55 35 65 20 60M50 40C50 55 65 65 80 60"/>
+        </svg>
+      </div>
+      <div class="svc-card-overlay"></div>
+      <div class="svc-card-cat"><span>ДОГЛЯД</span></div>
+      <span class="svc-card-arrow">↗</span>
+      <div class="svc-card-body">
+        <div class="svc-card-label">від 600 грн/100м²</div>
+        <h3 class="svc-card-title">Догляд за садом</h3>
+        <p class="svc-card-sub">Покос, аерація, обрізка, підживлення</p>
+      </div>
+    </div>
+
+    <!-- 08 coming soon -->
+    <div class="svc-card coming-soon">
+      <div class="svc-card-placeholder c8">
+        <svg class="ph-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <rect x="20" y="40" width="60" height="45" rx="4"/>
+          <path d="M30 40V30a20 20 0 0140 0v10"/>
+          <path d="M40 62a10 10 0 0020 0"/>
+        </svg>
+      </div>
+      <div class="svc-card-overlay"></div>
+      <div class="svc-card-coming-label">
+        <span class="badge">В ПРОЄКТІ</span>
+        <span class="ctitle">Корпоративним клієнтам</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
