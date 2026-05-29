@@ -166,7 +166,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-pcard.is-in::before{animation:gsBgEnter 1.2s forwards var(--reveal-delay);}
 .gs-pcard.is-in .gs-pcard-img,.gs-pcard.is-in .gs-pcard-ph{animation:gsBgZoomOut 1.7s forwards var(--reveal-delay);}
 @keyframes gsBgEnter{0%{transform:translateY(0) skewY(8deg);}100%{transform:translateY(110%) skewY(8deg);}}
-@keyframes gsBgZoomOut{0%{transform:scale(1.1);}100%{transform:scale(1);}}
+@keyframes gsBgZoomOut{0%{transform:scale(1.1);filter:blur(10px);}100%{transform:scale(1);filter:blur(0);}}
 .gs-pcard:hover .gs-pcard-img,.gs-pcard:hover .gs-pcard-ph{transition:transform 0.6s var(--ease-out);transform:scale(1.05);}
 /* затемнення знизу для читабельності */
 .gs-pcard-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.15) 40%,rgba(0,0,0,0.72) 75%,rgba(0,0,0,0.9) 100%);}
@@ -183,7 +183,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-pcard.is-in .gs-pcard-label{animation:gsTextUp 0.85s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:calc(var(--reveal-delay) + 0.5s);}
 .gs-pcard.is-in .gs-pcard-title{animation:gsTextUp 0.95s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:calc(var(--reveal-delay) + 0.62s);}
 .gs-pcard.is-in .gs-pcard-sub{animation:gsTextUp 0.85s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:calc(var(--reveal-delay) + 0.76s);}
-@keyframes gsTextUp{0%{opacity:0;transform:translateY(120%) skewY(6deg);}100%{opacity:1;transform:translateY(0) skewY(0);}}
+@keyframes gsTextUp{0%{opacity:0;transform:translateY(120%) skewY(6deg);filter:blur(8px);}100%{opacity:1;transform:translateY(0) skewY(0);filter:blur(0);}}
 /* стрілка */
 .gs-pcard-arrow{position:absolute;top:20px;right:20px;z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);display:grid;place-items:center;color:#fff;transition:background var(--dur-base) var(--ease-out),border-color var(--dur-base) var(--ease-out);}
 .gs-pcard-arrow .ti{font-size:17px;line-height:1;}
