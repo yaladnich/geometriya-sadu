@@ -152,28 +152,43 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-marquee-item{color:var(--fg-1);}
 @keyframes gs-slide{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
-.gs-services-grid{display:grid;grid-template-columns:repeat(4,1fr);column-gap:14px;row-gap:56px;}
-@media(max-width:1100px){.gs-services-grid{grid-template-columns:repeat(2,1fr);}}
+/* === Photo-картки послуг (стиль lev-development) === */
+.gs-services-grid{display:grid;grid-template-columns:repeat(3,1fr);column-gap:35px;row-gap:56px;}
+@media(max-width:1000px){.gs-services-grid{grid-template-columns:repeat(2,1fr);column-gap:24px;row-gap:40px;}}
 @media(max-width:600px){.gs-services-grid{grid-template-columns:1fr;}}
-.gs-svc{background:linear-gradient(to bottom,#1B1F1C 0%,#0A0B0A 100%);border:none;border-radius:var(--r-lg) var(--r-lg) 0 0;padding:28px 24px;display:flex;flex-direction:column;gap:18px;min-height:280px;cursor:pointer;transition:background var(--dur-base) var(--ease-out),transform var(--dur-base) var(--ease-out);position:relative;overflow:hidden;}
-.gs-svc::after{display:none;}
-.gs-svc-foot{position:relative;z-index:1;}
-.gs-svc:hover .gs-svc-arrow{color:var(--accent);}
-.gs-svc:hover .gs-svc-arrow .ti{transform:rotate(180deg);}
-.gs-svc-leaf{position:absolute;right:-14px;bottom:8px;width:128px;height:128px;color:var(--accent);opacity:0.14;pointer-events:none;z-index:0;transform:rotate(-8deg);transition:opacity var(--dur-base) var(--ease-out),transform var(--dur-slow) var(--ease-out);}
-.gs-svc-leafed:hover .gs-svc-leaf{opacity:0.26;transform:rotate(0deg) scale(1.04);}
-.gs-svc-leafed .gs-svc-head,.gs-svc-leafed .gs-svc-title,.gs-svc-leafed .gs-svc-desc{position:relative;z-index:1;}
-.gs-svc-head{display:flex;align-items:center;justify-content:space-between;}
-.gs-svc-num{color:var(--accent);font-size:14px;}
-.gs-svc-icon{width:40px;height:40px;border-radius:var(--r-sm);border:1px solid var(--border);display:grid;place-items:center;color:var(--accent);}
-.gs-svc-icon .ti{font-size:22px;line-height:1;}
-.gs-svc-title{font-family:var(--font-display);font-weight:700;font-size:22px;line-height:1.15;margin:0;color:var(--fg-1);}
-.gs-svc-desc{flex:1;font-size:14px;line-height:1.55;color:var(--fg-2);margin:0;}
-.gs-svc-foot{display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--border-soft);}
-.gs-svc-price{font-family:var(--font-mono);font-size:13px;color:var(--fg-3);}
-.gs-svc-arrow{width:36px;height:36px;border-radius:999px;display:grid;place-items:center;transition:all var(--dur-base) var(--ease-out);color:rgba(242,141,27,.78);}
-.gs-svc-arrow .ti{font-size:17px;line-height:1;transition:transform 0.35s var(--ease-in-out);}
-.gs-svc-arrow .ti.gs-icon-glitch{animation:gs-close-glitch 0.44s linear;}
+.gs-pcard{position:relative;aspect-ratio:3/4;border-radius:var(--r-md);overflow:hidden;cursor:pointer;display:flex;}
+/* фото / плейсхолдер */
+.gs-pcard-img,.gs-pcard-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.1);backface-visibility:hidden;}
+.gs-pcard-ph{background:linear-gradient(135deg,var(--accent-deep) 0%,var(--bg-1) 100%);}
+/* діагональна шторка появи */
+.gs-pcard::before{content:'';position:absolute;top:0;left:-5%;width:110%;height:150%;background:var(--bg-1);transform:translateY(-17%) skewY(8deg);z-index:4;pointer-events:none;}
+.gs-pcard{--reveal-delay:0.1s;}
+.gs-pcard.is-in::before{animation:gsBgEnter 1.2s forwards var(--reveal-delay);}
+.gs-pcard.is-in .gs-pcard-img,.gs-pcard.is-in .gs-pcard-ph{animation:gsBgZoomOut 1.7s forwards var(--reveal-delay);}
+@keyframes gsBgEnter{0%{transform:translateY(0) skewY(8deg);}100%{transform:translateY(110%) skewY(8deg);}}
+@keyframes gsBgZoomOut{0%{transform:scale(1.1);}100%{transform:scale(1);}}
+.gs-pcard:hover .gs-pcard-img,.gs-pcard:hover .gs-pcard-ph{transition:transform 0.6s var(--ease-out);transform:scale(1.05);}
+/* затемнення знизу для читабельності */
+.gs-pcard-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.15) 40%,rgba(0,0,0,0.72) 75%,rgba(0,0,0,0.9) 100%);}
+/* вертикальна категорія */
+.gs-pcard-cat{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;align-items:center;padding:0 12px;}
+.gs-pcard-cat span{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.5);}
+/* контент знизу */
+.gs-pcard-body{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:24px 22px 28px 40px;}
+.gs-pcard-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-bright);margin-bottom:10px;}
+.gs-pcard-title{font-family:var(--font-display);font-weight:800;font-size:clamp(20px,2.2vw,28px);line-height:1.1;letter-spacing:-0.01em;color:#fff;margin:0 0 8px;}
+.gs-pcard-sub{font-size:13px;color:rgba(255,255,255,0.55);line-height:1.4;margin:0;}
+/* стрілка */
+.gs-pcard-arrow{position:absolute;top:20px;right:20px;z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);display:grid;place-items:center;color:#fff;transition:background var(--dur-base) var(--ease-out),border-color var(--dur-base) var(--ease-out);}
+.gs-pcard-arrow .ti{font-size:17px;line-height:1;}
+.gs-pcard:hover .gs-pcard-arrow{background:var(--accent);border-color:var(--accent);}
+/* coming soon */
+.gs-pcard.is-soon .gs-pcard-img,.gs-pcard.is-soon .gs-pcard-ph{filter:blur(6px) brightness(0.55);}
+.gs-pcard-soon{display:none;position:absolute;inset:0;z-index:3;align-items:center;justify-content:center;flex-direction:column;gap:8px;text-align:center;padding:0 20px;}
+.gs-pcard.is-soon .gs-pcard-soon{display:flex;}
+.gs-pcard-soon .badge{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.25);border-radius:999px;padding:4px 14px;}
+.gs-pcard-soon .ct{font-family:var(--font-display);font-size:clamp(20px,2.5vw,28px);font-weight:800;letter-spacing:-0.02em;color:#fff;}
+@media(prefers-reduced-motion:reduce){.gs-pcard::before{display:none;}.gs-pcard-img,.gs-pcard-ph{transform:none;animation:none;}}
 
 .gs-why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;}
 @media(max-width:1000px){.gs-why-grid{grid-template-columns:repeat(2,1fr);}}
@@ -667,56 +682,87 @@ html,body{overflow-x:hidden;max-width:100%;}
       <h2 class="h-display-2">Послуги ландшафтного<br><span class="gs-accent-italic">дизайну</span></h2>
     </div>
     <div class="gs-services-grid">
-      <article class="gs-svc" onclick="openModal()">
-        <div class="gs-svc-head"><span class="num gs-svc-num">01</span><span class="gs-svc-icon"><i class="ti ti-ruler-measure"></i></span></div>
-        <h3 class="gs-svc-title">Ландшафтне проєктування</h3>
-        <p class="gs-svc-desc">Ескіз, генплан, 3D-візуалізація, схема автополиву</p>
-        <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow"><i class="ti ti-arrow-up-right"></i></span></div>
+      <article class="gs-pcard" onclick="openModal()">
+        <div class="gs-pcard-ph"></div>
+        <div class="gs-pcard-overlay"></div>
+        <div class="gs-pcard-cat"><span>Проєкти</span></div>
+        <span class="gs-pcard-arrow"><i class="ti ti-arrow-up-right"></i></span>
+        <div class="gs-pcard-body">
+          <div class="gs-pcard-label">індивідуально</div>
+          <h3 class="gs-pcard-title">Ландшафтне проєктування</h3>
+          <p class="gs-pcard-sub">Ескіз, генплан, 3D-візуалізація, схема автополиву</p>
+        </div>
       </article>
-      <article class="gs-svc gs-svc-leafed" onclick="openModal()">
-        <svg class="gs-svc-leaf" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-          <path d="M88 12C52 14 30 30 22 58c-3 11-2 22 2 30 9-4 17-10 24-18M88 12c-2 30-14 50-38 60M88 12c-18 6-34 18-44 36M52 40c8-3 18-4 28-3M40 58c7-2 16-2 25 1" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <div class="gs-svc-head"><span class="num gs-svc-num">02</span><span class="gs-svc-icon"><i class="ti ti-trees"></i></span></div>
-        <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
-        <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
-        <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow"><i class="ti ti-arrow-up-right"></i></span></div>
+      <article class="gs-pcard" onclick="openModal()">
+        <div class="gs-pcard-ph"></div>
+        <div class="gs-pcard-overlay"></div>
+        <div class="gs-pcard-cat"><span>Озеленення</span></div>
+        <span class="gs-pcard-arrow"><i class="ti ti-arrow-up-right"></i></span>
+        <div class="gs-pcard-body">
+          <div class="gs-pcard-label">індивідуально</div>
+          <h3 class="gs-pcard-title">Озеленення та благоустрій</h3>
+          <p class="gs-pcard-sub">Висадка дерев, кущів, квіткових композицій</p>
+        </div>
       </article>
-      <article class="gs-svc" onclick="openModal()">
-        <div class="gs-svc-head"><span class="num gs-svc-num">03</span><span class="gs-svc-icon"><i class="ti ti-grain"></i></span></div>
-        <h3 class="gs-svc-title">Рулонний газон</h3>
-        <p class="gs-svc-desc">Продаж та укладання, підготовка ґрунту, сітка від кротів, встановлення георешітки</p>
-        <div class="gs-svc-foot"><span class="gs-svc-price">від 70 грн/м²</span><span class="gs-svc-arrow"><i class="ti ti-arrow-up-right"></i></span></div>
+      <article class="gs-pcard" onclick="openModal()">
+        <div class="gs-pcard-ph"></div>
+        <div class="gs-pcard-overlay"></div>
+        <div class="gs-pcard-cat"><span>Газон</span></div>
+        <span class="gs-pcard-arrow"><i class="ti ti-arrow-up-right"></i></span>
+        <div class="gs-pcard-body">
+          <div class="gs-pcard-label">від 70 грн/м²</div>
+          <h3 class="gs-pcard-title">Рулонний газон</h3>
+          <p class="gs-pcard-sub">Продаж та укладання, підготовка ґрунту, сітка від кротів, георешітка</p>
+        </div>
       </article>
-      <article class="gs-svc" onclick="openModal()">
-        <div class="gs-svc-head"><span class="num gs-svc-num">04</span><span class="gs-svc-icon"><i class="ti ti-bulldozer"></i></span></div>
-        <h3 class="gs-svc-title">Земляні роботи</h3>
-        <p class="gs-svc-desc">Зняття ґрунту, траншеї, планування, культивація</p>
-        <div class="gs-svc-foot"><span class="gs-svc-price">від 50 грн/м²</span><span class="gs-svc-arrow"><i class="ti ti-arrow-up-right"></i></span></div>
+      <article class="gs-pcard" onclick="openModal()">
+        <div class="gs-pcard-ph"></div>
+        <div class="gs-pcard-overlay"></div>
+        <div class="gs-pcard-cat"><span>Земляні</span></div>
+        <span class="gs-pcard-arrow"><i class="ti ti-arrow-up-right"></i></span>
+        <div class="gs-pcard-body">
+          <div class="gs-pcard-label">від 50 грн/м²</div>
+          <h3 class="gs-pcard-title">Земляні роботи</h3>
+          <p class="gs-pcard-sub">Зняття ґрунту, траншеї, планування, культивація</p>
+        </div>
       </article>
-      <article class="gs-svc" onclick="openModal()">
-        <div class="gs-svc-head"><span class="num gs-svc-num">05</span><span class="gs-svc-icon"><i class="ti ti-droplet"></i></span></div>
-        <h3 class="gs-svc-title">Монтаж автополиву</h3>
-        <p class="gs-svc-desc">Проєктування та монтаж Hunter, Rain Bird, Unidelta</p>
-        <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow"><i class="ti ti-arrow-up-right"></i></span></div>
+      <article class="gs-pcard" onclick="openModal()">
+        <div class="gs-pcard-ph"></div>
+        <div class="gs-pcard-overlay"></div>
+        <div class="gs-pcard-cat"><span>Полив</span></div>
+        <span class="gs-pcard-arrow"><i class="ti ti-arrow-up-right"></i></span>
+        <div class="gs-pcard-body">
+          <div class="gs-pcard-label">індивідуально</div>
+          <h3 class="gs-pcard-title">Монтаж автополиву</h3>
+          <p class="gs-pcard-sub">Проєктування та монтаж Hunter, Rain Bird, Unidelta</p>
+        </div>
       </article>
-      <article class="gs-svc" onclick="openModal()">
-        <div class="gs-svc-head"><span class="num gs-svc-num">06</span><span class="gs-svc-icon"><i class="ti ti-snowflake"></i></span></div>
-        <h3 class="gs-svc-title">Консервація автополиву</h3>
-        <p class="gs-svc-desc">Підготовка системи до зими та весняний запуск</p>
-        <div class="gs-svc-foot"><span class="gs-svc-price">від 2 000 грн</span><span class="gs-svc-arrow"><i class="ti ti-arrow-up-right"></i></span></div>
+      <article class="gs-pcard" onclick="openModal()">
+        <div class="gs-pcard-ph"></div>
+        <div class="gs-pcard-overlay"></div>
+        <div class="gs-pcard-cat"><span>Догляд</span></div>
+        <span class="gs-pcard-arrow"><i class="ti ti-arrow-up-right"></i></span>
+        <div class="gs-pcard-body">
+          <div class="gs-pcard-label">від 600 грн/100м²</div>
+          <h3 class="gs-pcard-title">Догляд за садом</h3>
+          <p class="gs-pcard-sub">Покос, аерація, обрізка, підживлення, обробка</p>
+        </div>
       </article>
-      <article class="gs-svc" onclick="openModal()">
-        <div class="gs-svc-head"><span class="num gs-svc-num">07</span><span class="gs-svc-icon"><i class="ti ti-leaf"></i></span></div>
-        <h3 class="gs-svc-title">Догляд за садом</h3>
-        <p class="gs-svc-desc">Покос, аерація, обрізка, підживлення, обробка</p>
-        <div class="gs-svc-foot"><span class="gs-svc-price">від 600 грн/100м²</span><span class="gs-svc-arrow"><i class="ti ti-arrow-up-right"></i></span></div>
+      <article class="gs-pcard is-soon">
+        <div class="gs-pcard-ph"></div>
+        <div class="gs-pcard-overlay"></div>
+        <div class="gs-pcard-soon">
+          <span class="badge">В проєкті</span>
+          <span class="ct">Консервація автополиву</span>
+        </div>
       </article>
-      <article class="gs-svc" onclick="openModal()">
-        <div class="gs-svc-head"><span class="num gs-svc-num">08</span><span class="gs-svc-icon"><i class="ti ti-building-skyscraper"></i></span></div>
-        <h3 class="gs-svc-title">Корпоративним клієнтам</h3>
-        <p class="gs-svc-desc">Озеленення ЖК, офісів, комерційних об'єктів під ключ</p>
-        <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow"><i class="ti ti-arrow-up-right"></i></span></div>
+      <article class="gs-pcard is-soon">
+        <div class="gs-pcard-ph"></div>
+        <div class="gs-pcard-overlay"></div>
+        <div class="gs-pcard-soon">
+          <span class="badge">В проєкті</span>
+          <span class="ct">Корпоративним клієнтам</span>
+        </div>
       </article>
     </div>
   </div>
@@ -1733,34 +1779,24 @@ function initCustomAnimations() {
     el.dataset.words = 'true';
   }
 
-  document.querySelectorAll('.gs-svc').forEach(row => {
-    const titleEl = row.querySelector('.gs-svc-title');
-    if (titleEl) splitWords(titleEl);
-
-    const words = titleEl ? Array.from(titleEl.querySelectorAll('.w')) : [];
-    const others = [
-      row.querySelector('.gs-svc-num'),
-      row.querySelector('.gs-svc-icon'),
-      row.querySelector('.gs-svc-desc'),
-      row.querySelector('.gs-svc-price'),
-      row.querySelector('.gs-svc-arrow')
-    ].filter(Boolean);
-
-    gsap.set(row, { opacity: 0, y: 28, filter: 'blur(8px)' });
-    gsap.set(words, { yPercent: 110, opacity: 0 });
-    gsap.set(others, { opacity: 0 });
-
-    ScrollTrigger.create({
-      trigger: row,
-      start: 'top 89%',
-      once: true,
-      onEnter: () => {
-        gsap.to(row, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.95, ease: 'power2.out', onComplete: () => gsap.set(row, { clearProps: 'filter' }) });
-        gsap.to(words, { yPercent: 0, opacity: 1, stagger: 0.07, ease: 'power3.out', duration: 0.55, delay: 0.04 });
-        gsap.to(others, { opacity: 1, stagger: 0.05, ease: 'power2.out', duration: 0.45, delay: 0.18 });
-      }
-    });
-  });
+  // Photo-картки послуг: поява діагональною шторкою + повільний зум (стиль lev-development)
+  (function(){
+    const cards = Array.from(document.querySelectorAll('.gs-pcard'));
+    if (!cards.length) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    if (reduced){ cards.forEach(c => c.classList.add('is-in')); return; }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const card = e.target;
+        const col = cards.indexOf(card) % 3;       // каскад по рядах (3 колонки)
+        card.style.setProperty('--reveal-delay', (0.1 + col * 0.18) + 's');
+        card.classList.add('is-in');
+        io.unobserve(card);
+      });
+    }, { threshold: 0.2, rootMargin: '0px 0px -8% 0px' });
+    cards.forEach(c => io.observe(c));
+  })();
 
   document.querySelectorAll('.gs-why-item').forEach((row, index) => {
     const titleEl = row.querySelector('.gs-why-title');
