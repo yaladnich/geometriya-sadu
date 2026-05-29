@@ -185,9 +185,10 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-pcard.is-in .gs-pcard-sub{animation:gsTextUp 0.85s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:calc(var(--reveal-delay) + 0.76s);}
 @keyframes gsTextUp{0%{opacity:0;transform:translateY(120%) skewY(6deg);filter:blur(8px);}100%{opacity:1;transform:translateY(0) skewY(0);filter:blur(0);}}
 /* стрілка */
-.gs-pcard-arrow{position:absolute;top:20px;right:20px;z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);display:grid;place-items:center;color:#fff;transition:background var(--dur-base) var(--ease-out),border-color var(--dur-base) var(--ease-out);}
-.gs-pcard-arrow .ti{font-size:17px;line-height:1;}
-.gs-pcard:hover .gs-pcard-arrow{background:var(--accent);border-color:var(--accent);}
+.gs-pcard-arrow{position:absolute;top:20px;right:20px;z-index:2;width:36px;height:36px;border-radius:999px;display:grid;place-items:center;color:rgba(242,141,27,.78);transition:color var(--dur-base) var(--ease-out);}
+.gs-pcard-arrow .ti{font-size:17px;line-height:1;transition:transform 0.35s var(--ease-in-out);}
+.gs-pcard-arrow .ti.gs-icon-glitch{animation:gs-close-glitch 0.44s linear;}
+.gs-pcard:hover .gs-pcard-arrow{color:var(--accent);}
 /* coming soon */
 .gs-pcard.is-soon .gs-pcard-img,.gs-pcard.is-soon .gs-pcard-ph{filter:blur(6px) brightness(0.55);}
 .gs-pcard-soon{display:none;position:absolute;inset:0;z-index:3;align-items:center;justify-content:center;flex-direction:column;gap:8px;text-align:center;padding:0 20px;}
@@ -1710,8 +1711,8 @@ function initCustomAnimations() {
     });
   })();
 
-  document.querySelectorAll('.gs-svc').forEach(card => {
-    const icon = card.querySelector('.gs-svc-arrow .ti');
+  document.querySelectorAll('.gs-svc, .gs-pcard').forEach(card => {
+    const icon = card.querySelector('.gs-svc-arrow .ti, .gs-pcard-arrow .ti');
     if (!icon) return;
     card.addEventListener('mouseenter', () => {
       icon.classList.remove('gs-icon-glitch');
