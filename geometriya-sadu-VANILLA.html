@@ -64,8 +64,18 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .inline-thumb{display:inline-block;width:0.9em;aspect-ratio:16/10;width:1.4em;height:1em;vertical-align:middle;margin-inline:0.15em;border-radius:0.18em;background-size:cover;background-position:center;transform:translateY(-0.08em);}
 
 .gs-container{max-width:var(--container-max);margin-inline:auto;padding-inline:var(--container-px);}
-.gs-section{padding-block:var(--section-y);}
+.gs-section{padding-block:var(--section-y);position:relative;}
 .gs-section-alt{background:var(--bg-2);}
+/* Ледь помітна декоративна сітка + м'який glow на темних секціях */
+.gs-section-alt{background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:64px 64px;background-position:center;}
+.gs-section-glow{position:relative;overflow:hidden;}
+.gs-section-glow::before{content:'';position:absolute;top:-20%;right:-10%;width:60vw;height:60vw;max-width:760px;max-height:760px;background:radial-gradient(circle,rgba(37,124,77,0.14),transparent 65%);pointer-events:none;z-index:0;}
+.gs-section-glow>.gs-container{position:relative;z-index:1;}
+/* Світла секція */
+.gs-section-light{background:#EFEDE6;color:#1A1C1A;background-image:radial-gradient(rgba(0,0,0,0.04) 1px,transparent 1px);background-size:22px 22px;}
+.gs-section-light .eyebrow{color:rgba(26,28,26,0.55);}
+.gs-section-light .h-display-2{color:#151715;}
+.gs-section-light .gs-accent-italic{color:var(--accent-deep);}
 .gs-section-head{margin-bottom:clamp(40px,6vw,80px);}
 .gs-section-head .eyebrow{margin-bottom:16px;}
 .gs-accent-italic{color:#257D4D;font-style:normal;font-weight:800;}
@@ -195,12 +205,12 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 
 .gs-reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 @media(max-width:900px){.gs-reviews-grid{grid-template-columns:1fr;}}
-.gs-review{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:32px;margin:0;display:flex;flex-direction:column;gap:20px;}
-.gs-review-stars{display:flex;gap:4px;color:var(--accent);}
-.gs-review-text{font-family:var(--font-display);font-weight:500;font-size:18px;line-height:1.5;color:var(--fg-1);margin:0;flex:1;}
-.gs-review-cite{display:flex;flex-direction:column;gap:2px;padding-top:16px;border-top:1px solid var(--border-soft);}
-.gs-review-name{font-weight:700;color:var(--fg-1);}
-.gs-review-meta{font-size:13px;color:var(--fg-3);font-family:var(--font-mono);}
+.gs-review{background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);border-radius:var(--r-lg);padding:32px;margin:0;display:flex;flex-direction:column;gap:20px;box-shadow:0 12px 40px -20px rgba(0,0,0,0.35);}
+.gs-review-stars{display:flex;gap:4px;color:#F28D1B;}
+.gs-review-text{font-family:var(--font-display);font-weight:500;font-size:18px;line-height:1.5;color:#1A1C1A;margin:0;flex:1;}
+.gs-review-cite{display:flex;flex-direction:column;gap:2px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.08);}
+.gs-review-name{font-weight:700;color:#151715;}
+.gs-review-meta{font-size:13px;color:rgba(26,28,26,0.5);font-family:var(--font-mono);}
 
 .gs-price-tabs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;}
 .gs-price-table{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;}
@@ -685,7 +695,7 @@ html,body{overflow-x:hidden;max-width:100%;}
 </section>
 
 <!-- WHY -->
-<section class="gs-section gs-section-alt" id="why">
+<section class="gs-section gs-section-alt gs-section-glow" id="why">
   <div class="gs-container">
     <div class="gs-section-head">
       <div class="eyebrow"><span class="eb-dash">—</span> Переваги</div>
@@ -746,7 +756,7 @@ html,body{overflow-x:hidden;max-width:100%;}
 </section>
 
 <!-- REVIEWS -->
-<section class="gs-section" id="reviews">
+<section class="gs-section gs-section-light" id="reviews">
   <div class="gs-container">
     <div class="gs-section-head"><div class="eyebrow"><span class="eb-dash">—</span> Відгуки</div><h2 class="h-display-2">Відгуки наших<br><span class="gs-accent-italic">клієнтів</span></h2></div>
     <div class="gs-reviews-grid">
@@ -758,7 +768,7 @@ html,body{overflow-x:hidden;max-width:100%;}
 </section>
 
 <!-- PRICING -->
-<section class="gs-section gs-section-alt" id="pricing">
+<section class="gs-section gs-section-alt gs-section-glow" id="pricing">
   <div class="gs-container">
     <div class="gs-section-head"><div class="eyebrow"><span class="eb-dash">—</span> Ціни</div><h2 class="h-display-2">Ціни на ландшафтні<br><span class="gs-accent-italic">роботи</span></h2></div>
     <div class="gs-price-tabs">
