@@ -43,6 +43,22 @@ h1 span{color:var(--accent);}
   grid-row:span 1;
 }
 
+/* === SCROLL REVEAL (як у lev-development: anime/animated/animated-delay) === */
+.svc-card.anime{
+  opacity:0;
+  transform:translateY(64px);
+  transition:opacity 0.9s cubic-bezier(0.22,1,0.36,1),
+             transform 0.9s cubic-bezier(0.22,1,0.36,1);
+  will-change:opacity,transform;
+}
+.svc-card.anime.animated{
+  opacity:1;
+  transform:translateY(0);
+}
+@media(prefers-reduced-motion:reduce){
+  .svc-card.anime{opacity:1;transform:none;transition:none;}
+}
+
 /* фото-фон */
 .svc-card-img{
   position:absolute;
@@ -315,5 +331,31 @@ h1 span{color:var(--accent);}
 
   </div>
 </div>
+<script>
+// Scroll-reveal у стилі lev-development: картки з'являються знизу
+// з каскадною затримкою (animated-delay) при попаданні в зону видимості.
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.svc-card'));
+  var reduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  cards.forEach(function(c){ c.classList.add('anime'); });
+  if(reduced){ cards.forEach(function(c){ c.classList.add('animated'); }); return; }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var card = e.target;
+        // індекс у межах поточного видимого ряду → каскадна затримка
+        var idx = cards.indexOf(card);
+        var rowPos = idx % 3; // 3 колонки
+        card.style.transitionDelay = (rowPos * 0.12) + 's';
+        card.classList.add('animated');
+        io.unobserve(card);
+      }
+    });
+  },{threshold:0.15, rootMargin:'0px 0px -10% 0px'});
+
+  cards.forEach(function(c){ io.observe(c); });
+})();
+</script>
 </body>
 </html>
