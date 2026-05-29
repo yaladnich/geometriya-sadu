@@ -78,17 +78,17 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-section-light .gs-accent-italic{color:var(--accent-deep);}
 /* Зелена акцентна секція з гласморфізмом поверх скетчу */
 /* Дуотон: зелений (тіні) + оранжевий (світло) */
-.gs-section-orange{background:#000;color:#fff;position:relative;overflow:hidden;}
+.gs-section-orange{background:#F28D1B;color:#fff;position:relative;overflow:hidden;}
 .gs-section-orange::before{display:none;}
-.gs-why-sketch{position:absolute;inset:-20%;width:140%;height:140%;background:url('images/why-sketch%202.webp') center/cover no-repeat;filter:grayscale(1) contrast(1.2);mix-blend-mode:screen;opacity:0.18;z-index:0;will-change:transform;}
-.gs-why-glass{display:none;}
+.gs-why-sketch{position:absolute;inset:-20%;width:140%;height:140%;background:url('images/why-sketch%202.webp') center/cover no-repeat;filter:grayscale(1) contrast(1.1);mix-blend-mode:multiply;opacity:1;z-index:0;will-change:transform;}
+.gs-why-glass{position:absolute;inset:0;z-index:1;background:#196A3F;mix-blend-mode:screen;opacity:0.82;}
 .gs-why-glass-soft{display:none;}
 .gs-section-orange>.gs-container{position:relative;z-index:2;}
 .gs-section-orange .eyebrow{color:rgba(255,255,255,0.65);}
 .gs-section-orange .eyebrow .eb-dash{color:#196A3F;}
 .gs-section-orange .h-display-2{color:#fff;}
-.gs-section-orange .gs-accent-italic{color:var(--accent-bright);}
-.gs-section-orange .gs-why-num{color:var(--accent-bright);}
+.gs-section-orange .gs-accent-italic{color:#196A3F;}
+.gs-section-orange .gs-why-num{color:#196A3F;}
 .gs-section-orange .gs-why-title{color:#fff;}
 .gs-section-orange .gs-why-desc{color:rgba(255,255,255,0.82);}
 .gs-section-head{margin-bottom:clamp(40px,6vw,80px);}
