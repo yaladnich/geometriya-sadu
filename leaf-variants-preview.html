@@ -28,6 +28,23 @@ h1{font-weight:800;font-size:clamp(28px,4vw,44px);margin:0 0 8px;letter-spacing:
 .deco{position:absolute;pointer-events:none;z-index:0;color:var(--accent);}
 .style-label{font-size:13px;color:var(--fg-2);margin-bottom:8px;font-weight:600;}
 .card-wrap{display:flex;flex-direction:column;}
+
+/* Анімація промальовування контуру */
+.deco path[stroke],.deco circle[stroke],.deco ellipse[stroke]{
+  stroke-dasharray:600;stroke-dashoffset:600;
+  animation:draw 2s var(--ease,cubic-bezier(0.65,0,0.35,1)) forwards;
+}
+.deco [fill]:not([stroke]){opacity:0;animation:fadeIn 1.2s ease forwards;animation-delay:1.2s;}
+@keyframes draw{to{stroke-dashoffset:0;}}
+@keyframes fadeIn{to{opacity:1;}}
+/* легка затримка між елементами для каскаду */
+.deco *:nth-child(2){animation-delay:0.25s;}
+.deco *:nth-child(3){animation-delay:0.5s;}
+.deco *:nth-child(4){animation-delay:0.75s;}
+.deco *:nth-child(5){animation-delay:1s;}
+/* перезапуск анімації по кліку на картку (для демо) */
+.replay .deco path[stroke],.replay .deco circle[stroke],.replay .deco ellipse[stroke]{animation:none;}
+.gs-svc{cursor:pointer;}
 </style>
 </head>
 <body>
@@ -194,6 +211,189 @@ h1{font-weight:800;font-size:clamp(28px,4vw,44px);margin:0 0 8px;letter-spacing:
     </article>
   </div>
 
+  <!-- 11. Листяне дерево (контур крони) -->
+  <div class="card-wrap">
+    <div class="style-label">11 — Листяне дерево (контур)</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:-10px;bottom:-8px;width:140px;height:140px;opacity:0.13;" viewBox="0 0 100 100" fill="none">
+        <path d="M50 95V55" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M50 60C40 62 33 56 33 47M50 60C60 62 67 56 67 47" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M50 58C32 58 20 46 20 32C20 20 28 12 38 12C40 6 45 4 50 4C55 4 60 6 62 12C72 12 80 20 80 32C80 46 68 58 50 58Z" stroke="currentColor" stroke-width="2.5"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v11</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 12. Кипарис / туя (вертикаль) -->
+  <div class="card-wrap">
+    <div class="style-label">12 — Кипариси / туї</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:14px;bottom:0;width:110px;height:150px;opacity:0.15;" viewBox="0 0 80 120" fill="currentColor">
+        <path d="M22 118V100C12 100 14 70 22 70C12 70 16 40 24 40C16 40 20 14 28 6C36 14 40 40 32 40C40 40 44 70 34 70C42 70 44 100 34 100V118Z" opacity="0.85"/>
+        <path d="M54 118V104C46 104 48 78 54 78C46 78 50 52 56 52C50 52 53 28 60 22C67 28 70 52 64 52C70 52 74 78 66 78C72 78 74 104 66 104V118Z" opacity="0.6"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v12</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 13. Кущ / топіарі (кулі) -->
+  <div class="card-wrap">
+    <div class="style-label">13 — Топіарі (стрижені кущі)</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:8px;bottom:6px;width:130px;height:110px;opacity:0.14;" viewBox="0 0 120 100" fill="none">
+        <circle cx="30" cy="55" r="22" stroke="currentColor" stroke-width="2.2"/>
+        <path d="M30 77V96" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="75" cy="40" r="16" stroke="currentColor" stroke-width="2.2"/>
+        <circle cx="75" cy="68" r="20" stroke="currentColor" stroke-width="2.2"/>
+        <path d="M75 88V96" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v13</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 14. Залите дерево (силует) -->
+  <div class="card-wrap">
+    <div class="style-label">14 — Дерево-силует (залите)</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:-30px;bottom:-30px;width:170px;height:170px;opacity:0.09;" viewBox="0 0 100 100" fill="currentColor">
+        <path d="M47 96V60H53V96H47Z"/>
+        <path d="M50 66C30 66 16 52 16 35C16 22 25 12 37 11C41 5 45 3 50 3C55 3 59 5 63 11C75 12 84 22 84 35C84 52 70 66 50 66Z"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v14</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 15. Пальма / екзот -->
+  <div class="card-wrap">
+    <div class="style-label">15 — Пальма / екзот</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:-4px;bottom:-6px;width:130px;height:150px;opacity:0.13;" viewBox="0 0 90 130" fill="none">
+        <path d="M45 128C45 100 43 70 48 42" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M48 40C40 28 26 22 12 24C24 26 36 32 44 42"/>
+          <path d="M48 40C56 28 70 22 84 24C72 26 60 32 50 42"/>
+          <path d="M47 44C36 38 22 38 12 46C24 44 36 46 46 50"/>
+          <path d="M49 44C60 38 74 38 84 46C72 44 60 46 50 50"/>
+          <path d="M48 42C44 30 44 16 50 4C56 16 56 30 50 44"/>
+        </g>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v15</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 16. Квітка / суцвіття -->
+  <div class="card-wrap">
+    <div class="style-label">16 — Квітка (контур)</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:6px;bottom:0;width:120px;height:140px;opacity:0.13;" viewBox="0 0 80 110" fill="none">
+        <path d="M40 108V50" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M40 78C30 76 24 68 26 60M40 90C50 88 56 82 55 74" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <g stroke="currentColor" stroke-width="2">
+          <ellipse cx="40" cy="22" rx="8" ry="16"/>
+          <ellipse cx="40" cy="22" rx="8" ry="16" transform="rotate(60 40 30)"/>
+          <ellipse cx="40" cy="22" rx="8" ry="16" transform="rotate(120 40 30)"/>
+          <circle cx="40" cy="32" r="6" fill="currentColor"/>
+        </g>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v16</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 17. Сад-композиція (кілька рослин) -->
+  <div class="card-wrap">
+    <div class="style-label">17 — Композиція рослин</div>
+    <article class="gs-svc">
+      <svg class="deco" style="left:0;right:0;bottom:0;width:100%;height:90px;opacity:0.14;" viewBox="0 0 300 90" fill="none" preserveAspectRatio="xMidYMax slice">
+        <circle cx="60" cy="55" r="22" stroke="currentColor" stroke-width="2"/>
+        <path d="M120 88C118 60 130 40 145 28C160 40 172 60 170 88" stroke="currentColor" stroke-width="2"/>
+        <path d="M210 88V50M210 50C204 52 200 47 200 42M210 50C216 52 220 47 220 42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <ellipse cx="255" cy="60" rx="18" ry="24" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v17</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 18. Бонсай / стилізоване дерево -->
+  <div class="card-wrap">
+    <div class="style-label">18 — Стилізоване дерево (лінія)</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:0;bottom:0;width:140px;height:150px;opacity:0.14;" viewBox="0 0 100 110" fill="none">
+        <path d="M50 108C50 88 46 72 42 62M50 108C50 80 56 60 64 48" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M42 62C34 56 30 46 32 36M64 48C74 44 80 34 80 24M50 75C42 70 38 62 38 54M50 70C60 66 66 58 68 50" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="30" cy="32" r="9" stroke="currentColor" stroke-width="2"/>
+        <circle cx="82" cy="22" r="11" stroke="currentColor" stroke-width="2"/>
+        <circle cx="56" cy="44" r="8" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v18</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 19. Великий водяний знак — дерево, дуже тонкий -->
+  <div class="card-wrap">
+    <div class="style-label">19 — Велике дерево, водяний знак</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:-55px;top:50%;transform:translateY(-50%);width:200px;height:200px;opacity:0.06;" viewBox="0 0 100 100" fill="none">
+        <path d="M50 98V52" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M50 60C38 62 30 54 30 43M50 56C62 58 70 50 70 39" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="50" cy="34" r="30" stroke="currentColor" stroke-width="2.5"/>
+        <circle cx="50" cy="34" r="18" stroke="currentColor" stroke-width="1.5" opacity="0.7"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v19</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 20. Жива огорожа / кущі рядком -->
+  <div class="card-wrap">
+    <div class="style-label">20 — Жива огорожа (рядок кущів)</div>
+    <article class="gs-svc">
+      <svg class="deco" style="left:0;right:0;bottom:0;width:100%;height:70px;opacity:0.16;" viewBox="0 0 300 70" fill="none" preserveAspectRatio="none">
+        <path d="M5 68C5 45 15 30 30 30C32 18 42 12 52 14C58 6 70 6 76 14C90 12 100 24 98 38C108 40 112 52 108 68" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M140 68C138 48 148 32 162 32C166 20 178 16 188 20C196 12 208 14 212 24C224 24 232 36 228 50C236 54 238 60 236 68" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v20</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
 </div>
+<p style="text-align:center;color:var(--fg-3);margin-top:32px;font-size:14px;">Клікни на будь-яку картку, щоб переграти анімацію промальовування</p>
+<script>
+document.querySelectorAll('.gs-svc').forEach(card=>{
+  card.addEventListener('click',()=>{
+    const deco=card.querySelector('.deco');
+    const clone=deco.cloneNode(true);
+    deco.replaceWith(clone);
+  });
+});
+</script>
 </body>
 </html>
