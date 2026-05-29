@@ -188,20 +188,21 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-pf-counter span{color:var(--fg-4);font-weight:700;}
 .gs-inline-thumb{display:inline-block;width:1.2em;height:0.9em;vertical-align:middle;background-size:cover;background-position:center;border-radius:8px;margin-inline:0.18em;transform:translateY(-0.08em);}
 .gs-pf-tabs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px;}
-.gs-chip{display:inline-flex;align-items:center;gap:6px;padding:12px 22px;border-radius:var(--r-pill);font-size:13px;font-weight:600;font-family:var(--font-body);text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--fg-2);position:relative;overflow:hidden;isolation:isolate;transition:color 0.38s var(--ease-in-out),border-color 0.38s var(--ease-in-out);}
+.gs-chip{display:inline-flex;align-items:center;gap:6px;padding:12px 22px;border-radius:var(--r-pill);font-size:13px;font-weight:600;font-family:var(--font-body);text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--fg-2);position:relative;overflow:hidden;isolation:isolate;transition:background 0.25s var(--ease-out),border-color 0.25s var(--ease-out),color 0.25s var(--ease-out),box-shadow 0.25s var(--ease-out);}
 .gs-chip::before{display:none;}
 .gs-chip-selected{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 4px 24px -8px rgba(37,124,77,0.5),inset 0 1px 0 rgba(255,255,255,0.12);}
-.gs-chip:hover{color:#fff;border-color:var(--accent);background:var(--accent);box-shadow:0 8px 32px -8px rgba(37,124,77,0.6),inset 0 1px 0 rgba(255,255,255,0.12);transition:background 0.25s var(--ease-out),border-color 0.25s var(--ease-out),color 0.25s var(--ease-out),box-shadow 0.25s var(--ease-out);}
-.gs-chip:hover{animation:gs-chip-glitch 0.5s steps(1,end);}
+.gs-chip:hover{color:#fff;border-color:var(--accent);background:var(--accent);box-shadow:0 8px 32px -8px rgba(37,124,77,0.6),inset 0 1px 0 rgba(255,255,255,0.12);}
+.gs-chip:hover .gs-chip-text{animation:gs-chip-glitch 0.55s steps(1,end) both;}
 @keyframes gs-chip-glitch{
-  0%  {text-shadow:none;letter-spacing:0.06em;}
-  10% {text-shadow:4px 0 #F28D1B,-4px 0 rgba(255,255,255,0.9);letter-spacing:0.09em;}
-  20% {text-shadow:-4px 0 #F28D1B, 4px 0 rgba(255,255,255,0.7);letter-spacing:0.04em;}
-  30% {text-shadow:5px 0 rgba(255,255,255,0.9),-5px 0 #F28D1B;letter-spacing:0.10em;}
-  40% {text-shadow:-3px 0 #F28D1B, 3px 0 rgba(255,255,255,0.6);letter-spacing:0.05em;}
-  55% {text-shadow:3px 0 #F28D1B,-3px 0 rgba(255,255,255,0.8);letter-spacing:0.07em;}
-  70% {text-shadow:-2px 0 rgba(255,255,255,0.7);letter-spacing:0.06em;}
-  100%{text-shadow:none;letter-spacing:0.06em;}
+  0%  {text-shadow:none;letter-spacing:inherit;}
+  8%  {text-shadow:6px 0 #F28D1B,-6px 0 rgba(255,255,255,0.95);letter-spacing:0.12em;}
+  16% {text-shadow:-6px 0 #F28D1B, 6px 0 rgba(255,255,255,0.8);letter-spacing:0.04em;}
+  24% {text-shadow:7px 0 rgba(255,255,255,0.95),-7px 0 #F28D1B;letter-spacing:0.09em;}
+  36% {text-shadow:-5px 0 #F28D1B, 5px 0 rgba(255,255,255,0.7);letter-spacing:0.06em;}
+  48% {text-shadow:5px 0 #F28D1B,-5px 0 rgba(255,255,255,0.85);letter-spacing:0.1em;}
+  60% {text-shadow:-3px 0 rgba(255,255,255,0.7);letter-spacing:0.06em;}
+  80% {text-shadow:2px 0 #F28D1B;letter-spacing:inherit;}
+  100%{text-shadow:none;letter-spacing:inherit;}
 }
 .gs-pf-feature{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:24px;}
 @media(max-width:900px){.gs-pf-feature{grid-template-columns:1fr;}}
@@ -751,8 +752,8 @@ html,body{overflow-x:hidden;max-width:100%;}
       <div class="gs-pf-counter num" id="pf-counter">01 <span class="gs-fg3">/ 04</span></div>
     </div>
     <div class="gs-pf-tabs" id="pf-tabs">
-      <button class="gs-chip gs-chip-selected" onclick="pfSelectProject(0,this)">КМ Green Hills</button>
-      <button class="gs-chip" onclick="pfSelectProject(1,this)">Конча Заспа</button>
+      <button class="gs-chip gs-chip-selected" onclick="pfSelectProject(0,this)"><span class="gs-chip-text">КМ Green Hills</span></button>
+      <button class="gs-chip" onclick="pfSelectProject(1,this)"><span class="gs-chip-text">Конча Заспа</span></button>
     </div>
     <div class="gs-pf-slider">
       <div class="gs-pf-main" id="pf-main">
@@ -802,10 +803,10 @@ html,body{overflow-x:hidden;max-width:100%;}
   <div class="gs-container">
     <div class="gs-section-head"><div class="eyebrow"><span class="eb-dash">—</span> Ціни</div><h2 class="h-display-2">Ціни на ландшафтні<br><span class="gs-accent-italic">роботи</span></h2></div>
     <div class="gs-price-tabs">
-      <button class="gs-chip gs-chip-selected" onclick="showPricing(0,this)">Земляні роботи</button>
-      <button class="gs-chip" onclick="showPricing(1,this)">Влаштування рулонного газону</button>
-      <button class="gs-chip" onclick="showPricing(2,this)">Догляд за рулонним газоном</button>
-      <button class="gs-chip" onclick="showPricing(3,this)">Обслуговування автополиву</button>
+      <button class="gs-chip gs-chip-selected" onclick="showPricing(0,this)"><span class="gs-chip-text">Земляні роботи</span></button>
+      <button class="gs-chip" onclick="showPricing(1,this)"><span class="gs-chip-text">Влаштування рулонного газону</span></button>
+      <button class="gs-chip" onclick="showPricing(2,this)"><span class="gs-chip-text">Догляд за рулонним газоном</span></button>
+      <button class="gs-chip" onclick="showPricing(3,this)"><span class="gs-chip-text">Обслуговування автополиву</span></button>
     </div>
     <div class="gs-price-table" id="price-table-0">
       <div class="gs-price-row gs-price-row-head"><div>Назва послуги</div><div>Од. виміру</div><div class="gs-price-num">Ціна</div></div>
