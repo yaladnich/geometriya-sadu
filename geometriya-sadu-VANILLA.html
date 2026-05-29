@@ -205,6 +205,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-price-tabs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;}
 .gs-price-table{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;}
 .gs-price-cat{padding:10px 24px 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);border-bottom:1px solid var(--border-soft);margin-top:8px;}
+.gs-price-note{padding:14px 24px;font-size:13px;line-height:1.55;color:var(--fg-2);background:var(--bg-2);border-top:1px solid var(--border-soft);}
 .gs-price-row{display:grid;grid-template-columns:1fr 140px 160px;padding:18px 24px;border-top:1px solid var(--border-soft);align-items:center;font-size:15px;}
 .gs-price-row:first-child{border-top:0;}
 .gs-price-row:hover:not(.gs-price-row-head){background:var(--bg-3);}
@@ -757,65 +758,77 @@ html,body{overflow-x:hidden;max-width:100%;}
     <div class="gs-section-head"><div class="eyebrow"><span class="eb-dash">—</span> Ціни</div><h2 class="h-display-2">Ціни на ландшафтні <span class="gs-accent-italic">роботи</span></h2></div>
     <div class="gs-price-tabs">
       <button class="gs-chip gs-chip-selected" onclick="showPricing(0,this)">Земляні роботи</button>
-      <button class="gs-chip" onclick="showPricing(1,this)">Газон і клумби</button>
-      <button class="gs-chip" onclick="showPricing(2,this)">Догляд за садом</button>
-      <button class="gs-chip" onclick="showPricing(3,this)">Автополив</button>
+      <button class="gs-chip" onclick="showPricing(1,this)">Влаштування рулонного газону</button>
+      <button class="gs-chip" onclick="showPricing(2,this)">Догляд за рулонним газоном</button>
+      <button class="gs-chip" onclick="showPricing(3,this)">Обслуговування автополиву</button>
     </div>
     <div class="gs-price-table" id="price-table-0">
       <div class="gs-price-row gs-price-row-head"><div>Назва послуги</div><div>Од. виміру</div><div class="gs-price-num">Ціна</div></div>
-      <div class="gs-price-cat">Грубі земляні роботи</div>
+      <div class="gs-price-cat">Грубі земляні роботи — ціна</div>
       <div class="gs-price-row"><div>Зняття ґрунту</div><div class="gs-price-unit">1 м³</div><div class="gs-price-num"><span class="num">від 1 500 грн</span></div></div>
-      <div class="gs-price-row"><div>Копання траншей (0,3 м)</div><div class="gs-price-unit">1 м.п.</div><div class="gs-price-num"><span class="num">80–100 грн</span></div></div>
-      <div class="gs-price-row"><div>Копання траншей (0,6 м)</div><div class="gs-price-unit">1 м.п.</div><div class="gs-price-num"><span class="num">250–300 грн</span></div></div>
-      <div class="gs-price-row"><div>Копання траншей (0,9 м)</div><div class="gs-price-unit">1 м.п.</div><div class="gs-price-num"><span class="num">від 1 000 грн</span></div></div>
-      <div class="gs-price-row"><div>Переміщення сипких матеріалів</div><div class="gs-price-unit">1 м³</div><div class="gs-price-num"><span class="num">від 750 грн</span></div></div>
-      <div class="gs-price-cat">Підготовчі роботи</div>
+      <div class="gs-price-row"><div>Копання траншей (0,3 м глибина)</div><div class="gs-price-unit">1 м.пог.</div><div class="gs-price-num"><span class="num">80–100 грн</span></div></div>
+      <div class="gs-price-row"><div>Копання траншей (0,6 м глибина)</div><div class="gs-price-unit">1 м.пог.</div><div class="gs-price-num"><span class="num">250–300 грн</span></div></div>
+      <div class="gs-price-row"><div>Копання траншей (0,9 м глибина)</div><div class="gs-price-unit">1 м.пог.</div><div class="gs-price-num"><span class="num">від 1 000 грн</span></div></div>
+      <div class="gs-price-row"><div>Копання траншей (1,2 м глибина)</div><div class="gs-price-unit">1 м.пог.</div><div class="gs-price-num"><span class="num">від 1 500 грн</span></div></div>
+      <div class="gs-price-row"><div>Переміщення сипких матеріалів (ґрунту, піску, щебню)</div><div class="gs-price-unit">1 м³</div><div class="gs-price-num"><span class="num">від 750 грн</span></div></div>
+      <div class="gs-price-cat">Підготовчі земляні роботи — ціна</div>
       <div class="gs-price-row"><div>Укладення геотекстилю</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">100 грн</span></div></div>
+      <div class="gs-price-row"><div>Покос тримером</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">20 грн</span></div></div>
       <div class="gs-price-row"><div>Зняття старої дернини</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">80 грн</span></div></div>
-      <div class="gs-price-row"><div>Культивація землі</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">50 грн</span></div></div>
-      <div class="gs-price-row"><div>Чистове планування</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">50 грн</span></div></div>
-      <div class="gs-price-row"><div>Обробка гербіцидом</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">30 грн</span></div></div>
+      <div class="gs-price-row"><div>Культивація землі без дернини</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">50 грн</span></div></div>
+      <div class="gs-price-row"><div>Чистове планування території</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">50 грн</span></div></div>
+      <div class="gs-price-row"><div>Обробка території від гербіцидом</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">30 грн</span></div></div>
+      <div class="gs-price-row"><div>Чорнове планування території з каткуванням і трамбуванням</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">60 грн</span></div></div>
     </div>
     <div class="gs-price-table" id="price-table-1" style="display:none">
       <div class="gs-price-row gs-price-row-head"><div>Назва послуги</div><div>Од. виміру</div><div class="gs-price-num">Ціна</div></div>
-      <div class="gs-price-cat">Рулонний газон</div>
+      <div class="gs-price-cat">Влаштування рулонного газону — ціна</div>
+      <div class="gs-price-row"><div>Розвантаження газону</div><div class="gs-price-unit">1 піддон</div><div class="gs-price-num"><span class="num">200 грн</span></div></div>
       <div class="gs-price-row"><div>Укладка рулонного газону</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">70 грн</span></div></div>
       <div class="gs-price-row"><div>Ремонт рулонного газону</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">300 грн</span></div></div>
-      <div class="gs-price-row"><div>Сітка від кротів</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">35 грн</span></div></div>
+      <div class="gs-price-row"><div>Укладання сітки від кротів</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">35 грн</span></div></div>
       <div class="gs-price-row"><div>Встановлення георешітки</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">від 150 грн</span></div></div>
-      <div class="gs-price-cat">Клумби</div>
+      <div class="gs-price-cat">Влаштування клумб — ціна</div>
       <div class="gs-price-row"><div>Укладка агроволокна</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">120 грн</span></div></div>
-      <div class="gs-price-row"><div>Бордюрна стрічка</div><div class="gs-price-unit">1 м.п.</div><div class="gs-price-num"><span class="num">60 грн</span></div></div>
+      <div class="gs-price-row"><div>Встановлення бордюрної стрічки</div><div class="gs-price-unit">1 м.пог.</div><div class="gs-price-num"><span class="num">60 грн</span></div></div>
       <div class="gs-price-row"><div>Розсипання кори</div><div class="gs-price-unit">1 мішок</div><div class="gs-price-num"><span class="num">50 грн</span></div></div>
+      <div class="gs-price-row"><div>Розсипання відсипки</div><div class="gs-price-unit">1 мішок</div><div class="gs-price-num"><span class="num">80 грн</span></div></div>
+      <div class="gs-price-row"><div>Переміщення відсипки</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">80 грн</span></div></div>
       <div class="gs-price-row"><div>Висадка рослин</div><div class="gs-price-unit">від вартості</div><div class="gs-price-num"><span class="num">35%</span></div></div>
     </div>
     <div class="gs-price-table" id="price-table-2" style="display:none">
       <div class="gs-price-row gs-price-row-head"><div>Назва послуги</div><div>Од. виміру</div><div class="gs-price-num">Ціна</div></div>
-      <div class="gs-price-cat">Догляд за газоном</div>
+      <div class="gs-price-cat">Догляд за рулонним газоном — ціна</div>
       <div class="gs-price-row"><div>Покос газону газонокосаркою</div><div class="gs-price-unit">100 м²</div><div class="gs-price-num"><span class="num">від 600 грн</span></div></div>
       <div class="gs-price-row"><div>Аерація рулонного газону</div><div class="gs-price-unit">100 м²</div><div class="gs-price-num"><span class="num">від 1 500 грн</span></div></div>
-      <div class="gs-price-row"><div>Скарифікація газону</div><div class="gs-price-unit">100 м²</div><div class="gs-price-num"><span class="num">800 грн</span></div></div>
-      <div class="gs-price-row"><div>Піскування газону</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">30 грн</span></div></div>
-      <div class="gs-price-row"><div>Внесення добрив</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">5 грн</span></div></div>
-      <div class="gs-price-row"><div>Обробка від бур'янів/хвороб</div><div class="gs-price-unit">10 л</div><div class="gs-price-num"><span class="num">1 100 грн</span></div></div>
-      <div class="gs-price-row"><div>Кромкування бордюрів</div><div class="gs-price-unit">1 м.п.</div><div class="gs-price-num"><span class="num">30 грн</span></div></div>
+      <div class="gs-price-row"><div>Скарифікація рулонного газону</div><div class="gs-price-unit">100 м²</div><div class="gs-price-num"><span class="num">800 грн</span></div></div>
+      <div class="gs-price-row"><div>Скарифікація (проколювання катком)</div><div class="gs-price-unit">100 м²</div><div class="gs-price-num"><span class="num">400 грн</span></div></div>
+      <div class="gs-price-row"><div>Піскування рулонного газону</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">30 грн</span></div></div>
+      <div class="gs-price-row"><div>Кромкування бордюрів з прибиранням</div><div class="gs-price-unit">1 м.пог.</div><div class="gs-price-num"><span class="num">30 грн</span></div></div>
+      <div class="gs-price-row"><div>Підсівання (робота + трава + пісок)</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">300 грн</span></div></div>
+      <div class="gs-price-row"><div>Внесення добрив на газон</div><div class="gs-price-unit">1 м²</div><div class="gs-price-num"><span class="num">5 грн</span></div></div>
+      <div class="gs-price-row"><div>Обробка газону від бур'янів</div><div class="gs-price-unit">10 л</div><div class="gs-price-num"><span class="num">1 100 грн</span></div></div>
+      <div class="gs-price-row"><div>Обробка газону від хвороб</div><div class="gs-price-unit">10 л</div><div class="gs-price-num"><span class="num">1 100 грн</span></div></div>
+      <div class="gs-price-row"><div>Обробка рослин від хвороб та шкідників</div><div class="gs-price-unit">10 л</div><div class="gs-price-num"><span class="num">1 100 грн</span></div></div>
+      <div class="gs-price-row"><div>Позакореневе підживлення (біостимулятори)</div><div class="gs-price-unit">10 л</div><div class="gs-price-num"><span class="num">600 грн</span></div></div>
+      <div class="gs-price-row"><div>Проливання рослин</div><div class="gs-price-unit">10 л</div><div class="gs-price-num"><span class="num">50 грн</span></div></div>
     </div>
     <div class="gs-price-table" id="price-table-3" style="display:none">
       <div class="gs-price-row gs-price-row-head"><div>Назва послуги</div><div>Од. виміру</div><div class="gs-price-num">Ціна</div></div>
-      <div class="gs-price-cat">Весняний запуск (розконсервація)</div>
+      <div class="gs-price-cat">Весняний запуск системи (розконсервація) — ціна</div>
       <div class="gs-price-row"><div>1–4 зони</div><div class="gs-price-unit">за послугу</div><div class="gs-price-num"><span class="num">2 000 грн</span></div></div>
       <div class="gs-price-row"><div>5–8 зон</div><div class="gs-price-unit">1 зона</div><div class="gs-price-num"><span class="num">450 грн</span></div></div>
       <div class="gs-price-row"><div>9–16 зон</div><div class="gs-price-unit">1 зона</div><div class="gs-price-num"><span class="num">400 грн</span></div></div>
       <div class="gs-price-row"><div>17–24 зони</div><div class="gs-price-unit">1 зона</div><div class="gs-price-num"><span class="num">350 грн</span></div></div>
-      <div class="gs-price-cat">Консервація перед зимою</div>
-      <div class="gs-price-row"><div>1–4 зони</div><div class="gs-price-unit">за послугу</div><div class="gs-price-num"><span class="num">3 000 грн</span></div></div>
-      <div class="gs-price-row"><div>5–8 зон</div><div class="gs-price-unit">1 зона</div><div class="gs-price-num"><span class="num">600 грн</span></div></div>
-      <div class="gs-price-row"><div>9–24 зони</div><div class="gs-price-unit">1 зона</div><div class="gs-price-num"><span class="num">500 грн</span></div></div>
-      <div class="gs-price-cat">Ремонт та обслуговування</div>
-      <div class="gs-price-row"><div>Діагностика (до 10 зон)</div><div class="gs-price-unit">виклик</div><div class="gs-price-num"><span class="num">2 000 грн</span></div></div>
-      <div class="gs-price-row"><div>Діагностика (до 20 зон)</div><div class="gs-price-unit">виклик</div><div class="gs-price-num"><span class="num">3 000 грн</span></div></div>
-      <div class="gs-price-row"><div>Заміна форсунки</div><div class="gs-price-unit">1 шт</div><div class="gs-price-num"><span class="num">300 грн</span></div></div>
-      <div class="gs-price-row"><div>Заміна клапанів</div><div class="gs-price-unit">за послугу</div><div class="gs-price-num"><span class="num">1 200 грн</span></div></div>
+      <div class="gs-price-note">У вартість входить: діагностика системи, налаштування контролера, налаштування радіусів поливу та чистка основного фільтра, встановлення насоса. Працюємо з обладнанням: Hunter, Rain Bird, Unidelta, K-Rain, SOLEM.</div>
+      <div class="gs-price-cat">Ремонт та обслуговування — ціна</div>
+      <div class="gs-price-row"><div>Виклик на діагностику (до 10 зон)</div><div class="gs-price-unit">виклик</div><div class="gs-price-num"><span class="num">2 000 грн</span></div></div>
+      <div class="gs-price-row"><div>Виклик на діагностику (до 20 зон)</div><div class="gs-price-unit">виклик</div><div class="gs-price-num"><span class="num">3 000 грн</span></div></div>
+      <div class="gs-price-row"><div>Виклик на діагностику (до 30 зон)</div><div class="gs-price-unit">виклик</div><div class="gs-price-num"><span class="num">4 000 грн</span></div></div>
+      <div class="gs-price-row"><div>Чистка або заміна форсунки</div><div class="gs-price-unit">1 шт</div><div class="gs-price-num"><span class="num">300 грн</span></div></div>
+      <div class="gs-price-row"><div>Переміщення форсунок</div><div class="gs-price-unit">1 шт</div><div class="gs-price-num"><span class="num">300 грн</span></div></div>
+      <div class="gs-price-row"><div>Заміна електромагнітних клапанів</div><div class="gs-price-unit">за послугу</div><div class="gs-price-num"><span class="num">1 200 грн</span></div></div>
+      <div class="gs-price-row"><div>Ремонт насоса та чистка системи</div><div class="gs-price-unit">—</div><div class="gs-price-num"><span class="num">індивідуально</span></div></div>
     </div>
   </div>
 </section>
