@@ -37,9 +37,8 @@ h1 span{color:var(--accent);}
 </head>
 <body>
 <section class="section">
-  <video class="sr-bg-video" autoplay muted loop playsinline>
-    <source src="Field Animation Blue.mp4" type="video/mp4">
-  </video>
+  <video class="sr-bg-video" autoplay muted loop playsinline preload="none"
+         poster="images/services-poster.webp" data-src="videos/services-bg.mp4"></video>
   <div class="section-overlay"></div>
   <div class="inner">
     <p class="eyebrow">Що ми робимо</p>
@@ -56,5 +55,26 @@ h1 span{color:var(--accent);}
     </div>
   </div>
 </section>
+<script>
+// Lazy-load відео: вантажимо тільки коли блок близько до екрана.
+// Не вантажимо на мобільних та в режимі економії трафіку — лишається poster.
+(function(){
+  var v = document.querySelector('.sr-bg-video');
+  if(!v) return;
+  var conn = navigator.connection || {};
+  var isMobile = window.matchMedia('(max-width:700px)').matches;
+  var reduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(isMobile || conn.saveData || reduced){ return; } // показуємо лише poster
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        if(!v.src){ v.src = v.dataset.src; v.load(); v.play().catch(function(){}); }
+        io.disconnect();
+      }
+    });
+  },{rootMargin:'300px'});
+  io.observe(v);
+})();
+</script>
 </body>
 </html>
