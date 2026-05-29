@@ -366,6 +366,7 @@ body{cursor:none;}
   *,*::before,*::after{animation-duration:1ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:1ms!important;}
   .ch,.w,.gs-pf-bg,.gs-hero-bg{opacity:1!important;clip-path:none!important;transform:none!important;}
 }
+.ch-word{display:inline-block;white-space:nowrap;}
 .ch-wrap{display:inline-block;vertical-align:bottom;}
 .ch{display:inline-block;}
 .ch-sp{display:inline-block;white-space:pre;}
@@ -1408,20 +1409,27 @@ function splitChars(container) {
     if (node.nodeType === 3) {
       const fragment = document.createDocumentFragment();
 
+      let wordEl = null;
       [...node.textContent].forEach(char => {
         if (char === ' ') {
+          wordEl = null;
           const space = document.createElement('span');
           space.className = 'ch-sp';
           space.textContent = ' ';
           fragment.appendChild(space);
         } else {
+          if (!wordEl) {
+            wordEl = document.createElement('span');
+            wordEl.className = 'ch-word';
+            fragment.appendChild(wordEl);
+          }
           const wrap = document.createElement('span');
           wrap.className = 'ch-wrap';
           const inner = document.createElement('span');
           inner.className = 'ch';
           inner.textContent = char;
           wrap.appendChild(inner);
-          fragment.appendChild(wrap);
+          wordEl.appendChild(wrap);
         }
       });
 
