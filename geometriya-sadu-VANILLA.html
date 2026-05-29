@@ -1649,6 +1649,16 @@ function initCustomAnimations() {
     });
   });
 
+  document.querySelectorAll('.gs-chip').forEach(chip => {
+    const text = chip.querySelector('.gs-chip-text');
+    if (!text) return;
+    chip.addEventListener('mouseenter', () => {
+      text.style.animation = 'none';
+      void text.offsetWidth;
+      text.style.animation = '';
+    });
+  });
+
   prepareHeroTitle();
   const heroStats = Array.from(document.querySelectorAll('.gs-hero-stats .gs-stat'));
   const heroStatMain = heroStats.map(stat => stat.querySelector('.gs-stat-num, .gs-brand-word')).filter(Boolean);
