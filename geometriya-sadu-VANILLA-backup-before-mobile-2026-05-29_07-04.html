@@ -365,136 +365,6 @@ html.lenis{height:auto;}
 .gs-num-btn{width:30px;height:30px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-3);color:var(--fg-2);font-size:18px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:all var(--dur-base) var(--ease-out);font-family:var(--font-body);padding:0;user-select:none;}
 .gs-num-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
 .gs-num-btn:active{transform:scale(0.92);}
-
-/* =============================================
-   БУРГЕР + МОБІЛЬНЕ МЕНЮ
-   ============================================= */
-.gs-burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;background:transparent;border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;padding:8px;flex-shrink:0;}
-.gs-burger span{display:block;height:1.5px;background:var(--fg-1);border-radius:2px;transition:transform 0.3s var(--ease-in-out),opacity 0.2s,width 0.3s var(--ease-in-out);}
-.gs-burger.is-open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
-.gs-burger.is-open span:nth-child(2){opacity:0;transform:scaleX(0);}
-.gs-burger.is-open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
-
-.gs-mobile-menu{position:fixed;top:0;left:0;right:0;bottom:0;z-index:49;background:rgba(10,11,10,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;padding:100px 28px 40px;gap:8px;transform:translateX(100%);transition:transform 0.4s var(--ease-in-out),visibility 0.4s;visibility:hidden;}
-.gs-mobile-menu.is-open{transform:translateX(0);visibility:visible;}
-.gs-mobile-nav{display:flex;flex-direction:column;gap:4px;}
-.gs-mobile-nav-link{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,8vw,40px);color:var(--fg-2);padding:10px 0;border-bottom:1px solid var(--border);display:block;transition:color 0.2s,padding-left 0.2s;}
-.gs-mobile-nav-link:hover{color:var(--fg-1);padding-left:12px;}
-
-@media(max-width:900px){
-  .gs-burger{display:flex;}
-  .gs-cta-pill-desktop{display:none!important;}
-}
-
-/* =============================================
-   МОБІЛЬНА АДАПТАЦІЯ
-   ============================================= */
-
-/* Header */
-@media(max-width:600px){
-  .gs-header{top:10px;left:12px;right:12px;}
-  .gs-header-inner{padding:8px 16px;}
-  .gs-brand img{height:34px;}
-}
-
-/* Hero */
-@media(max-width:700px){
-  .gs-hero{padding-top:100px;padding-bottom:40px;}
-  .gs-hero-ctas{flex-direction:column;gap:10px;margin-bottom:48px;}
-  .gs-hero-ctas .gs-btn{width:100%;justify-content:center;}
-  .gs-hero-stats{gap:24px;}
-  .gs-hero-sub{font-size:15px;}
-}
-@media(max-width:480px){
-  .gs-hero{padding-top:88px;}
-  .gs-hero-eyebrow{margin-bottom:20px;}
-  .gs-hero-ctas{margin-bottom:36px;}
-}
-
-/* Секції — відступи */
-@media(max-width:700px){
-  .gs-section-head{margin-bottom:32px;}
-  .gs-pf-feature-desc{padding:20px;}
-  .gs-pf-feature-name{font-size:26px;}
-}
-
-/* Портфоліо thumb */
-@media(max-width:600px){
-  .gs-pf-thumbs{grid-template-columns:1fr 1fr;}
-}
-@media(max-width:400px){
-  .gs-pf-thumbs{grid-template-columns:1fr;}
-}
-
-/* Кроки — відступи та нумерація */
-@media(max-width:700px){
-  .gs-step{gap:8px;padding-block:24px;}
-  .gs-step-num{font-size:clamp(48px,12vw,72px);}
-  .gs-step-body{padding-top:0;}
-  .gs-step-title{font-size:22px;}
-  .gs-step-desc{font-size:15px;}
-}
-
-/* CTA форма */
-@media(max-width:700px){
-  .gs-cta-right{padding:20px;}
-  .gs-cta-wrap{gap:40px;}
-}
-@media(max-width:480px){
-  .gs-cta-right{padding:16px;}
-}
-
-/* Модалка */
-@media(max-width:600px){
-  .gs-modal{padding:24px 20px;border-radius:var(--r-md);}
-  .gs-modal-title{font-size:clamp(26px,7vw,36px);}
-}
-
-/* Ціни */
-@media(max-width:480px){
-  .gs-price-row{font-size:14px;padding:14px 16px;}
-  .gs-price-cat{padding:8px 16px 4px;}
-}
-
-/* Чипи/таби — менший padding на мобільному */
-@media(max-width:600px){
-  .gs-chip{padding:10px 16px;font-size:12px;}
-}
-
-/* Відгуки — 1 колонка вже є (900px), але padding */
-@media(max-width:600px){
-  .gs-review{padding:22px;}
-}
-
-/* FAQ */
-@media(max-width:600px){
-  .gs-faq-q{padding:14px 16px;font-size:15px;}
-  .gs-faq-open .gs-faq-a{padding:0 16px 16px 44px;}
-  .gs-faq-a{padding:0 16px 0 44px;}
-}
-
-/* Футер */
-@media(max-width:600px){
-  .gs-footer{padding-block:48px 24px;}
-  .gs-footer-bottom{flex-direction:column;gap:8px;}
-}
-
-/* FAB кнопки — на малих екранах іконки менші */
-@media(max-width:480px){
-  .gs-fab-stack{right:12px;bottom:12px;gap:8px;}
-  .gs-fab{width:44px;height:44px;}
-  .gs-fab .ti{font-size:19px;}
-}
-
-/* Marquee — трохи менший шрифт */
-@media(max-width:480px){
-  .gs-marquee-track{font-size:clamp(22px,7vw,36px);}
-}
-
-/* Числа «Why» */
-@media(max-width:600px){
-  .gs-why-num{font-size:56px;}
-}
 </style>
 </head>
 <body>
@@ -516,31 +386,12 @@ html.lenis{height:auto;}
       <a href="#pricing">Ціни</a>
       <a href="#faq">FAQ</a>
     </nav>
-    <a class="gs-cta-pill gs-cta-pill-desktop" href="tel:+380683782003">
+    <a class="gs-cta-pill" href="tel:+380683782003">
       <span>Зателефонувати</span>
       <i class="ti ti-arrow-up-right" style="color:#F28D1B"></i>
     </a>
-    <button class="gs-burger" id="gs-burger" aria-label="Меню" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
   </div>
 </header>
-
-<!-- Мобільне меню -->
-<div class="gs-mobile-menu" id="gs-mobile-menu" aria-hidden="true">
-  <nav class="gs-mobile-nav">
-    <a href="#services" class="gs-mobile-nav-link">Послуги</a>
-    <a href="#why" class="gs-mobile-nav-link">Переваги</a>
-    <a href="#portfolio" class="gs-mobile-nav-link">Портфоліо</a>
-    <a href="#steps" class="gs-mobile-nav-link">Етапи</a>
-    <a href="#pricing" class="gs-mobile-nav-link">Ціни</a>
-    <a href="#faq" class="gs-mobile-nav-link">FAQ</a>
-  </nav>
-  <a class="gs-cta-pill" href="tel:+380683782003" style="align-self:flex-start;margin-top:8px;">
-    <span>Зателефонувати</span>
-    <i class="ti ti-phone" style="color:#F28D1B"></i>
-  </a>
-</div>
 
 <!-- HERO -->
 <section class="gs-hero" id="top">
@@ -1879,34 +1730,6 @@ initCustomAnimations();
 initPortfolio();
 restartPortfolioTimer();
 updateHeaderAndProgress();
-
-// Бургер-меню
-(function initBurger() {
-  const burger = document.getElementById('gs-burger');
-  const menu = document.getElementById('gs-mobile-menu');
-  if (!burger || !menu) return;
-  function openMenu() {
-    burger.classList.add('is-open');
-    burger.setAttribute('aria-expanded', 'true');
-    menu.classList.add('is-open');
-    menu.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMenu() {
-    burger.classList.remove('is-open');
-    burger.setAttribute('aria-expanded', 'false');
-    menu.classList.remove('is-open');
-    menu.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-  }
-  burger.addEventListener('click', () => {
-    burger.classList.contains('is-open') ? closeMenu() : openMenu();
-  });
-  menu.querySelectorAll('.gs-mobile-nav-link, .gs-cta-pill').forEach(link => {
-    link.addEventListener('click', closeMenu);
-  });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
-})();
 </script>
 </body>
 </html>
