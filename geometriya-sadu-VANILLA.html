@@ -76,8 +76,11 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-section-light .eyebrow{color:rgba(26,28,26,0.55);}
 .gs-section-light .h-display-2{color:#151715;}
 .gs-section-light .gs-accent-italic{color:var(--accent-deep);}
-/* Зелена акцентна секція */
-.gs-section-orange{background:#196A3F;color:#fff;}
+/* Зелена акцентна секція з гласморфізмом поверх скетчу */
+.gs-section-orange{background:#196A3F;color:#fff;position:relative;overflow:hidden;isolation:isolate;}
+.gs-section-orange::before{content:'';position:absolute;inset:0;background:url('images/why-sketch.webp') center/cover no-repeat;filter:grayscale(1) contrast(1.05);opacity:0.55;z-index:-2;}
+.gs-section-orange::after{content:'';position:absolute;inset:0;background:linear-gradient(rgba(25,106,63,0.58),rgba(18,78,46,0.7));backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.07);z-index:-1;}
+.gs-section-orange>.gs-container{position:relative;z-index:1;}
 .gs-section-orange .eyebrow{color:rgba(255,255,255,0.65);}
 .gs-section-orange .eyebrow .eb-dash{color:#F28D1B;}
 .gs-section-orange .h-display-2{color:#fff;}
