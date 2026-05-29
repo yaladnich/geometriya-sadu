@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Декор-варіанти — Геометрія саду</title>
+<style>
+:root{
+  --bg-1:#0A0B0A;--accent:#257c4d;--accent-bright:#2e9d5f;
+  --fg-1:#fff;--fg-2:rgba(255,255,255,0.72);--fg-3:rgba(255,255,255,0.48);
+  --border:rgba(255,255,255,0.10);--r-lg:24px;--r-sm:8px;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg-1);color:var(--fg-1);font-family:"Onest",system-ui,-apple-system,sans-serif;padding:40px 24px 80px;}
+h1{font-weight:800;font-size:clamp(28px,4vw,44px);margin:0 0 8px;letter-spacing:-0.02em;}
+.sub{color:var(--fg-3);margin:0 0 40px;font-size:15px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;max-width:1400px;margin:0 auto;}
+.gs-svc{background:linear-gradient(to bottom,#1B1F1C 0%,#0A0B0A 100%);border:none;border-radius:var(--r-lg) var(--r-lg) 0 0;padding:28px 24px;display:flex;flex-direction:column;gap:18px;min-height:280px;position:relative;overflow:hidden;}
+.gs-svc-head{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;}
+.gs-svc-num{color:var(--accent);font-size:14px;font-weight:600;}
+.gs-svc-variant{font-family:monospace;font-size:12px;color:var(--fg-3);background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:6px;}
+.gs-svc-title{font-weight:700;font-size:22px;line-height:1.15;margin:0;position:relative;z-index:1;}
+.gs-svc-desc{flex:1;font-size:14px;line-height:1.55;color:var(--fg-2);margin:0;position:relative;z-index:1;}
+.gs-svc-foot{display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);position:relative;z-index:1;}
+.gs-svc-price{font-family:monospace;font-size:13px;color:var(--fg-3);}
+.gs-svc-arrow{width:36px;height:36px;border-radius:999px;display:grid;place-items:center;color:rgba(242,141,27,.78);}
+/* декоративний шар — спільне */
+.deco{position:absolute;pointer-events:none;z-index:0;color:var(--accent);}
+.style-label{font-size:13px;color:var(--fg-2);margin-bottom:8px;font-weight:600;}
+.card-wrap{display:flex;flex-direction:column;}
+</style>
+</head>
+<body>
+<h1>Декоративні фонові елементи</h1>
+<p class="sub">10 варіантів у різних стилях. Усі статичні (без реакції на наведення). Обери номер — застосую на картки.</p>
+<div class="grid">
+
+  <!-- 1. Тонкий контурний лист (як зараз, але статичний) -->
+  <div class="card-wrap">
+    <div class="style-label">01 — Тонкий контур, кутовий</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:-14px;bottom:8px;width:128px;height:128px;opacity:0.14;transform:rotate(-8deg);" viewBox="0 0 100 100" fill="none">
+        <path d="M88 12C52 14 30 30 22 58c-3 11-2 22 2 30 9-4 17-10 24-18M88 12c-2 30-14 50-38 60M88 12c-18 6-34 18-44 36M52 40c8-3 18-4 28-3M40 58c7-2 16-2 25 1" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v1</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 2. Залите листя, монстера -->
+  <div class="card-wrap">
+    <div class="style-label">02 — Залите листя (монстера)</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:-20px;bottom:-20px;width:150px;height:150px;opacity:0.10;" viewBox="0 0 100 100" fill="currentColor">
+        <path d="M50 8c-6 0-10 5-12 10-3-2-7-2-10 0-4 4-3 10 0 14-5 1-9 5-9 10 0 6 5 10 11 10-2 4-1 9 2 12 4 4 11 4 15 0 2 5 6 8 11 8s9-3 11-8c4 4 11 4 15 0 3-3 4-8 2-12 6 0 11-4 11-10 0-5-4-9-9-10 3-4 4-10 0-14-3-2-7-2-10 0-2-5-6-10-12-10zm0 12c2 0 4 1 4 3v40c0 2-2 4-4 4s-4-2-4-4V23c0-2 2-3 4-3z"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v2</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 3. Велика гілка по діагоналі -->
+  <div class="card-wrap">
+    <div class="style-label">03 — Гілка з листям по діагоналі</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:0;top:0;width:100%;height:100%;opacity:0.10;" viewBox="0 0 200 280" fill="none" preserveAspectRatio="xMaxYMin slice">
+        <path d="M200 0C150 40 110 90 90 150 80 180 78 220 85 260" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M150 38c8-8 20-12 32-10M120 80c10-6 22-7 33-2M98 130c10-4 22-3 32 3M88 185c9-3 20 0 28 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <ellipse cx="170" cy="30" rx="14" ry="6" transform="rotate(-30 170 30)" fill="currentColor" opacity="0.6"/>
+        <ellipse cx="142" cy="78" rx="13" ry="5" transform="rotate(-25 142 78)" fill="currentColor" opacity="0.6"/>
+        <ellipse cx="120" cy="135" rx="13" ry="5" transform="rotate(20 120 135)" fill="currentColor" opacity="0.6"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v3</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 4. Геометричний патерн листя (лінії) -->
+  <div class="card-wrap">
+    <div class="style-label">04 — Геометричний лист (мінімал)</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:18px;bottom:18px;width:90px;height:90px;opacity:0.20;" viewBox="0 0 100 100" fill="none">
+        <path d="M50 8L50 92M50 8C30 28 20 50 22 78M50 8C70 28 80 50 78 78M50 30C38 38 32 48 33 62M50 30C62 38 68 48 67 62M50 52C42 57 38 64 39 72M50 52C58 57 62 64 61 72" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v4</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 5. Великий водяний знак монстера, зрізаний -->
+  <div class="card-wrap">
+    <div class="style-label">05 — Великий водяний знак</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:-50px;bottom:-50px;width:200px;height:200px;opacity:0.07;" viewBox="0 0 100 100" fill="none">
+        <path d="M50 5C50 5 25 20 25 50C25 75 40 95 50 95C60 95 75 75 75 50C75 20 50 5 50 5Z" stroke="currentColor" stroke-width="2.5"/>
+        <path d="M50 12V90M50 30C42 35 38 42 38 52M50 30C58 35 62 42 62 52M50 50C44 54 41 60 41 68M50 50C56 54 59 60 59 68" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v5</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 6. Розсип дрібних листочків -->
+  <div class="card-wrap">
+    <div class="style-label">06 — Розсип дрібних листочків</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:0;top:0;width:100%;height:100%;opacity:0.16;" viewBox="0 0 200 280" fill="currentColor">
+        <ellipse cx="170" cy="40" rx="9" ry="4" transform="rotate(-40 170 40)"/>
+        <ellipse cx="150" cy="90" rx="7" ry="3" transform="rotate(30 150 90)"/>
+        <ellipse cx="180" cy="140" rx="8" ry="3.5" transform="rotate(-20 180 140)"/>
+        <ellipse cx="155" cy="200" rx="6" ry="3" transform="rotate(50 155 200)"/>
+        <ellipse cx="175" cy="240" rx="9" ry="4" transform="rotate(-35 175 240)"/>
+        <ellipse cx="140" cy="160" rx="6" ry="2.5" transform="rotate(15 140 160)"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v6</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 7. Контурні кола/топографія саду -->
+  <div class="card-wrap">
+    <div class="style-label">07 — Топографія (лінії рельєфу)</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:-40px;bottom:-40px;width:170px;height:170px;opacity:0.16;" viewBox="0 0 100 100" fill="none">
+        <path d="M50 20C70 20 85 35 85 55" stroke="currentColor" stroke-width="2"/>
+        <path d="M50 32C63 32 73 42 73 55" stroke="currentColor" stroke-width="2"/>
+        <path d="M50 44C56 44 62 49 62 55" stroke="currentColor" stroke-width="2"/>
+        <path d="M50 8C73 8 92 27 92 50" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v7</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 8. Папороть (детальна гілка) -->
+  <div class="card-wrap">
+    <div class="style-label">08 — Папороть (детальна)</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:-6px;bottom:-10px;width:120px;height:160px;opacity:0.13;" viewBox="0 0 80 160" fill="none">
+        <path d="M40 158C40 120 38 70 55 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <path d="M48 50C56 46 64 47 70 52M46 65C54 61 62 62 68 67M44 80C52 76 60 77 65 82M42 95C50 91 57 92 62 97M40 110C47 107 54 108 59 112M39 125C45 122 52 123 56 127"/>
+          <path d="M48 50C42 44 40 36 42 28M46 65C40 60 37 53 38 45M44 80C39 75 36 68 37 60"/>
+        </g>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v8</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 9. Абстрактна хвиля-трава -->
+  <div class="card-wrap">
+    <div class="style-label">09 — Трава (абстрактні штрихи)</div>
+    <article class="gs-svc">
+      <svg class="deco" style="left:0;right:0;bottom:0;width:100%;height:80px;opacity:0.18;" viewBox="0 0 300 80" fill="none" preserveAspectRatio="none">
+        <path d="M10 80C12 50 8 35 18 18M30 80C32 55 28 38 26 22M50 80C52 48 50 30 60 14M70 80C72 52 70 36 66 24M95 80C97 50 94 32 104 18M120 80C122 55 120 40 116 26M145 80C147 48 145 30 155 16M170 80C172 52 170 38 166 24M195 80C197 50 195 34 205 20M220 80C222 55 220 40 216 28M250 80C252 48 250 32 260 18M275 80C277 52 275 38 271 26" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v9</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+  <!-- 10. Кут-рамка з листочком (лінія + акцент) -->
+  <div class="card-wrap">
+    <div class="style-label">10 — Кутова лінія з листком</div>
+    <article class="gs-svc">
+      <svg class="deco" style="right:0;bottom:0;width:140px;height:140px;opacity:0.22;" viewBox="0 0 100 100" fill="none">
+        <path d="M100 40V100H40" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M78 78C72 72 70 64 72 56C80 58 86 64 88 72C86 76 82 78 78 78Z" fill="currentColor" opacity="0.5"/>
+        <path d="M72 56C66 60 62 67 62 75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div class="gs-svc-head"><span class="gs-svc-num">02</span><span class="gs-svc-variant">v10</span></div>
+      <h3 class="gs-svc-title">Озеленення та благоустрій</h3>
+      <p class="gs-svc-desc">Висадка дерев, кущів, квіткових композицій</p>
+      <div class="gs-svc-foot"><span class="gs-svc-price">індивідуально</span><span class="gs-svc-arrow">↗</span></div>
+    </article>
+  </div>
+
+</div>
+</body>
+</html>
