@@ -190,8 +190,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-pf-tabs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px;}
 .gs-chip{display:inline-flex;align-items:center;gap:6px;padding:12px 22px;border-radius:var(--r-pill);font-size:13px;font-weight:600;font-family:var(--font-body);text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--fg-2);position:relative;overflow:hidden;isolation:isolate;transition:color 0.38s var(--ease-in-out),border-color 0.38s var(--ease-in-out);}
 .gs-chip::before{display:none;}
-.gs-chip-selected{background:var(--accent);color:#fff;border-color:var(--accent);}
-.gs-chip:hover{color:#fff;border-color:var(--accent);background:var(--accent);transition:background 0.25s var(--ease-out),border-color 0.25s var(--ease-out),color 0.25s var(--ease-out);}
+.gs-chip-selected{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 4px 24px -8px rgba(37,124,77,0.5),inset 0 1px 0 rgba(255,255,255,0.12);}
+.gs-chip:hover{color:#fff;border-color:var(--accent);background:var(--accent);box-shadow:0 8px 32px -8px rgba(37,124,77,0.6),inset 0 1px 0 rgba(255,255,255,0.12);transition:background 0.25s var(--ease-out),border-color 0.25s var(--ease-out),color 0.25s var(--ease-out),box-shadow 0.25s var(--ease-out);}
 .gs-chip:hover{animation:gs-chip-glitch 0.55s steps(1,end);}
 @keyframes gs-chip-glitch{
   0%{text-shadow:none;transform:translateX(0);clip-path:inset(0 0 0 0);}
