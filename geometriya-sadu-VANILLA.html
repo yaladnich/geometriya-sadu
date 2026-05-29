@@ -78,7 +78,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-section-light .gs-accent-italic{color:var(--accent-deep);}
 /* Зелена акцентна секція з гласморфізмом поверх скетчу */
 .gs-section-orange{background:#196A3F;color:#fff;position:relative;overflow:hidden;isolation:isolate;}
-.gs-section-orange::before{content:'';position:absolute;inset:0;background:url('images/why-sketch.webp') center/cover no-repeat;filter:grayscale(1) contrast(1.05);opacity:0.55;z-index:-2;}
+.gs-section-orange::before{display:none;}
+.gs-why-sketch{position:absolute;inset:-20%;width:140%;height:140%;background:url('images/why-sketch.webp') center/cover no-repeat;filter:grayscale(1) contrast(1.05);opacity:0.55;z-index:-2;will-change:transform;}
 .gs-section-orange::after{content:'';position:absolute;inset:0;background:linear-gradient(rgba(25,106,63,0.58),rgba(18,78,46,0.7));backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.07);z-index:-1;}
 .gs-section-orange>.gs-container{position:relative;z-index:1;}
 .gs-section-orange .eyebrow{color:rgba(255,255,255,0.65);}
@@ -719,6 +720,7 @@ html,body{overflow-x:hidden;max-width:100%;}
 
 <!-- WHY -->
 <section class="gs-section gs-section-orange" id="why">
+  <div class="gs-why-sketch" id="gs-why-sketch"></div>
   <div class="gs-container">
     <div class="gs-section-head">
       <div class="eyebrow"><span class="eb-dash">—</span> Переваги</div>
@@ -1965,6 +1967,23 @@ initCustomAnimations();
 initPortfolio();
 restartPortfolioTimer();
 updateHeaderAndProgress();
+
+// Параллакс скетчу в секції «Переваги»
+(function initWhyParallax() {
+  const sketch = document.getElementById('gs-why-sketch');
+  const section = document.getElementById('why');
+  if (!sketch || !section) return;
+  gsap.to(sketch, {
+    yPercent: 18,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: section,
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: 1.2
+    }
+  });
+})();
 
 // Бургер-меню
 (function initBurger() {
