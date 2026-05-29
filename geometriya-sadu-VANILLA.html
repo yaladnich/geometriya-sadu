@@ -29,7 +29,7 @@
   --font-display:"Onest",ui-sans-serif,system-ui,-apple-system,sans-serif;
   --font-body:"Onest",ui-sans-serif,system-ui,-apple-system,sans-serif;
   --font-mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,monospace;
-  --t-display-1:clamp(56px,12vw,128px);--t-display-2:clamp(40px,8vw,88px);
+  --t-display-1:clamp(40px,11vw,128px);--t-display-2:clamp(30px,7vw,88px);
   --t-h1:clamp(36px,5.5vw,64px);--t-h2:clamp(28px,4vw,48px);--t-h3:clamp(22px,2.6vw,32px);
   --t-h4:20px;--t-body-lg:18px;--t-body:16px;--t-body-sm:14px;--t-eyebrow:12px;
   --w-regular:400;--w-medium:500;--w-semi:600;--w-bold:700;--w-black:800;
@@ -69,7 +69,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-section-head{margin-bottom:clamp(40px,6vw,80px);}
 .gs-section-head .eyebrow{margin-bottom:16px;}
 .gs-accent-italic{color:#257D4D;font-style:normal;font-weight:800;}
-.h-display-2{font-family:var(--font-display);font-weight:800;font-size:var(--t-display-2);line-height:1.05;letter-spacing:-0.02em;text-wrap:wrap;white-space:normal;word-break:break-word;overflow-wrap:break-word;margin:0;}
+.h-display-2{font-family:var(--font-display);font-weight:800;font-size:var(--t-display-2);line-height:1.05;letter-spacing:-0.02em;text-wrap:balance;white-space:normal;overflow-wrap:break-word;hyphens:none;margin:0;}
 .h-display-1{font-family:var(--font-display);font-weight:800;font-size:var(--t-display-1);line-height:0.95;letter-spacing:-0.02em;text-wrap:balance;margin:0;}
 .gs-accent{color:var(--accent);} .gs-fg3{color:var(--fg-3);}
 
@@ -397,18 +397,29 @@ html.lenis{height:auto;}
   .gs-brand img{height:34px;}
 }
 
+/* Захист від горизонтального скролу */
+html,body{overflow-x:hidden;max-width:100%;}
+
 /* Hero */
 @media(max-width:700px){
   .gs-hero{padding-top:100px;padding-bottom:40px;}
   .gs-hero-ctas{flex-direction:column;gap:10px;margin-bottom:48px;}
-  .gs-hero-ctas .gs-btn{width:100%;justify-content:center;}
+  .gs-hero-ctas .gs-btn{width:100%;justify-content:center;padding-left:18px;padding-right:18px;}
   .gs-hero-stats{gap:24px;}
   .gs-hero-sub{font-size:15px;}
+  .gs-hero-title{max-width:100%;}
 }
 @media(max-width:480px){
   .gs-hero{padding-top:88px;}
   .gs-hero-eyebrow{margin-bottom:20px;}
   .gs-hero-ctas{margin-bottom:36px;}
+}
+/* На дуже вузьких екранах hero-рядки (nowrap) можуть не вміщатись — зменшуємо шрифт */
+@media(max-width:400px){
+  .gs-hero-title{font-size:26px;}
+}
+@media(max-width:340px){
+  .gs-hero-title{font-size:23px;}
 }
 
 /* Секції — відступи */
