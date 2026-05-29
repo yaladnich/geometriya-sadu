@@ -304,6 +304,14 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-fab-stack.is-open .gs-fab-actions .gs-fab:nth-child(1){transition-delay:0.19s;}
 .gs-fab-toggle .ti{transition:transform 0.4s var(--ease-in-out);}
 .gs-fab-stack.is-open .gs-fab-toggle .ti{transform:rotate(135deg);}
+/* М'яка пульсація головної кнопки */
+@keyframes gs-fab-pulse{
+  0%{box-shadow:0 0 0 0 rgba(37,124,77,0.45),var(--shadow-cta);}
+  70%{box-shadow:0 0 0 18px rgba(37,124,77,0),var(--shadow-cta);}
+  100%{box-shadow:0 0 0 0 rgba(37,124,77,0),var(--shadow-cta);}
+}
+.gs-fab-toggle{animation:gs-fab-pulse 2.6s var(--ease-out) infinite;}
+.gs-fab-stack.is-open .gs-fab-toggle{animation:none;}
 
 @media(max-width:700px){.gs-fab-stack{right:16px;bottom:16px}.gs-fab{width:48px;height:48px;}}
 
