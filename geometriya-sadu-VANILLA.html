@@ -80,7 +80,10 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-section-orange{background:#196A3F;color:#fff;position:relative;overflow:hidden;}
 .gs-section-orange::before{display:none;}
 .gs-why-sketch{position:absolute;inset:-20%;width:140%;height:140%;background:url('images/why-sketch.webp') center/cover no-repeat;filter:grayscale(1) contrast(1.1);opacity:0.6;z-index:0;will-change:transform;}
-.gs-why-glass{position:absolute;inset:0;z-index:1;background:rgba(25,106,63,0.45);backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);border-top:1px solid rgba(255,255,255,0.12);border-bottom:1px solid rgba(255,255,255,0.06);}
+/* Нерівномірний гласморфізм: кілька шарів з різним blur і mask */
+.gs-why-glass{position:absolute;inset:0;z-index:1;border-top:1px solid rgba(255,255,255,0.12);border-bottom:1px solid rgba(255,255,255,0.06);}
+.gs-why-glass::before{content:'';position:absolute;inset:0;background:rgba(25,106,63,0.30);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);mask-image:radial-gradient(ellipse 70% 60% at 55% 45%,transparent 30%,black 80%);-webkit-mask-image:radial-gradient(ellipse 70% 60% at 55% 45%,transparent 30%,black 80%);}
+.gs-why-glass::after{content:'';position:absolute;inset:0;background:rgba(25,106,63,0.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);mask-image:radial-gradient(ellipse 65% 55% at 50% 50%,black 0%,transparent 65%);-webkit-mask-image:radial-gradient(ellipse 65% 55% at 50% 50%,black 0%,transparent 65%);}
 .gs-section-orange>.gs-container{position:relative;z-index:2;}
 .gs-section-orange .eyebrow{color:rgba(255,255,255,0.65);}
 .gs-section-orange .eyebrow .eb-dash{color:#F28D1B;}
