@@ -79,7 +79,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 /* Зелена акцентна секція з гласморфізмом поверх скетчу */
 /* Дуотон: зелений (тіні) + оранжевий (світло) */
 .gs-section-orange{background:#000 url('images/Back.webp') center/cover no-repeat;color:#fff;position:relative;overflow:hidden;}
-.gs-section-orange::before{display:none;}
+.gs-section-orange::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,11,10,0.45) 0%,rgba(10,11,10,0.65) 50%,rgba(10,11,10,0.88) 100%);z-index:1;pointer-events:none;}
 .gs-why-sketch{display:none;}
 .gs-why-glass{display:none;}
 .gs-why-glass-soft{display:none;}
