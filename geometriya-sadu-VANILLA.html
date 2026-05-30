@@ -1889,6 +1889,13 @@ function initCustomAnimations() {
         card.style.setProperty('--reveal-delay', (0.1 + col * 0.18) + 's');
         card.classList.add('is-in');
         io.unobserve(card);
+        const img = card.querySelector('.gs-pcard-img,.gs-pcard-ph');
+        if (img) {
+          img.addEventListener('animationend', () => {
+            img.style.animation = 'none';
+            img.style.transform = 'scale(1)';
+          }, { once: true });
+        }
       });
     }, { threshold: 0.2, rootMargin: '0px 0px -8% 0px' });
     cards.forEach(c => io.observe(c));
