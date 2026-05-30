@@ -175,9 +175,9 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-pcard-cat span{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.5);}
 /* контент знизу */
 .gs-pcard-body{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:24px 22px 28px 40px;}
-.gs-pcard-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-bright);margin-bottom:10px;}
+.gs-pcard-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:10px;}
 .gs-pcard-title{font-family:var(--font-display);font-weight:800;font-size:clamp(20px,2.2vw,28px);line-height:1.1;letter-spacing:-0.01em;color:#fff;margin:0 0 8px;}
-.gs-pcard-sub{font-size:13px;color:rgba(255,255,255,0.55);line-height:1.4;margin:0;}
+.gs-pcard-sub{font-size:13px;color:var(--accent-bright);line-height:1.4;margin:0;}
 /* поява заголовків знизу зі скосом (стиль lev-development block-title) */
 .gs-pcard-label,.gs-pcard-title,.gs-pcard-sub{opacity:0;transform:translateY(120%) skewY(6deg);transform-origin:0 bottom;}
 .gs-pcard.is-in .gs-pcard-label{animation:gsTextUp 0.85s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:calc(var(--reveal-delay) + 0.5s);}
