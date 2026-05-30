@@ -1850,27 +1850,28 @@ function initCustomAnimations() {
     }
 
     gsap.set(title, { opacity: 1, y: 0, clearProps: 'transform' });
-    title.querySelectorAll('.h2-line').forEach(line => splitChars(line));
+    title.querySelectorAll('.h2-line').forEach(line => splitWords(line));
 
-    const chars = title.querySelectorAll('.ch');
-    gsap.set(chars, { yPercent: 110, rotate: 4, opacity: 0 });
+    const words = title.querySelectorAll('.w');
+    gsap.set(words, { yPercent: 110, opacity: 0 });
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: title,
         start: 'top 88%',
-        end: 'top 32%',
-        scrub: 1.5
+        end: 'top 45%',
+        scrub: 1
       }
     });
 
-    tl.to(chars, { yPercent: 0, rotate: 0, opacity: 1, stagger: 0.016, ease: 'power3.out' });
+    tl.to(words, { yPercent: 0, opacity: 1, stagger: 0.08, ease: 'power3.out' });
   });
 
   function splitWords(el) {
     if (!el || el.dataset.words === 'true') return;
+    const accent = el.querySelector('.gs-accent-italic') ? ' gs-accent-italic' : '';
     const words = el.textContent.trim().split(/\s+/);
-    el.innerHTML = words.map(word => `<span class="w-wrap"><span class="w">${word}</span></span>`).join(' ');
+    el.innerHTML = words.map(word => `<span class="w-wrap"><span class="w${accent}">${word}</span></span>`).join(' ');
     el.dataset.words = 'true';
   }
 
