@@ -1814,14 +1814,14 @@ function initCustomAnimations() {
   gsap.set(heroStatLabels, { y: 8, opacity: 0 });
   document.querySelectorAll('.gs-hero-title .tl-i').forEach(line => splitWords(line));
   const h1Chars = document.querySelectorAll('.gs-hero-title .w');
-  gsap.set(h1Chars, { yPercent: 110, opacity: 0 });
+  gsap.set(h1Chars, { yPercent: 120, skewY: 6, opacity: 0, filter: 'blur(8px)', transformOrigin: '0 bottom' });
   gsap.set('.gs-hero-bg', { scale: 1.08 });
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       gsap.timeline({ delay: 0.15 })
         .to('.gs-hero-bg', { scale: 1, duration: 1.4 }, 0)
-        .to(h1Chars, { yPercent: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out' }, 0)
+        .to(h1Chars, { yPercent: 0, skewY: 0, opacity: 1, filter: 'blur(0px)', duration: 0.85, stagger: 0.1, ease: 'power3.out' }, 0)
         .to('.gs-hero-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.58)
         .to('.gs-hero-sub', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.72)
         .to('.gs-hero-ctas', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.86)
@@ -1853,7 +1853,7 @@ function initCustomAnimations() {
     title.querySelectorAll('.h2-line').forEach(line => splitWords(line));
 
     const words = title.querySelectorAll('.w');
-    gsap.set(words, { yPercent: 110, opacity: 0 });
+    gsap.set(words, { yPercent: 120, skewY: 6, opacity: 0, filter: 'blur(8px)', transformOrigin: '0 bottom' });
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -1864,7 +1864,7 @@ function initCustomAnimations() {
       }
     });
 
-    tl.to(words, { yPercent: 0, opacity: 1, stagger: 0.08, ease: 'power3.out' });
+    tl.to(words, { yPercent: 0, skewY: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.08, ease: 'power3.out' });
   });
 
   function splitWords(el) {
