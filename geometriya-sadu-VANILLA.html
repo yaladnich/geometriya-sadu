@@ -343,10 +343,10 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-cta-orange .gs-cta-sub{font-size:clamp(17px,2.1vw,24px);color:rgba(10,11,10,0.78);max-width:520px;margin:0 auto 44px;line-height:1.35;}
 .gs-cta-orange .gs-oframe{position:relative;max-width:720px;margin:0 auto;padding:40px 44px;}
 .gs-cta-orange .gs-oframe-corner{position:absolute;width:28px;height:28px;border:2px solid rgba(10,11,10,0.55);}
-.gs-cta-orange .gs-oframe-corner.tl{top:0;left:0;border-right:0;border-bottom:0;}
-.gs-cta-orange .gs-oframe-corner.tr{top:0;right:0;border-left:0;border-bottom:0;}
-.gs-cta-orange .gs-oframe-corner.bl{bottom:0;left:0;border-right:0;border-top:0;}
-.gs-cta-orange .gs-oframe-corner.br{bottom:0;right:0;border-left:0;border-top:0;}
+.gs-cta-orange .gs-oframe-corner.tl{top:0;left:0;border-right:0;border-bottom:0;border-top-left-radius:8px;}
+.gs-cta-orange .gs-oframe-corner.tr{top:0;right:0;border-left:0;border-bottom:0;border-top-right-radius:8px;}
+.gs-cta-orange .gs-oframe-corner.bl{bottom:0;left:0;border-right:0;border-top:0;border-bottom-left-radius:8px;}
+.gs-cta-orange .gs-oframe-corner.br{bottom:0;right:0;border-left:0;border-top:0;border-bottom-right-radius:8px;}
 .gs-cta-orange .gs-oform{display:flex;flex-direction:column;gap:30px;text-align:left;}
 .gs-cta-orange .gs-oform label{display:flex;flex-direction:column;gap:4px;}
 .gs-cta-orange .gs-oform input,.gs-cta-orange .gs-oform textarea{background:transparent;border:0;border-bottom:1px solid rgba(10,11,10,0.32);border-radius:0;color:#0a0b0a;caret-color:var(--accent);font-family:var(--font-body);font-size:16px;padding:8px 0;outline:none;transition:border-color var(--dur-base) var(--ease-out);resize:none;}
@@ -1759,7 +1759,7 @@ function initCustomAnimations() {
       return Array.from(root.childNodes).find(n => n.nodeType === 3 && n.nodeValue.trim());
     }
 
-    document.querySelectorAll('.gs-btn-primary, .gs-cta-pill').forEach(btn => {
+    document.querySelectorAll('.gs-btn-primary, .gs-cta-pill, .gs-osend').forEach(btn => {
       const node = getTextNode(btn);
       if (!node) return;
       btn.addEventListener('mouseenter', () => {
@@ -2036,6 +2036,24 @@ function initCustomAnimations() {
         scrollTrigger: { trigger: orangeForm, start: 'top 82%', once: true }
       }
     );
+
+    // Кутові дужки «збираються» до кутів рамки
+    const corners = orangeForm.querySelectorAll('.gs-oframe-corner');
+    const offsets = { tl: [16, 16], tr: [-16, 16], bl: [16, -16], br: [-16, -16] };
+    corners.forEach(corner => {
+      const cls = ['tl', 'tr', 'bl', 'br'].find(c => corner.classList.contains(c)) || 'tl';
+      const [ox, oy] = offsets[cls];
+      gsap.fromTo(corner,
+        { opacity: 0, x: ox, y: oy, scale: 0.5 },
+        {
+          opacity: 1, x: 0, y: 0, scale: 1,
+          duration: 0.6,
+          ease: 'back.out(2)',
+          delay: 0.25,
+          scrollTrigger: { trigger: orangeForm, start: 'top 82%', once: true }
+        }
+      );
+    });
   }
 }
 
