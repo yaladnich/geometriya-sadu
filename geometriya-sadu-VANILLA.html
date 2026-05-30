@@ -1869,8 +1869,9 @@ function initCustomAnimations() {
 
   function splitWords(el) {
     if (!el || el.dataset.words === 'true') return;
+    const accent = el.querySelector('.gs-accent-italic') ? ' gs-accent-italic' : '';
     const words = el.textContent.trim().split(/\s+/);
-    el.innerHTML = words.map(word => `<span class="w-wrap"><span class="w">${word}</span></span>`).join(' ');
+    el.innerHTML = words.map(word => `<span class="w-wrap"><span class="w${accent}">${word}</span></span>`).join(' ');
     el.dataset.words = 'true';
   }
 
