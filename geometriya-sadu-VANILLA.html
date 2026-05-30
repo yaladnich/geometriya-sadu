@@ -338,6 +338,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 /* Помаранчева форма-заявка (повноширинна) */
 .gs-cta-orange{background:#F28D1B;color:#0a0b0a;position:relative;overflow:hidden;}
 .gs-cta-orange::before{display:none;}
+.gs-cta-orange .gs-cta-sketch{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(1400px,118%);max-width:none;opacity:0.16;mix-blend-mode:multiply;pointer-events:none;z-index:0;user-select:none;}
 .gs-cta-orange .gs-cta-inner{max-width:920px;margin:0 auto;text-align:center;position:relative;z-index:1;}
 .gs-cta-orange .gs-cta-heading{font-family:var(--font-display);font-weight:800;font-size:clamp(34px,6vw,76px);line-height:1.0;letter-spacing:-0.025em;color:#0a0b0a;margin:0 0 56px;}
 .gs-cta-orange .gs-cta-sub{font-size:clamp(17px,2.1vw,24px);color:rgba(10,11,10,0.78);max-width:520px;margin:0 auto 44px;line-height:1.35;}
@@ -1050,6 +1051,7 @@ html,body{overflow-x:hidden;max-width:100%;}
 
 <!-- CTA -->
 <section class="gs-section gs-cta-section gs-cta-orange" id="cta">
+  <img src="images/cta-sketch.webp" class="gs-cta-sketch" alt="" aria-hidden="true">
   <div class="gs-container gs-cta-inner">
     <h2 class="gs-cta-heading">Поговорімо<br>про <span class="gs-accent-italic">ваш сад</span></h2>
     <div id="cta-form-wrap">
@@ -2036,6 +2038,20 @@ function initCustomAnimations() {
         scrollTrigger: { trigger: orangeForm, start: 'top 82%', once: true }
       }
     );
+
+    // Фоновий скетч будинку — плавна поява
+    const ctaSketch = document.querySelector('.gs-cta-orange .gs-cta-sketch');
+    if (ctaSketch) {
+      gsap.fromTo(ctaSketch,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 0.16, y: 0,
+          duration: 1.1,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: '.gs-cta-orange', start: 'top 78%', once: true }
+        }
+      );
+    }
 
     // Кутові дужки «збираються» до кутів рамки
     const corners = orangeForm.querySelectorAll('.gs-oframe-corner');
