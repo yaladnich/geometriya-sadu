@@ -475,6 +475,8 @@ body{background:var(--bg-1);}
 body{cursor:none;}
 #gs-dot{position:fixed;top:0;left:0;z-index:9999;width:12px;height:12px;border-radius:50%;background:#F28D1B;box-shadow:0 0 12px rgba(242,141,27,.55);pointer-events:none;opacity:0;transition:opacity .25s var(--ease-out),width .2s var(--ease-out),height .2s var(--ease-out),background .2s var(--ease-out);will-change:transform;}
 #gs-dot.is-hover{width:26px;height:26px;background:rgba(242,141,27,.28);box-shadow:0 0 18px rgba(242,141,27,.45),inset 0 0 0 1.5px #F28D1B;}
+#gs-dot.on-orange{background:var(--accent);box-shadow:0 0 12px rgba(37,124,77,.55);}
+#gs-dot.on-orange.is-hover{background:rgba(37,124,77,.28);box-shadow:0 0 18px rgba(37,124,77,.45),inset 0 0 0 1.5px var(--accent);}
 #gs-scroll-prog{position:fixed;top:0;left:0;height:2px;width:0%;background:var(--accent);z-index:201;pointer-events:none;transition:width .08s linear;}
 @keyframes scrollPulse{0%{transform:translateY(-40px);opacity:0}25%{opacity:1}75%{opacity:1}100%{transform:translateY(40px);opacity:0}}
 .gs-hero-scroll{animation:gs-scroll-hint 1800ms ease-in-out infinite;}
@@ -2074,6 +2076,7 @@ initCustomSelects();
   }
 
   document.addEventListener('mouseover', e => {
+    dot.classList.toggle('on-orange', !!e.target.closest('.gs-cta-orange'));
     if (e.target.closest(TEXT_SEL)) setState('text');
     else if (e.target.closest(LINK_SEL)) setState('link');
     else setState('');
