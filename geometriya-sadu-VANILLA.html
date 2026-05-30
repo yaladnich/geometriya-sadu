@@ -349,7 +349,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-cta-orange .gs-oframe-corner.br{bottom:0;right:0;border-left:0;border-top:0;}
 .gs-cta-orange .gs-oform{display:flex;flex-direction:column;gap:30px;text-align:left;}
 .gs-cta-orange .gs-oform label{display:flex;flex-direction:column;gap:4px;}
-.gs-cta-orange .gs-oform input,.gs-cta-orange .gs-oform textarea{background:transparent;border:0;border-bottom:1px solid rgba(10,11,10,0.32);border-radius:0;color:#0a0b0a;font-family:var(--font-body);font-size:16px;padding:8px 0;outline:none;transition:border-color var(--dur-base) var(--ease-out);resize:none;}
+.gs-cta-orange .gs-oform input,.gs-cta-orange .gs-oform textarea{background:transparent;border:0;border-bottom:1px solid rgba(10,11,10,0.32);border-radius:0;color:#0a0b0a;caret-color:var(--accent);font-family:var(--font-body);font-size:16px;padding:8px 0;outline:none;transition:border-color var(--dur-base) var(--ease-out);resize:none;}
+.gs-cta-orange .gs-oform input::selection,.gs-cta-orange .gs-oform textarea::selection{background:var(--accent);color:#fff;}
 .gs-cta-orange .gs-oform input::placeholder,.gs-cta-orange .gs-oform textarea::placeholder{color:rgba(10,11,10,0.5);}
 .gs-cta-orange .gs-oform input:focus,.gs-cta-orange .gs-oform textarea:focus{border-bottom-color:#0a0b0a;}
 .gs-cta-orange .gs-oform .gs-field-invalid{border-bottom-color:#b00020;}
