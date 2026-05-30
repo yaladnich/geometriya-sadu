@@ -21,11 +21,11 @@ https://yaladnich.github.io/geometriya-sadu/
 - Брендові іконки (Telegram/Viber/телефон/форма) — inline SVG
 
 ## Файли
-- `geometriya-sadu-VANILLA.html` — **головний робочий файл** (~1900 рядків, всі правки тут)
+- `geometriya-sadu-VANILLA.html` — **головний робочий файл** (~2000 рядків, всі правки тут)
 - `index.html` — редірект на головний файл
 - `.github/workflows/pages.yml` — деплой на GitHub Pages з гілки `main`
 - Бекапи: `geometriya-sadu-VANILLA-backup-*.html`
-- Демо/превʼю (не в продакшені): `services-photo-preview.html`, `services-video-preview.html`, `services-3d-preview.html`, `leaf-variants-preview.html`, `cta-sketch-variants-preview.html`
+- Демо/превʼю (не в продакшені): `services-photo-preview.html`, `cta-sketch-variants-preview.html` та ін.
 
 ## Деплой
 - **GitHub Pages** через GitHub Actions, тригер — пуш у `main`
@@ -41,45 +41,65 @@ https://yaladnich.github.io/geometriya-sadu/
 4. PR через MCP (`mcp__github__create_pull_request`, base=main) → squash merge (`mcp__github__merge_pull_request`)
 - Claude GitHub App встановлено на репо (write-доступ). MCP **не може** створювати гілки (403) — гілку створювати через `git push`.
 
+### Робота з кількома сесіями Claude
+Користувач іноді паралельно має дві активні сесії Claude. Щоб уникнути конфліктів:
+- **Тільки одна сесія** вносить правки одночасно
+- Перед кожною правкою обов'язково `git fetch origin main && git reset --hard origin/main`
+- Після мерджу PR — інша сесія теж робить reset перед наступною зміною
+
 ---
 
-## Поточний стан секцій
+## Поточний стан сайту (актуально на PR #145)
 
 ### #services — Картки послуг (`.gs-pcard`)
 - Вертикальні photo-картки, `aspect-ratio:3/4`, сітка `repeat(3,1fr)`, `column-gap:35px; row-gap:56px`
-- Зараз замість фото — **градієнтні плейсхолдери** `.gs-pcard-ph`
-- Для підключення реального фото: замінити `<div class="gs-pcard-ph"></div>` на `<img class="gs-pcard-img" src="images/...">` (CSS для `.gs-pcard-img` вже є)
-- Структура картки: `.gs-pcard-ph` → `.gs-pcard-overlay` → `.gs-pcard-cat` → `.gs-pcard-arrow` → `.gs-pcard-body` (`.gs-pcard-label`, `.gs-pcard-title`, `.gs-pcard-sub`)
-- Анімація появи: `.gs-pcard::before` шторка (`gsBgEnter`), фото (`gsBgZoomOut`), заголовки (`gsTextUp`), тригер IntersectionObserver + клас `.is-in`
-- Стрілка `.gs-pcard-arrow`: помаранчева за замовч., ховер → зеленіє + гліч + поворот 180°
+- **Всі 8 карток мають реальні фото** (`.gs-pcard-img`)
+- Структура картки: `<img class="gs-pcard-img">` → `.gs-pcard-overlay` → `.gs-pcard-cat` → `.gs-pcard-arrow` → `.gs-pcard-body` (`.gs-pcard-label`, `.gs-pcard-title`, `.gs-pcard-sub`)
 
-#### Промпти Midjourney/ImageFX для карток (vertical portrait 3:4):
-| # | Назва | Промпт |
-|---|-------|--------|
-| 01 | Проєктування | `architect reviewing garden design blueprints on tablet, scale model of modern garden layout on wooden table, pencil sketches, soft natural light, dark moody studio, vertical portrait 3:4` |
-| 02 | Рулонний газон | `workers laying fresh rolled sod lawn at modern suburban house, lush green grass rolls, early morning light, mist, cinematic, dark moody, vertical portrait 3:4` |
-| 03 | Автополив | `underground irrigation system installation, spray heads watering lush green lawn at dusk, water droplets in golden light, cinematic, dark moody, vertical portrait 3:4` |
-| 04 | Озеленення | `planting ornamental shrubs and perennials in modern garden, mulched beds, stone path, contemporary house facade, golden hour, cinematic, vertical portrait 3:4` |
-| 05 | Земляні роботи | `mini excavator doing precision landscaping earthworks, fresh soil, modern suburban garden construction, dramatic overcast sky, cinematic, dark moody, vertical portrait 3:4` |
-| 06 | Корпоративним клієнтам | `manicured corporate office building entrance garden, perfectly trimmed hedges, seasonal flowers, glass facade, morning light, cinematic, vertical portrait 3:4` |
-| 07 | Декоративні елементи | `decorative garden water feature with stone boulders, ornamental grasses, modern garden design, evening moody light, cinematic, dark atmosphere, vertical portrait 3:4` |
-| 08 | Сервісне обслуговування | `professional gardener trimming geometric hedges with electric hedge trimmer, lawn aeration and mowing in background, modern suburban garden, morning dew, golden hour, cinematic, vertical portrait 3:4` |
+#### Анімація появи (IntersectionObserver + клас `.is-in`)
+- `.gs-pcard::before` — діагональна шторка (`skewY(8deg)`), keyframe `gsBgEnter` сповзає вниз 1.2s
+- Фото — `gsBgZoomOut` 1.7s: `scale(1.1)→1` + `blur(10px)→0`
+- Заголовки — `gsTextUp`: `translateY(120%) skewY(6deg)` + `blur(8px)→0`, каскад label→title→sub
+- Каскад по колонках: `--reveal-delay: 0.1 + col*0.18s`
+
+#### Hover на картках
+- Фото: `transform:scale(1.08)`, `transition:1.2s cubic-bezier(0.22,1,0.36,1)` — плавний повільний zoom
+- Стрілка: зеленіє + glitch (`gs-icon-glitch`) + поворот 180°
+- Більше нічого (зелена шторка/reveal опису — відхилено)
+
+#### Фото файли (`images/`)
+| Картка | Файл |
+|--------|------|
+| Ландшафтне проєктування | `Ландшафтне проєктування.webp` |
+| Озеленення та благоустрій | `Озеленення .webp` (є пробіл!) |
+| Рулонний газон | `Рулонний газон v2.webp` |
+| Земляні роботи | `Підготовчі роботи.webp` |
+| Монтаж автополиву | `Автополив.webp` |
+| Догляд за садом | `Сервісне обслуговування.webp` |
+| Консервація автополиву | `Обслуговування автополиву.webp` |
+| Корпоративним клієнтам | `Корпоративним клієнтам.webp` |
+
+### #services — Анімація заголовків секцій (PR #143–#145)
+- Заголовки `.h-display-2` та `.gs-cta-heading` розбиваються по словах через JS `splitWords()`
+- Кожне слово: `.w-wrap` (overflow:hidden) → `.w` (анімується знизу зі скосом + blur)
+- Стиль анімації аналогічний `.gs-pcard-title` (skew + blur rise)
+- CSS класи: `.w-wrap`, `.w`, анімація через `gsTextUp` keyframe
 
 ### #cta — Форма заявки
 - Секція: клас `.gs-cta-orange`, фон `#f4f3ef`, колір тексту `#0a0b0a`
-- Фоновий скетч `images/cta-sketch.svg` — прямий дочірній елемент `<section>`, зелений фільтр + `mix-blend-mode:multiply`
+- Фоновий скетч `images/cta-sketch.svg` — **прямий дочірній елемент `<section>`** (не у враппері!)
   - CSS: `position:absolute; left:50%; bottom:0; transform:translateX(-50%); width:min(1400px,118%); opacity:0.5`
-  - Фільтр: `filter:invert(38%) sepia(40%) saturate(700%) hue-rotate(96deg) brightness(85%)`
+  - Фільтр (зелений): `filter:invert(38%) sepia(40%) saturate(700%) hue-rotate(96deg) brightness(85%)`
+  - `mix-blend-mode:multiply` — **КРИТИЧНО**: якщо обгорнути в div зі своїм z-index/position — з'явиться білий прямокутник
   - Анімація: `clip-path:inset(0 0 100% 0)` → `inset(0 0 0%)` (GSAP, 1.8s, scrollTrigger)
-  - **ВАЖЛИВО**: скетч має бути прямим дочірнім елементом `<section>` — не у враппері div, бо проміжний stacking context ламає `mix-blend-mode:multiply` (білий фон стає видимим)
-- Форма-панель `.gs-oframe`: `background:#fff; border-radius:14px; box-shadow:...` (суцільно біла, без прозорості)
+- Форма-панель `.gs-oframe`: `background:#fff; border-radius:14px` (суцільно біла)
 - Кутові дужки `.gs-oframe-corner` — помаранчеві `#F28D1B`
-- Нотатка про персональні дані — **всередині** `.gs-oframe` після `</form>` (клас `.gs-oform-note`)
+- Нотатка про персональні дані `.gs-oform-note` — **всередині** `.gs-oframe` після `</form>`
 - Кнопка `.gs-osend`: стрілка помаранчева → зелена на ховер + поворот 180°
-- Курсор `#gs-dot` при наведенні на `.gs-cta-orange` стає зеленим (клас `.on-orange` через JS mouseover)
+- Курсор `#gs-dot` при наведенні на `.gs-cta-orange` стає зеленим (клас `.on-orange` через JS)
 
-### Інші секції (зроблено раніше)
-- **#hero**: кастомний курсор-куля (помаранчева `#gs-dot`, `body{cursor:none}`), scramble-анімація кнопок
+### Інші секції
+- **#hero**: кастомний курсор-куля (помаранчева `#gs-dot`, `body{cursor:none}`), scramble + word-reveal анімація заголовків
 - **#why**: фон `Back.webp` з паралаксом GSAP (yPercent:20)
 - **#process**: таби `.gs-chip` з text-scramble гліч-ефектом
 - **FAB-віджет**: зелені іконки, зациклена гліч-анімація, пульсація
@@ -89,7 +109,6 @@ https://yaladnich.github.io/geometriya-sadu/
 ---
 
 ## Незавершені задачі / на майбутнє
-- **Реальні фото в картки послуг** — зараз плейсхолдери (пріоритет! промпти вище)
 - **Telegram-лінк**: зараз `href="#"` — потрібне посилання від клієнта
 - Реальні фото в секції «Кроки» і 3-му проєкті портфоліо
 - Почистити старий CSS/JS класів `.gs-svc*` (лишився, не використовується)
