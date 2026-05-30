@@ -2,15 +2,12 @@
 
 > Передай цей файл на початку нового чату, щоб продовжити роботу без втрати контексту.
 
-## Посилання на попередній чат
-https://claude.ai/code/session_01BLUgFYY6ojdvMxpaJ9KnP8
-
 ## Живий сайт
 https://yaladnich.github.io/geometriya-sadu/
 
 ## Що це за проєкт
 Односторінковий лендинг ландшафтної компанії **«Геометрія саду»** (Київ та область).
-Послуги: рулонний газон, автополив, озеленення, земляні роботи, догляд.
+Послуги: проєктування, рулонний газон, автополив, озеленення, земляні роботи, догляд, корпоративним клієнтам.
 
 ## Стек
 - Чистий **vanilla HTML/CSS/JS** в одному файлі
@@ -24,56 +21,66 @@ https://yaladnich.github.io/geometriya-sadu/
 - Брендові іконки (Telegram/Viber/телефон/форма) — inline SVG
 
 ## Файли
-- `geometriya-sadu-VANILLA.html` — **головний робочий файл** (~1800 рядків, всі правки тут)
+- `geometriya-sadu-VANILLA.html` — **головний робочий файл** (~1900 рядків, всі правки тут)
 - `index.html` — редірект на головний файл
 - `.github/workflows/pages.yml` — деплой на GitHub Pages з гілки `main`
 - Бекапи: `geometriya-sadu-VANILLA-backup-*.html`
+- Демо/превʼю (не в продакшені): `services-photo-preview.html`, `services-video-preview.html`, `services-3d-preview.html`, `leaf-variants-preview.html`
 
 ## Деплой
 - **GitHub Pages** через GitHub Actions, тригер — пуш у `main`
-- Pages вже увімкнено в налаштуваннях репозиторію (Source: GitHub Actions)
 - Сайт оновлюється ~1 хв після мерджу в main
-
-## Git workflow (ВАЖЛИВО)
-Прямий пуш у `main` заблоковано проксі. Працюємо так:
-1. Коміт у робочу гілку `claude/blissful-faraday-y2CrU`
-2. `git push -u origin claude/blissful-faraday-y2CrU`
-3. Створити PR через GitHub MCP (`mcp__github__create_pull_request`, base=main)
-4. Змерджити через `mcp__github__merge_pull_request` (squash)
-- Репозиторій (для MCP): owner=`yaladnich-hue`, repo=`-`
-- Репо було перейменовано → реальна локація `github.com/yaladnich/geometriya-sadu` (редірект працює автоматично)
 - Контейнер НЕ має доступу до `github.io` (network policy) — деплой перевіряє користувач у браузері
 
-## Що вже зроблено
-- Консолідація HTML, налаштування GitHub Pages
-- Мобільна адаптація (бургер-меню ≤900px, slide-in overlay)
-- Виправлення переносів слів (`overflow-wrap:break-word`, без `word-break`)
-- SEO-переписування H2 (під пошукові запити, "людською" мовою)
-- Оновлення таблиць цін (4 таби: земляні роботи, влаштування газону, догляд, автополив)
-- FAB-віджет контактів: згортається/розгортається, каскадна анімація, м'яка пульсація, aria
-- Іконки FAB уніфіковано (filled SVG: Viber, Telegram, телефон, форма)
-- Текстові правки:
-  - Рулонний газон: "продаж, укладання, ґрунт, сітка від кротів, георешітка" (прибрано "бордюри")
-  - Перевага 02: "Спеціалізована техніка в парку" (було "Власна бригада без субпідряду")
-  - Перевага 03: прибрано "Письмова гарантія після здачі"
-  - Hero-підзаголовок: "Власна спецтехніка" (було "Власна бригада без субпідрядників")
+## Git workflow (ВАЖЛИВО)
+Репозиторій: **`github.com/yaladnich/geometriya-sadu`** (owner=`yaladnich`, repo=`geometriya-sadu`).
+Прямий пуш у `main` заблоковано — працюємо через PR:
+1. Робоча гілка: `claude/beautiful-cannon-AWQJW`
+2. **Перед кожною правкою**: `git fetch origin main && git reset --hard origin/main` (бо squash-merge переписує історію — інакше будуть конфлікти)
+3. Внести правку → `git commit` → `git push -f origin claude/beautiful-cannon-AWQJW`
+4. PR через MCP (`mcp__github__create_pull_request`, base=main) → squash merge (`mcp__github__merge_pull_request`)
+- Claude GitHub App встановлено на репо (write-доступ). MCP **не може** створювати гілки (403) — гілку створювати через `git push`.
 
-## Остання сесія (дизайн-ітерації)
-- **Таби (.gs-chip)**: гліч-ефект тепер text-scramble (як на кнопці хіро) через `initBtnScramble` — текст замінюється кирилицею і відновлюється зліва-направо. Ширина фіксується (`minWidth`+`maxWidth`) при наведенні, `.gs-chip-text{white-space:nowrap}` щоб не стрибало
-- **Блок Why (#why, `.gs-section-orange`)**: фон тепер `Back.webp` (images/Back.webp) у окремому div `.gs-why-sketch` з паралаксом (GSAP ScrollTrigger, yPercent:20). Зверху темний градієнт-overlay як на хіро (`::before`). Скеч (`why-sketch 2.webp`) прибрано. Картки `.gs-why-item` — без фону/рамок (просто текст)
-- **Скролбар**: зелений повзунок (#257c4d), чорна доріжка (#000) — глобально на `html` + `::-webkit-scrollbar`
-- **Картки послуг (.gs-svc)**: прибрано рамку; фон = вертикальний градієнт `#1B1F1C → #0A0B0A` (низ зливається з фоном секції, кути знизу без радіусу `border-radius:r-lg r-lg 0 0`). Ховер: підйом translateY(-4px) + бічна/верхня тінь + іконка-стрілка зеленіє і обертається 180°. Сітка `.gs-services-grid`: `column-gap:14px; row-gap:56px` (два ряди по 4 чітко розділені)
+## Остання сесія — РЕДИЗАЙН КАРТОК ПОСЛУГ (стиль lev-development.com.ua)
+Секцію `#services` повністю переробили під стиль lev-development.com.ua.
+
+### Структура картки (клас `.gs-pcard`)
+- Вертикальні photo-картки, `aspect-ratio:3/4`, сітка `repeat(3,1fr)`, `column-gap:35px; row-gap:56px`
+- Зараз замість фото — **градієнтні плейсхолдери** `.gs-pcard-ph` (linear-gradient accent-deep→bg-1)
+- Елементи: `.gs-pcard-ph` → `.gs-pcard-overlay` → `.gs-pcard-cat` (вертикальний лейбл) → `.gs-pcard-arrow` → `.gs-pcard-body` (`.gs-pcard-label`, `.gs-pcard-title`, `.gs-pcard-sub`)
+- 8 карток, всі звичайні (`.is-soon` лишився в CSS, але не використовується)
+- Для підключення реального фото: замінити `<div class="gs-pcard-ph"></div>` на `<img class="gs-pcard-img" src="images/...">` (CSS для `.gs-pcard-img` вже є)
+
+### Анімація появи (точно з main.css lev-development)
+- `.gs-pcard::before` — діагональна шторка (`skewY(8deg)`), keyframe **`gsBgEnter`** сповзає вниз 1.2s
+- Фото — **`gsBgZoomOut`** 1.7s: `scale(1.1)→1` + `blur(10px)→0`
+- Заголовки — **`gsTextUp`**: `translateY(120%) skewY(6deg)` + `blur(8px)→0`, каскад label→title→sub
+- Тригер: **IntersectionObserver** додає клас `.is-in`; каскад по колонках через `--reveal-delay` (`0.1 + col*0.18s`)
+
+### Стрілка `.gs-pcard-arrow`
+- Помаранчева `rgba(242,141,27,.78)` за замовчуванням
+- Ховер: зеленіє + **glitch** (`gs-icon-glitch` через JS mouseenter) + **поворот 180°**
+- JS-loop: `document.querySelectorAll('.gs-svc, .gs-pcard')`
+
+### PR цієї сесії (всі в main)
+#83 редизайн · #84 картки 07/08 + анімація заголовків · #85 blur · #86 гліч-стрілка · #87 поворот 180°
+
+## Раніше зроблено
+- Консолідація HTML, GitHub Pages, мобільна адаптація (бургер ≤900px)
+- SEO-переписування H2, таблиці цін (4 таби)
+- FAB-віджет контактів (згортання, каскад, пульсація)
+- Блок Why (#why): фон `Back.webp` з паралаксом (GSAP ScrollTrigger, yPercent:20)
+- Зелений скролбар (#257c4d)
+- Таби (.gs-chip): text-scramble гліч-ефект
 
 ## Незавершені задачі / на майбутнє
-- **Telegram-лінк**: зараз `href="#"` — користувач ще не дав посилання на канал
-- Перевірити решту згадок "Власна бригада" в коді:
-  - meta description (рядок ~7)
-  - футер (рядок ~926)
-  - Крок 04 "Виконання робіт" (рядок ~745)
+- **Реальні фото в картки послуг** — зараз плейсхолдери (пріоритет!)
+- **Telegram-лінк**: зараз `href="#"` — користувач ще не дав посилання
 - Реальні фото в секції «Кроки» і 3-му проєкті портфоліо
-- Деплой на власний хостинг (згадано в брифі, не зроблено)
+- Почистити старий CSS/JS класів `.gs-svc*` (лишився, не використовується)
+- Видалити демо-файли після фіналізації
 
 ## Стиль роботи з користувачем
 - Спілкування українською
-- Користувач надсилає скріншоти + короткий опис правки → Claude вносить у HTML, комітить, мерджить
+- Користувач надсилає скріншоти + короткий опис → Claude вносить у HTML, комітить, мерджить
 - Тексти мають звучати «від людини з досвідом у сфері», не від маркетолога
