@@ -393,6 +393,18 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 }
 .gs-fab-toggle{animation:gs-fab-pulse 2.6s var(--ease-out) infinite;}
 .gs-fab-stack.is-open .gs-fab-toggle{animation:none;}
+/* Гліч іконки тоггл-кнопки */
+@keyframes gs-fab-icon-glitch{
+  0%,70%,100%{filter:none;transform:translate(0,0);}
+  72%{filter:drop-shadow(3px 0 rgba(255,60,60,.95)) drop-shadow(-3px 0 rgba(79,214,136,.9));transform:translate(-3px,0);}
+  75%{filter:drop-shadow(-3px 0 rgba(79,214,136,.95)) drop-shadow(3px 0 rgba(255,60,60,.85));transform:translate(3px,1px);}
+  78%{filter:drop-shadow(2px 0 rgba(255,60,60,.9));transform:translate(-1px,-1px);}
+  81%{filter:drop-shadow(-2px 0 rgba(79,214,136,.8));transform:translate(2px,0);}
+  84%{filter:drop-shadow(3px 0 rgba(255,60,60,.7));transform:translate(-2px,1px);}
+  87%{filter:none;transform:translate(0,0);}
+}
+.gs-fab-toggle .ti{animation:gs-fab-icon-glitch 3.5s linear infinite;}
+.gs-fab-stack.is-open .gs-fab-toggle .ti{animation:none;}
 
 @media(max-width:700px){.gs-fab-stack{right:16px;bottom:16px}.gs-fab{width:48px;height:48px;}}
 
