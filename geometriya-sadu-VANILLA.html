@@ -338,12 +338,13 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 /* Помаранчева форма-заявка (повноширинна) */
 .gs-cta-orange{background:#f4f3ef;color:#0a0b0a;position:relative;overflow:hidden;}
 .gs-cta-orange::before{display:none;}
-.gs-cta-orange .gs-cta-sketch{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(1400px,118%);max-width:none;opacity:0.5;mix-blend-mode:multiply;filter:invert(38%) sepia(40%) saturate(700%) hue-rotate(96deg) brightness(85%);pointer-events:none;z-index:0;user-select:none;}
+.gs-cta-orange .gs-cta-sketch{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0.38;mix-blend-mode:multiply;filter:invert(38%) sepia(40%) saturate(700%) hue-rotate(96deg) brightness(85%);pointer-events:none;z-index:0;user-select:none;border-radius:14px;}
 .gs-cta-orange .gs-cta-inner{max-width:920px;margin:0 auto;text-align:center;position:relative;z-index:1;}
 .gs-cta-orange .gs-cta-heading{font-family:var(--font-display);font-weight:800;font-size:clamp(34px,6vw,76px);line-height:1.0;letter-spacing:-0.025em;color:#0a0b0a;margin:0 0 56px;}
 .gs-cta-orange .gs-cta-sub{font-size:clamp(17px,2.1vw,24px);color:rgba(10,11,10,0.78);max-width:520px;margin:0 auto 44px;line-height:1.35;}
-.gs-cta-orange .gs-oframe{position:relative;max-width:720px;margin:0 auto;padding:40px 44px;border-radius:14px;background:rgba(255,255,255,0.55);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);box-shadow:0 24px 60px -30px rgba(0,0,0,0.25),inset 0 0 0 1px rgba(255,255,255,0.5);}
-.gs-cta-orange .gs-oframe-corner{position:absolute;width:28px;height:28px;border:2px solid #F28D1B;}
+.gs-cta-orange .gs-oframe{position:relative;max-width:720px;margin:0 auto;padding:40px 44px;border-radius:14px;background:rgba(255,255,255,0.55);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);box-shadow:0 24px 60px -30px rgba(0,0,0,0.25),inset 0 0 0 1px rgba(255,255,255,0.5);overflow:hidden;}
+.gs-cta-orange .gs-oframe-corner{position:absolute;width:28px;height:28px;border:2px solid #F28D1B;z-index:2;}
+.gs-cta-orange .gs-oform,.gs-cta-orange .gs-oform-note{position:relative;z-index:1;}
 .gs-cta-orange .gs-oframe-corner.tl{top:0;left:0;border-right:0;border-bottom:0;border-top-left-radius:8px;}
 .gs-cta-orange .gs-oframe-corner.tr{top:0;right:0;border-left:0;border-bottom:0;border-top-right-radius:8px;}
 .gs-cta-orange .gs-oframe-corner.bl{bottom:0;left:0;border-right:0;border-top:0;border-bottom-left-radius:8px;}
@@ -1051,12 +1052,12 @@ html,body{overflow-x:hidden;max-width:100%;}
 
 <!-- CTA -->
 <section class="gs-section gs-cta-section gs-cta-orange" id="cta">
-  <img src="images/cta-sketch.svg" class="gs-cta-sketch" alt="" aria-hidden="true">
   <div class="gs-container gs-cta-inner">
     <h2 class="gs-cta-heading">Поговорімо про<br><span class="gs-accent-italic">ваш сад</span></h2>
     <div id="cta-form-wrap">
       <p class="gs-cta-sub">Залишайте заявку і вже незабаром будете ним насолоджуватись</p>
       <div class="gs-oframe">
+        <img src="images/cta-sketch.svg" class="gs-cta-sketch" alt="" aria-hidden="true">
         <span class="gs-oframe-corner tl"></span>
         <span class="gs-oframe-corner tr"></span>
         <span class="gs-oframe-corner bl"></span>
@@ -1073,8 +1074,8 @@ html,body{overflow-x:hidden;max-width:100%;}
             </button>
           </div>
         </form>
+        <p class="gs-oform-note">Натискаючи кнопку, ви погоджуєтесь на обробку персональних даних.</p>
       </div>
-      <p class="gs-oform-note">Натискаючи кнопку, ви погоджуєтесь на обробку персональних даних.</p>
     </div>
     <div id="cta-success" style="display:none" class="gs-cta-success">
       <div class="gs-cta-check">✓</div>
@@ -2040,14 +2041,14 @@ function initCustomAnimations() {
     );
 
     // Фоновий скетч будинку — промальовка зверху вниз
-    const ctaSketch = document.querySelector('.gs-cta-orange .gs-cta-sketch');
+    const ctaSketch = document.querySelector('.gs-oframe .gs-cta-sketch');
     if (ctaSketch) {
-      gsap.set(ctaSketch, { opacity: 0.5, clipPath: 'inset(0 0 100% 0)' });
+      gsap.set(ctaSketch, { opacity: 0.38, clipPath: 'inset(0 0 100% 0)' });
       gsap.to(ctaSketch, {
         clipPath: 'inset(0 0 0% 0)',
         duration: 1.8,
         ease: 'power2.inOut',
-        scrollTrigger: { trigger: '.gs-cta-orange', start: 'top 78%', once: true }
+        scrollTrigger: { trigger: '.gs-oframe', start: 'top 80%', once: true }
       });
     }
 
