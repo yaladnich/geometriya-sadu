@@ -1719,6 +1719,12 @@ function initCustomAnimations() {
         chip.style.maxWidth = w + 'px';
         scrambleNode(node);
         setTimeout(() => { chip.style.minWidth = ''; chip.style.maxWidth = ''; }, 480);
+        const textEl = chip.querySelector('.gs-chip-text');
+        if (textEl) {
+          textEl.classList.remove('gs-icon-glitch');
+          void textEl.offsetWidth;
+          textEl.classList.add('gs-icon-glitch');
+        }
       });
     });
   })();
