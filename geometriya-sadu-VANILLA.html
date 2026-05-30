@@ -1067,7 +1067,7 @@ html,body{overflow-x:hidden;max-width:100%;}
           <div class="gs-oform-row">
             <button class="gs-osend" type="submit" id="cta-btn">
               <span>Відправити</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
             </button>
           </div>
         </form>
@@ -2019,6 +2019,24 @@ function initCustomAnimations() {
       }
     );
   });
+
+  // Оранжева форма-заявка: каскадна поява підзаголовка та полів
+  const orangeForm = document.getElementById('cta-form-wrap');
+  if (orangeForm) {
+    const items = orangeForm.querySelectorAll('.gs-cta-sub, .gs-oform label, .gs-oform-row, .gs-oform-note');
+    gsap.fromTo(items,
+      { opacity: 0, y: 24, filter: 'blur(8px)' },
+      {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        duration: 0.7,
+        ease: 'power3.out',
+        stagger: 0.09,
+        scrollTrigger: { trigger: orangeForm, start: 'top 82%', once: true }
+      }
+    );
+  }
 }
 
 document.addEventListener('keydown', event => {
