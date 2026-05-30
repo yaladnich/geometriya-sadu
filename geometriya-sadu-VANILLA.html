@@ -638,7 +638,7 @@ html,body{overflow-x:hidden;max-width:100%;}
     <h1 class="display-2 gs-hero-title">Ландшафтний дизайн<br>під ключ у Києві</h1>
     <p class="body-lg gs-hero-sub">Ландшафтні роботи під ключ — рулонний газон, автополив, озеленення, земляні роботи. Власна спецтехніка.</p>
     <div class="gs-hero-ctas">
-      <button class="gs-btn gs-btn-primary" onclick="openModal()">Замовити консультацію<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:#F28D1B"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
+      <button class="gs-btn gs-btn-primary" onclick="openModal()"><span>Замовити консультацію</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:#F28D1B"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
     </div>
     <div class="gs-hero-stats">
       <div class="gs-stat">
@@ -1132,7 +1132,7 @@ html,body{overflow-x:hidden;max-width:100%;}
       </label>
       <label>Коментар <textarea name="message" id="modal-message" rows="3" placeholder="Коротко про задачу"></textarea></label>
       <span class="gs-field-err" id="modal-submit-err"></span>
-      <button class="gs-btn gs-btn-primary" type="submit" id="modal-btn">Відправити<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:#F28D1B"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
+      <button class="gs-btn gs-btn-primary" type="submit" id="modal-btn"><span>Відправити</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:#F28D1B"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
     </form>
     <div id="modal-success" style="display:none" class="gs-cta-success">
       <div class="gs-cta-check">✓</div>
@@ -1695,6 +1695,7 @@ function initCustomAnimations() {
     document.querySelectorAll('.gs-btn-primary, .gs-cta-pill').forEach(btn => {
       const node = getTextNode(btn);
       const svg = btn.querySelector('svg');
+      const spanEl = btn.querySelector('span');
       if (!node) return;
       btn.addEventListener('mouseenter', () => {
         if (node._gs) return;
@@ -1704,6 +1705,11 @@ function initCustomAnimations() {
           svg.classList.remove('gs-icon-glitch');
           void svg.offsetWidth;
           svg.classList.add('gs-icon-glitch');
+        }
+        if (spanEl) {
+          spanEl.classList.remove('gs-icon-glitch');
+          void spanEl.offsetWidth;
+          spanEl.classList.add('gs-icon-glitch');
         }
         setTimeout(() => { btn.style.width = ''; }, 480);
       });
