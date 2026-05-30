@@ -175,7 +175,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-pcard.is-in::before{animation:gsBgEnter 1.2s forwards var(--reveal-delay);}
 .gs-pcard.is-in .gs-pcard-img,.gs-pcard.is-in .gs-pcard-ph{animation:gsBgZoomOut 1.7s forwards var(--reveal-delay);}
 @keyframes gsBgEnter{0%{transform:translateY(0) skewY(8deg);}100%{transform:translateY(110%) skewY(8deg);}}
-@keyframes gsBgZoomOut{0%{transform:scale(1.1);}100%{transform:scale(1);}}
+@keyframes gsBgZoomOut{0%{transform:scale(1.1);filter:blur(10px);}100%{transform:scale(1);filter:blur(0);}}
 .gs-pcard:hover .gs-pcard-img,.gs-pcard:hover .gs-pcard-ph{transition:transform 0.6s var(--ease-out);transform:scale(1.05);}
 /* затемнення знизу для читабельності */
 .gs-pcard-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.15) 40%,rgba(0,0,0,0.72) 75%,rgba(0,0,0,0.9) 100%);}
