@@ -1839,7 +1839,7 @@ function initCustomAnimations() {
     }
   });
 
-  document.querySelectorAll('.h-display-2').forEach(title => {
+  document.querySelectorAll('.h-display-2, .gs-cta-heading').forEach(title => {
     if (title.dataset.h2Split !== 'true') {
       const parts = title.innerHTML.split(/<br\s*\/?>\s*/i);
       title.innerHTML = parts.map(line => `<span class="h2-line">${line}</span>`).join('');
