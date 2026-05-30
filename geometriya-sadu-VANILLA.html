@@ -149,6 +149,14 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-marquee{background:var(--bg-1);border-block:1px solid var(--border);padding-block:28px;overflow:hidden;position:relative;}
 .gs-marquee-track{display:flex;gap:56px;width:max-content;animation:gs-slide 50s linear infinite;font-family:var(--font-display);font-weight:700;font-size:clamp(28px,3.5vw,44px);letter-spacing:-0.01em;white-space:nowrap;align-items:center;}
 .gs-marquee-spark{color:var(--accent);font-size:0.7em;display:inline-flex;align-items:center;}
+@keyframes gs-spark-glitch{
+  0%,80%,100%{filter:none;transform:scale(1);}
+  82%{filter:drop-shadow(2px 0 rgba(79,214,136,.95)) drop-shadow(-2px 0 rgba(255,60,60,.9));transform:scale(1.3) translateX(-2px);}
+  85%{filter:drop-shadow(-3px 0 rgba(255,60,60,.9));transform:scale(0.9) translateX(2px);}
+  88%{filter:drop-shadow(2px 0 rgba(79,214,136,.8));transform:scale(1.2);}
+  91%{filter:none;transform:scale(1);}
+}
+.gs-marquee-spark.gs-spark-glitchy{animation:gs-spark-glitch 3s linear infinite;}
 .gs-marquee-item{color:var(--fg-1);}
 @keyframes gs-slide{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
@@ -344,11 +352,26 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-footer-bottom{padding-top:24px;border-top:1px solid var(--border-soft);display:flex;justify-content:space-between;font-size:13px;color:var(--fg-3);flex-wrap:wrap;gap:12px;}
 
 .gs-fab-stack{position:fixed;right:24px;bottom:24px;z-index:60;display:flex;flex-direction:column;align-items:center;gap:12px;}
-.gs-fab{position:relative;overflow:hidden;isolation:isolate;width:54px;height:54px;border-radius:999px;display:grid;place-items:center;border:1px solid var(--border);background:var(--bg-2);cursor:pointer;color:var(--fg-1);transition:color 0.38s var(--ease-in-out),border-color 0.38s var(--ease-in-out);}
+.gs-fab{position:relative;overflow:hidden;isolation:isolate;width:54px;height:54px;border-radius:999px;display:grid;place-items:center;border:1px solid var(--border);background:var(--bg-2);cursor:pointer;color:var(--accent);transition:color 0.38s var(--ease-in-out),border-color 0.38s var(--ease-in-out);}
 .gs-fab .ti{font-size:22px;line-height:1;}
+.gs-fab svg{transition:filter 0.38s var(--ease-in-out);}
 .gs-fab:not(.gs-fab-primary)::before{content:'';position:absolute;bottom:0;left:-5%;width:110%;height:115%;background:var(--accent);border-radius:50% 50% 0 0/20px 20px 0 0;transform:translateY(110%);transition:transform 0.45s var(--ease-in-out);z-index:-1;}
 .gs-fab:not(.gs-fab-primary):hover::before{transform:translateY(0);}
 .gs-fab:not(.gs-fab-primary):hover{color:#fff;border-color:var(--accent);}
+@keyframes gs-fab-idle-glitch{
+  0%,87%,100%{filter:none;transform:translate(0,0);}
+  88%{filter:drop-shadow(2px 0 rgba(79,214,136,.9)) drop-shadow(-2px 0 rgba(255,60,60,.85));transform:translate(-2px,0);}
+  90%{filter:drop-shadow(-3px 0 rgba(79,214,136,.9)) drop-shadow(3px 0 rgba(255,60,60,.85));transform:translate(2px,0);}
+  92%{filter:drop-shadow(2px 0 rgba(255,60,60,.9));transform:translate(-1px,1px);}
+  94%{filter:none;transform:translate(0,0);}
+  96%{filter:drop-shadow(-2px 0 rgba(79,214,136,.8));transform:translate(1px,0);}
+  98%{filter:none;transform:translate(0,0);}
+}
+.gs-fab-actions .gs-fab svg{animation:gs-fab-idle-glitch 4s linear infinite;}
+.gs-fab-actions .gs-fab:nth-child(2) svg{animation-delay:1.3s;}
+.gs-fab-actions .gs-fab:nth-child(3) svg{animation-delay:2.7s;}
+.gs-fab-actions .gs-fab:nth-child(4) svg{animation-delay:0.6s;}
+.gs-fab-actions .gs-fab:hover svg{animation:none;}
 .gs-fab-primary{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:var(--shadow-cta);}
 .gs-fab-primary:hover{background:var(--accent-bright);border-color:var(--accent-bright);}
 
@@ -663,21 +686,21 @@ html,body{overflow-x:hidden;max-width:100%;}
 <!-- MARQUEE -->
 <section class="gs-marquee">
   <div class="gs-marquee-track" id="mqt">
-    <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Рулонний газон</span>
+    <span class="gs-marquee-spark gs-spark-glitchy">✦</span><span class="gs-marquee-item">Рулонний газон</span>
     <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Автополив Hunter · Rain Bird</span>
     <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Земляні роботи</span>
-    <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Озеленення</span>
+    <span class="gs-marquee-spark gs-spark-glitchy" style="animation-delay:1.1s">✦</span><span class="gs-marquee-item">Озеленення</span>
     <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Проєктування</span>
     <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Консервація автополиву</span>
-    <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Догляд за садом</span>
+    <span class="gs-marquee-spark gs-spark-glitchy" style="animation-delay:2.2s">✦</span><span class="gs-marquee-item">Догляд за садом</span>
     <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Корпоративним клієнтам</span>
-    <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Рулонний газон</span>
+    <span class="gs-marquee-spark gs-spark-glitchy" style="animation-delay:0.5s">✦</span><span class="gs-marquee-item">Рулонний газон</span>
     <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Автополив Hunter · Rain Bird</span>
     <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Земляні роботи</span>
-    <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Озеленення</span>
+    <span class="gs-marquee-spark gs-spark-glitchy" style="animation-delay:1.8s">✦</span><span class="gs-marquee-item">Озеленення</span>
     <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Проєктування</span>
     <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Консервація автополиву</span>
-    <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Догляд за садом</span>
+    <span class="gs-marquee-spark gs-spark-glitchy" style="animation-delay:2.8s">✦</span><span class="gs-marquee-item">Догляд за садом</span>
     <span class="gs-marquee-spark">✦</span><span class="gs-marquee-item">Корпоративним клієнтам</span>
   </div>
 </section>
@@ -1694,23 +1717,11 @@ function initCustomAnimations() {
 
     document.querySelectorAll('.gs-btn-primary, .gs-cta-pill').forEach(btn => {
       const node = getTextNode(btn);
-      const svg = btn.querySelector('svg');
-      const spanEl = btn.querySelector('span');
       if (!node) return;
       btn.addEventListener('mouseenter', () => {
         if (node._gs) return;
         btn.style.width = btn.offsetWidth + 'px';
         scrambleNode(node);
-        if (svg) {
-          svg.classList.remove('gs-icon-glitch');
-          void svg.offsetWidth;
-          svg.classList.add('gs-icon-glitch');
-        }
-        if (spanEl) {
-          spanEl.classList.remove('gs-icon-glitch');
-          void spanEl.offsetWidth;
-          spanEl.classList.add('gs-icon-glitch');
-        }
         setTimeout(() => { btn.style.width = ''; }, 480);
       });
     });
