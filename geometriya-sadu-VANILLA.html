@@ -178,26 +178,21 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 @keyframes gsBgZoomOut{0%{transform:scale(1.1);filter:blur(10px);}100%{transform:scale(1);filter:blur(0);}}
 .gs-pcard:hover .gs-pcard-img,.gs-pcard:hover .gs-pcard-ph{transition:transform 0.6s var(--ease-out);transform:scale(1.05);}
 /* затемнення знизу для читабельності */
-.gs-pcard-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.15) 40%,rgba(0,0,0,0.72) 75%,rgba(0,0,0,0.9) 100%);transition:background 0.5s var(--ease-out);}
-/* зелена шторка на ховер (стиль lev-development) */
-.gs-pcard:hover .gs-pcard-overlay{background:linear-gradient(to bottom,rgba(10,40,24,0.1) 0%,rgba(13,55,32,0.4) 45%,rgba(37,124,77,0.62) 78%,rgba(20,72,44,0.92) 100%);}
+.gs-pcard-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.15) 40%,rgba(0,0,0,0.72) 75%,rgba(0,0,0,0.9) 100%);}
 /* вертикальна категорія */
 .gs-pcard-cat{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;align-items:center;padding:0 12px;}
 .gs-pcard-cat span{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.5);}
 /* контент знизу */
-.gs-pcard-body{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:24px 22px 28px 40px;transition:transform 0.5s var(--ease-out);}
-.gs-pcard:hover .gs-pcard-body{transform:translateY(-6px);}
+.gs-pcard-body{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:24px 22px 28px 40px;}
 .gs-pcard-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:10px;}
 .gs-pcard-title{font-family:var(--font-display);font-weight:800;font-size:clamp(20px,2.2vw,28px);line-height:1.1;letter-spacing:-0.01em;color:#fff;margin:0 0 8px;}
 .gs-pcard-sub{font-size:13px;color:var(--accent-bright);line-height:1.4;margin:0;}
 /* поява заголовків знизу зі скосом (стиль lev-development block-title) */
-.gs-pcard-label,.gs-pcard-title{opacity:0;transform:translateY(120%) skewY(6deg);transform-origin:0 bottom;}
+.gs-pcard-label,.gs-pcard-title,.gs-pcard-sub{opacity:0;transform:translateY(120%) skewY(6deg);transform-origin:0 bottom;}
 .gs-pcard.is-in .gs-pcard-label{animation:gsTextUp 0.85s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:calc(var(--reveal-delay) + 0.5s);}
 .gs-pcard.is-in .gs-pcard-title{animation:gsTextUp 0.95s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:calc(var(--reveal-delay) + 0.62s);}
+.gs-pcard.is-in .gs-pcard-sub{animation:gsTextUp 0.85s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:calc(var(--reveal-delay) + 0.76s);}
 @keyframes gsTextUp{0%{opacity:0;transform:translateY(120%) skewY(6deg);filter:blur(8px);}100%{opacity:1;transform:translateY(0) skewY(0);filter:blur(0);}}
-/* опис прихований, виїжджає знизу на ховер (lev-development) */
-.gs-pcard-sub{opacity:0;max-height:0;transform:translateY(12px);transition:opacity 0.45s var(--ease-out),transform 0.45s var(--ease-out),max-height 0.45s var(--ease-out);overflow:hidden;}
-.gs-pcard:hover .gs-pcard-sub{opacity:1;max-height:80px;transform:translateY(0);}
 /* стрілка */
 .gs-pcard-arrow{position:absolute;top:20px;right:20px;z-index:2;width:36px;height:36px;border-radius:999px;display:grid;place-items:center;color:rgba(242,141,27,.78);transition:color var(--dur-base) var(--ease-out);}
 .gs-pcard-arrow .ti{font-size:17px;line-height:1;transition:transform 0.35s var(--ease-in-out);}
@@ -210,7 +205,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-pcard.is-soon .gs-pcard-soon{display:flex;}
 .gs-pcard-soon .badge{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.25);border-radius:999px;padding:4px 14px;}
 .gs-pcard-soon .ct{font-family:var(--font-display);font-size:clamp(20px,2.5vw,28px);font-weight:800;letter-spacing:-0.02em;color:#fff;}
-@media(prefers-reduced-motion:reduce){.gs-pcard::before{display:none;}.gs-pcard-img,.gs-pcard-ph,.gs-pcard-label,.gs-pcard-title,.gs-pcard-sub{transform:none;opacity:1;animation:none;}.gs-pcard-sub{max-height:none;}}
+@media(prefers-reduced-motion:reduce){.gs-pcard::before{display:none;}.gs-pcard-img,.gs-pcard-ph,.gs-pcard-label,.gs-pcard-title,.gs-pcard-sub{transform:none;opacity:1;animation:none;}}
 
 .gs-why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;}
 @media(max-width:1000px){.gs-why-grid{grid-template-columns:repeat(2,1fr);}}
