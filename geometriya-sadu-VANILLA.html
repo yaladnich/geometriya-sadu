@@ -343,7 +343,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-cta-orange .gs-cta-heading{font-family:var(--font-display);font-weight:800;font-size:clamp(34px,6vw,76px);line-height:1.0;letter-spacing:-0.025em;color:#0a0b0a;margin:0 0 56px;}
 .gs-cta-orange .gs-cta-sub{font-size:clamp(17px,2.1vw,24px);color:rgba(10,11,10,0.78);max-width:520px;margin:0 auto 44px;line-height:1.35;}
 .gs-cta-orange .gs-oframe{position:relative;max-width:720px;margin:0 auto;padding:40px 44px;border-radius:14px;background:rgba(255,255,255,0.55);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);box-shadow:0 24px 60px -30px rgba(0,0,0,0.25),inset 0 0 0 1px rgba(255,255,255,0.5);}
-.gs-cta-orange .gs-oframe-corner{position:absolute;width:28px;height:28px;border:2px solid rgba(10,11,10,0.55);}
+.gs-cta-orange .gs-oframe-corner{position:absolute;width:28px;height:28px;border:2px solid #F28D1B;}
 .gs-cta-orange .gs-oframe-corner.tl{top:0;left:0;border-right:0;border-bottom:0;border-top-left-radius:8px;}
 .gs-cta-orange .gs-oframe-corner.tr{top:0;right:0;border-left:0;border-bottom:0;border-top-right-radius:8px;}
 .gs-cta-orange .gs-oframe-corner.bl{bottom:0;left:0;border-right:0;border-top:0;border-bottom-left-radius:8px;}
@@ -358,8 +358,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-cta-orange .gs-oform-row{display:flex;align-items:center;justify-content:flex-end;margin-top:6px;}
 .gs-cta-orange .gs-osend{display:inline-flex;align-items:center;gap:9px;background:transparent;border:0;cursor:pointer;color:#0a0b0a;font-family:var(--font-body);font-weight:700;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;padding:6px 0;transition:gap var(--dur-base) var(--ease-out);}
 .gs-cta-orange .gs-osend:hover{gap:14px;}
-.gs-cta-orange .gs-osend svg{transition:transform 0.35s var(--ease-in-out);}
-.gs-cta-orange .gs-osend:hover svg{transform:rotate(180deg);}
+.gs-cta-orange .gs-osend svg{color:#F28D1B;transition:transform 0.35s var(--ease-in-out),color 0.3s var(--ease-out);}
+.gs-cta-orange .gs-osend:hover svg{transform:rotate(180deg);color:var(--accent);}
 .gs-cta-orange .gs-field-err{color:#7a0016;font-size:12px;}
 .gs-cta-orange .gs-oform-note{font-size:12px;color:rgba(10,11,10,0.55);margin:14px 0 0;text-align:center;}
 .gs-cta-orange .gs-cta-success{color:#0a0b0a;}
@@ -1069,7 +1069,7 @@ html,body{overflow-x:hidden;max-width:100%;}
           <div class="gs-oform-row">
             <button class="gs-osend" type="submit" id="cta-btn">
               <span>Відправити</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
             </button>
           </div>
         </form>
