@@ -177,7 +177,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 @keyframes gsBgEnter{0%{transform:translateY(0) skewY(8deg);}100%{transform:translateY(110%) skewY(8deg);}}
 @keyframes gsBgZoomOut{0%{transform:scale(1.1);filter:blur(10px);}100%{transform:scale(1);filter:blur(0);}}
 .gs-pcard-img,.gs-pcard-ph{transition:transform 1.2s cubic-bezier(0.22,1,0.36,1);}
-.gs-pcard:hover .gs-pcard-img,.gs-pcard:hover .gs-pcard-ph{transform:scale(1.08);}
+.gs-pcard.anim-done .gs-pcard-img,.gs-pcard.anim-done .gs-pcard-ph{transform:scale(1);}
+.gs-pcard.anim-done:hover .gs-pcard-img,.gs-pcard.anim-done:hover .gs-pcard-ph{transform:scale(1.08);}
 /* затемнення знизу для читабельності */
 .gs-pcard-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.15) 40%,rgba(0,0,0,0.72) 75%,rgba(0,0,0,0.9) 100%);}
 /* вертикальна категорія */
@@ -1893,7 +1894,7 @@ function initCustomAnimations() {
         if (img) {
           img.addEventListener('animationend', () => {
             img.style.animation = 'none';
-            img.style.transform = 'scale(1)';
+            card.classList.add('anim-done');
           }, { once: true });
         }
       });
