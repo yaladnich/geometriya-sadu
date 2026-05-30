@@ -2040,7 +2040,7 @@ function initCustomAnimations() {
       }
     );
 
-    // Фоновий скетч будинку — плавна поява + паралакс
+    // Фоновий скетч будинку — плавна поява
     const ctaSketch = document.querySelector('.gs-cta-orange .gs-cta-sketch');
     if (ctaSketch) {
       gsap.fromTo(ctaSketch,
@@ -2050,14 +2050,6 @@ function initCustomAnimations() {
           duration: 1.1,
           ease: 'power2.out',
           scrollTrigger: { trigger: '.gs-cta-orange', start: 'top 78%', once: true }
-        }
-      );
-      gsap.fromTo(ctaSketch,
-        { yPercent: 14 },
-        {
-          yPercent: -14,
-          ease: 'none',
-          scrollTrigger: { trigger: '.gs-cta-orange', start: 'top bottom', end: 'bottom top', scrub: true }
         }
       );
     }
