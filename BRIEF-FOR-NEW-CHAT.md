@@ -63,9 +63,9 @@ https://yaladnich.github.io/geometriya-sadu/
 - Каскад по колонках: `--reveal-delay: 0.1 + col*0.18s`
 
 #### Hover на картках
-- Фото: `transform:scale(1.08)`, `transition:1.2s cubic-bezier(0.22,1,0.36,1)` — плавний повільний zoom
+- Фото: `transform:scale(1.08)`, `transition:1.2s cubic-bezier(0.22,1,0.36,1)` — працює одразу, без очікування анімації входу
 - Стрілка: зеленіє + glitch (`gs-icon-glitch`) + поворот 180°
-- Більше нічого (зелена шторка/reveal опису — відхилено)
+- **ВАЖЛИВО**: анімація входу фото (`gsBgZoomOut`) видалена — лишилась тільки шторка `::before` (`gsBgEnter`). Фото стартує з `scale(1)` одразу, hover дає `scale(1.08)`. Так реалізовано на lev-development.com.ua.
 
 #### Фото файли (`images/`)
 | Картка | Файл |
