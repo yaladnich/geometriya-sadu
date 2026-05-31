@@ -1827,7 +1827,7 @@ function initCustomAnimations() {
   gsap.set(heroStatLabels, { y: 8, opacity: 0 });
   document.querySelectorAll('.gs-hero-title .tl-i').forEach(line => splitWords(line));
   const h1Chars = document.querySelectorAll('.gs-hero-title .w');
-  gsap.set(h1Chars, { yPercent: 120, skewY: 6, opacity: 0, filter: 'blur(8px)', transformOrigin: '0 bottom' });
+  gsap.set(h1Chars, { yPercent: 120, skewY: 14, opacity: 0, filter: 'blur(8px)', transformOrigin: '0 bottom' });
   gsap.set('.gs-hero-bg', { scale: 1.08 });
 
   requestAnimationFrame(() => {
@@ -1866,7 +1866,7 @@ function initCustomAnimations() {
     title.querySelectorAll('.h2-line').forEach(line => splitWords(line));
 
     const words = title.querySelectorAll('.w');
-    gsap.set(words, { yPercent: 120, skewY: 6, opacity: 0, filter: 'blur(8px)', transformOrigin: '0 bottom' });
+    gsap.set(words, { yPercent: 120, skewY: 14, opacity: 0, filter: 'blur(8px)', transformOrigin: '0 bottom' });
 
     const tl = gsap.timeline({
       scrollTrigger: {
