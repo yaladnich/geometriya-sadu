@@ -75,6 +75,15 @@ https://yaladnich.github.io/geometriya-sadu/
   - Таби `.gs-chip`: `chip.style.minWidth/maxWidth = w + 'px'` → після 480ms скидати
   - Nav посилання: текст знаходиться всередині `<span>`, тому `getTextNode` шукає через `btn.querySelector('span')`
 
+### Відомі фікси — НЕ ВИДАЛЯТИ
+
+1. **Обрізання букви "у" (та інших літер з хвостиком) в H1/H2 анімації**
+   - Причина: `.w-wrap` має `overflow:hidden` для slide-up анімації, але це обрізає descender-и (у, р, д, щ тощо)
+   - Рішення: `padding-bottom:0.15em; margin-bottom:-0.15em` на `.w-wrap` — дає місце для хвостика, компенсує відступ
+   - **НЕ ПРИБИРАТИ** ці значення навіть якщо здається що вони зайві
+
+---
+
 ### Анімація заголовків H1 / H2
 - JS `splitWords()` розбиває текст на `.w-wrap` (overflow:hidden) → `.w`
 - **Стартовий стан**: `yPercent:120, skewY:14, opacity:0, filter:blur(8px), transformOrigin:'0 bottom'`
