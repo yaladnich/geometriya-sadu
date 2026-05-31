@@ -1827,14 +1827,14 @@ function initCustomAnimations() {
   gsap.set(heroStatLabels, { y: 8, opacity: 0 });
   document.querySelectorAll('.gs-hero-title .tl-i').forEach(line => splitWords(line));
   const h1Chars = document.querySelectorAll('.gs-hero-title .w');
-  gsap.set(h1Chars, { yPercent: 120, skewY: 6, opacity: 0, filter: 'blur(8px)', transformOrigin: '0 bottom' });
+  gsap.set(h1Chars, { yPercent: 110, rotateY: 45, skewY: 4, opacity: 0, filter: 'blur(6px)', transformOrigin: '50% 100%' });
   gsap.set('.gs-hero-bg', { scale: 1.08 });
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       gsap.timeline({ delay: 0.15 })
         .to('.gs-hero-bg', { scale: 1, duration: 1.4 }, 0)
-        .to(h1Chars, { yPercent: 0, skewY: 0, opacity: 1, filter: 'blur(0px)', duration: 0.85, stagger: 0.1, ease: 'power3.out' }, 0)
+        .to(h1Chars, { yPercent: 0, rotateY: 0, skewY: 0, opacity: 1, filter: 'blur(0px)', duration: 0.85, stagger: 0.1, ease: 'power3.out' }, 0)
         .to('.gs-hero-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.58)
         .to('.gs-hero-sub', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.72)
         .to('.gs-hero-ctas', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.86)
