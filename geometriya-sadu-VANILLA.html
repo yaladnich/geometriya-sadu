@@ -114,18 +114,21 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-btn-secondary{background:transparent;color:var(--fg-1);border:1px solid var(--border);}
 .gs-btn-secondary:hover{background:rgba(255,255,255,0.04);border-color:var(--border-strong);}
 
-.gs-header{position:fixed;top:16px;left:24px;right:24px;z-index:50;transition:transform var(--dur-base) var(--ease-out);animation:gs-header-in 0.5s linear both;}
+.gs-header{position:fixed;top:0;left:0;right:0;z-index:50;transition:transform var(--dur-base) var(--ease-out);animation:gs-header-in 0.5s linear both;}
 @keyframes gs-header-in{from{opacity:0;}to{opacity:1;}}
-.gs-header-inner{position:relative;overflow:hidden;width:var(--container-w);margin-inline:auto;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 30px;border-radius:var(--r-pill);background:transparent;}
-.gs-header-inner::after{content:'';position:absolute;inset:0;z-index:-2;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity 0.4s var(--ease-out);background:rgba(10,11,10,0.85);border:1px solid var(--border-strong);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+.gs-header-inner{position:relative;width:100%;margin:0;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px var(--container-px);background:transparent;}
+.gs-header-inner::after{content:'';position:absolute;inset:0;z-index:-2;pointer-events:none;opacity:0;transition:opacity 0.4s var(--ease-out);background:rgba(10,11,10,0.85);border-bottom:1px solid var(--border-strong);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
 .gs-header-scrolled .gs-header-inner::after{opacity:1;}
 .gs-brand{display:flex;align-items:center;gap:12px;padding-left:14px;}
 .gs-brand img,.gs-brand svg{display:block;width:auto;height:44px;}
 .gs-nav{display:flex;align-items:center;flex:1;justify-content:space-between;gap:24px;margin:0 40px;font-size:1rem;text-transform:uppercase;letter-spacing:0.08em;color:#fff;font-weight:600;}
 .gs-nav a{display:inline-flex;align-items:center;gap:8px;transition:color var(--dur-base) var(--ease-out);}
 .gs-nav a:hover{color:var(--accent-bright);}
-.gs-nav-plus{display:inline-block;color:#F28D1B;font-weight:600;line-height:1;transition:color var(--dur-base) var(--ease-out);}
+.gs-nav-plus{display:inline-grid;place-items:center;color:#F28D1B;line-height:0;transition:color var(--dur-base) var(--ease-out);}
+.gs-nav-plus svg{width:22px;height:22px;display:block;}
+.gs-nav-plus svg line{transition:transform 0.35s var(--ease-in-out);transform-box:fill-box;transform-origin:center;}
 .gs-nav a:hover .gs-nav-plus{color:var(--accent-bright);animation:gs-close-glitch 0.44s linear;}
+.gs-nav a:hover .gs-nav-plus svg line:last-child{transform:rotate(90deg);}
 .gs-cta-pill{display:inline-flex;align-items:center;gap:6px;background:transparent;color:#fff;border:0;cursor:pointer;padding:0;font-weight:600;font-size:1rem;text-transform:uppercase;letter-spacing:0.08em;font-family:var(--font-body);transition:color var(--dur-base) var(--ease-out);box-sizing:border-box;}
 .gs-cta-pill:hover{color:var(--accent-bright);}
 @media(max-width:900px){.gs-nav{display:none;}}
@@ -540,8 +543,8 @@ html.lenis{height:auto;}
 
 /* Header */
 @media(max-width:600px){
-  .gs-header{top:10px;left:12px;right:12px;}
-  .gs-header-inner{padding:8px 16px;}
+  .gs-header{top:0;left:0;right:0;}
+  .gs-header-inner{padding:10px var(--container-px);}
   .gs-brand img{height:34px;}
 }
 
@@ -668,13 +671,13 @@ html,body{overflow-x:hidden;max-width:100%;}
       <img src="./images/logo-geom.webp?v=6" height="44" alt="Геометрія саду">
     </a>
     <nav class="gs-nav">
-      <a href="#services"><span>Послуги</span><i class="gs-nav-plus">+</i></a>
-      <a href="#why"><span>Переваги</span><i class="gs-nav-plus">+</i></a>
-      <a href="#portfolio"><span>Портфоліо</span><i class="gs-nav-plus">+</i></a>
-      <a href="#steps"><span>Етапи</span><i class="gs-nav-plus">+</i></a>
-      <a href="#pricing"><span>Ціни</span><i class="gs-nav-plus">+</i></a>
-      <a href="#faq"><span>Поширені питання</span><i class="gs-nav-plus">+</i></a>
-      <a href="#cta"><span>Контакти</span><i class="gs-nav-plus">+</i></a>
+      <a href="#services"><span>Послуги</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
+      <a href="#why"><span>Переваги</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
+      <a href="#portfolio"><span>Портфоліо</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
+      <a href="#steps"><span>Етапи</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
+      <a href="#pricing"><span>Ціни</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
+      <a href="#faq"><span>Поширені питання</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
+      <a href="#cta"><span>Контакти</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
     </nav>
     <a class="gs-cta-pill gs-cta-pill-desktop" href="tel:+380683782003">
       <span>Зателефонувати</span>
