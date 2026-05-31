@@ -2205,12 +2205,12 @@ updateHeaderAndProgress();
   if (curtain) {
     gsap.to(curtain, {
       yPercent: 115,
+      duration: 1.4,
       ease: 'power2.inOut',
       scrollTrigger: {
         trigger: section,
-        start: 'top 85%',
-        end: 'top 15%',
-        scrub: 1
+        start: 'top 80%',
+        once: true
       }
     });
   }
