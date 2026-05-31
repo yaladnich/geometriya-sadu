@@ -1760,7 +1760,7 @@ function initCustomAnimations() {
       return Array.from(root.childNodes).find(n => n.nodeType === 3 && n.nodeValue.trim());
     }
 
-    document.querySelectorAll('.gs-btn-primary, .gs-cta-pill, .gs-osend, .gs-nav a').forEach(btn => {
+    document.querySelectorAll('.gs-btn-primary, .gs-cta-pill, .gs-osend').forEach(btn => {
       const node = getTextNode(btn);
       if (!node) return;
       btn.addEventListener('mouseenter', () => {
@@ -1768,6 +1768,15 @@ function initCustomAnimations() {
         btn.style.width = btn.offsetWidth + 'px';
         scrambleNode(node);
         setTimeout(() => { btn.style.width = ''; }, 480);
+      });
+    });
+    document.querySelectorAll('.gs-nav a').forEach(btn => {
+      const span = btn.querySelector('span');
+      const node = span ? getTextNode(span) : getTextNode(btn);
+      if (!node) return;
+      btn.addEventListener('mouseenter', () => {
+        if (node._gs) return;
+        scrambleNode(node);
       });
     });
 
