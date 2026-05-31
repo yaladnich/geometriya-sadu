@@ -121,9 +121,11 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-header-scrolled .gs-header-inner::after{opacity:1;}
 .gs-brand{display:flex;align-items:center;gap:12px;padding-left:14px;}
 .gs-brand img,.gs-brand svg{display:block;width:auto;height:44px;}
-.gs-nav{display:flex;align-items:center;gap:28px;font-size:1rem;text-transform:uppercase;letter-spacing:0.08em;color:#fff;font-weight:600;}
-.gs-nav a{display:inline-flex;align-items:center;gap:4px;transition:color var(--dur-base) var(--ease-out);}
+.gs-nav{display:flex;align-items:center;flex:1;justify-content:space-between;gap:24px;margin:0 40px;font-size:1rem;text-transform:uppercase;letter-spacing:0.08em;color:#fff;font-weight:600;}
+.gs-nav a{display:inline-flex;align-items:center;gap:8px;transition:color var(--dur-base) var(--ease-out);}
 .gs-nav a:hover{color:var(--accent-bright);}
+.gs-nav-plus{display:inline-block;color:#F28D1B;font-weight:600;line-height:1;transition:color var(--dur-base) var(--ease-out);}
+.gs-nav a:hover .gs-nav-plus{color:var(--accent-bright);animation:gs-close-glitch 0.44s linear;}
 .gs-cta-pill{display:inline-flex;align-items:center;gap:6px;background:transparent;color:#fff;border:0;cursor:pointer;padding:0;font-weight:600;font-size:1rem;text-transform:uppercase;letter-spacing:0.08em;font-family:var(--font-body);transition:color var(--dur-base) var(--ease-out);box-sizing:border-box;}
 .gs-cta-pill:hover{color:var(--accent-bright);}
 @media(max-width:900px){.gs-nav{display:none;}}
@@ -666,12 +668,13 @@ html,body{overflow-x:hidden;max-width:100%;}
       <img src="./images/logo-geom.webp?v=6" height="44" alt="Геометрія саду">
     </a>
     <nav class="gs-nav">
-      <a href="#services">Послуги</a>
-      <a href="#why">Переваги</a>
-      <a href="#portfolio">Портфоліо</a>
-      <a href="#steps">Етапи</a>
-      <a href="#pricing">Ціни</a>
-      <a href="#faq">FAQ</a>
+      <a href="#services"><span>Послуги</span><i class="gs-nav-plus">+</i></a>
+      <a href="#why"><span>Переваги</span><i class="gs-nav-plus">+</i></a>
+      <a href="#portfolio"><span>Портфоліо</span><i class="gs-nav-plus">+</i></a>
+      <a href="#steps"><span>Етапи</span><i class="gs-nav-plus">+</i></a>
+      <a href="#pricing"><span>Ціни</span><i class="gs-nav-plus">+</i></a>
+      <a href="#faq"><span>Поширені питання</span><i class="gs-nav-plus">+</i></a>
+      <a href="#cta"><span>Контакти</span><i class="gs-nav-plus">+</i></a>
     </nav>
     <a class="gs-cta-pill gs-cta-pill-desktop" href="tel:+380683782003">
       <span>Зателефонувати</span>
