@@ -1780,11 +1780,15 @@ function initCustomAnimations() {
     });
     document.querySelectorAll('.gs-nav a').forEach(btn => {
       const span = btn.querySelector('span');
-      const node = span ? getTextNode(span) : getTextNode(btn);
+      const widthTarget = span || btn;
+      const node = getTextNode(widthTarget);
       if (!node) return;
       btn.addEventListener('mouseenter', () => {
         if (node._gs) return;
+        widthTarget.style.display = 'inline-block';
+        widthTarget.style.width = widthTarget.offsetWidth + 'px';
         scrambleNode(node);
+        setTimeout(() => { widthTarget.style.width = ''; widthTarget.style.display = ''; }, 480);
       });
     });
 
