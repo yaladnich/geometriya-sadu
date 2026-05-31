@@ -52,13 +52,27 @@ https://yaladnich.github.io/geometriya-sadu/
 
 ---
 
-## Поточний стан сайту (актуально на PR #201)
+## Поточний стан сайту (актуально на PR #233+)
+
+### Хедер (актуальний стан)
+- `position:fixed; top:12px; left:0; right:0; z-index:50; height:81px`
+- Завжди скляна пілюля: `.gs-header-inner` — `border-radius:var(--r-pill); background:rgba(10,11,10,0.55); border:1px solid var(--border); backdrop-filter:blur(16px); overflow:hidden`
+- При скролі темнішає: `background:rgba(10,11,10,0.85); border-color:var(--border-strong); padding:0 1%`
+- **НЕ ЗМІНЮВАТИ** форму пілюлі, не додавати full-width фон, не змінювати `top`
 
 ### Типографіка (глобально)
-- **Навбар** `.gs-nav`: `13px / 700 / uppercase / 0.08em / color:#fff`, hover `rgba(255,255,255,0.7)`
-- **Кнопка в навбарі** `.gs-cta-pill`: `13px / 700 / uppercase / 0.08em / color:#fff`
+- **Навбар** `.gs-nav`: `0.875rem / 1.125rem / 700 / uppercase / color:#fff`, hover `var(--accent-bright)`
+- **Кнопка в навбарі** `.gs-cta-pill`: `0.875rem / 700 / uppercase / color:#fff`
 - **Кнопки** `.gs-btn`: `13px / 700 / uppercase / 0.08em`
 - Бургер: без рамки, лінії `#F28D1B`
+
+### Scramble ефект при hover (ВАЖЛИВО)
+- Функція `scrambleNode(node)` — глітч-анімація тексту при наведенні
+- Застосовується до: `.gs-btn-primary`, `.gs-cta-pill`, `.gs-osend`, `.gs-nav a`, `.gs-chip`
+- **ОБОВ'ЯЗКОВО фіксувати ширину елемента перед scramble**, інакше текст "розширюється" під час анімації:
+  - Кнопки: `btn.style.width = btn.offsetWidth + 'px'` → після 480ms скидати
+  - Таби `.gs-chip`: `chip.style.minWidth/maxWidth = w + 'px'` → після 480ms скидати
+  - Nav посилання: текст знаходиться всередині `<span>`, тому `getTextNode` шукає через `btn.querySelector('span')`
 
 ### Анімація заголовків H1 / H2
 - JS `splitWords()` розбиває текст на `.w-wrap` (overflow:hidden) → `.w`
