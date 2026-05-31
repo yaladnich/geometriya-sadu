@@ -18,7 +18,7 @@
   --border: rgba(255,255,255,0.10); --border-strong: rgba(255,255,255,0.18); --border-soft: rgba(255,255,255,0.06);
   --error: #FF5C5C; --warn: #F2B95A; --success: var(--accent);
   --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:24px;--space-6:32px;--space-7:48px;--space-8:64px;--space-9:96px;--space-10:128px;--space-11:192px;
-  --section-y: clamp(80px,12vw,192px); --container-max:1760px; --container-px:clamp(20px,4vw,48px);
+  --section-y: clamp(80px,12vw,192px); --container-w:92vw; --container-px:calc((100vw - var(--container-w)) / 2);
   --r-xs:4px;--r-sm:8px;--r-md:16px;--r-lg:24px;--r-xl:32px;--r-pill:999px;
   --shadow-card:0 1px 0 rgba(255,255,255,0.04) inset,0 0 0 1px rgba(255,255,255,0.06);
   --shadow-card-hover:0 0 0 1px rgba(255,255,255,0.18),0 12px 40px -12px rgba(0,0,0,0.6);
@@ -68,7 +68,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .muted{color:var(--fg-2);} .muted-2{color:var(--fg-3);}
 .inline-thumb{display:inline-block;width:0.9em;aspect-ratio:16/10;width:1.4em;height:1em;vertical-align:middle;margin-inline:0.15em;border-radius:0.18em;background-size:cover;background-position:center;transform:translateY(-0.08em);}
 
-.gs-container{max-width:var(--container-max);margin-inline:auto;padding-inline:var(--container-px);}
+.gs-container{width:var(--container-w);margin-inline:auto;padding-inline:0;}
 .gs-section{padding-block:var(--section-y);position:relative;}
 .gs-section-alt{background:var(--bg-2);}
 /* Ледь помітна декоративна сітка + м'який glow на темних секціях */
@@ -100,7 +100,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-section-orange .gs-why-desc{color:rgba(255,255,255,0.82);}
 .gs-section-head{margin-bottom:clamp(40px,6vw,80px);}
 .gs-section-head .eyebrow{margin-bottom:16px;}
-.gs-accent-italic{color:#257D4D;font-style:normal;font-weight:800;}
+.gs-accent-italic{color:#257D4D;font-style:normal;font-weight:inherit;}
 .h-display-2{font-family:var(--font-display);font-weight:400;font-size:var(--t-display-2);line-height:1.05;letter-spacing:-0.03em;word-break:keep-all;overflow-wrap:normal;hyphens:none;margin:0;}
 .h-display-1{font-family:var(--font-display);font-weight:400;font-size:var(--t-display-1);line-height:0.95;letter-spacing:-0.03em;text-wrap:balance;margin:0;}
 .gs-accent{color:var(--accent);} .gs-fg3{color:var(--fg-3);}
