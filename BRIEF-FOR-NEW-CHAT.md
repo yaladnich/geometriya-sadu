@@ -49,22 +49,32 @@ https://yaladnich.github.io/geometriya-sadu/
 
 ---
 
-## Поточний стан сайту (актуально на PR #188)
+## Поточний стан сайту (актуально на PR #201)
 
 ### Типографіка (глобально)
-- **Навбар** `.gs-nav`: `13px / 700 / uppercase / 0.08em / color:#fff`
+- **Навбар** `.gs-nav`: `13px / 700 / uppercase / 0.08em / color:#fff`, hover `rgba(255,255,255,0.7)`
 - **Кнопка в навбарі** `.gs-cta-pill`: `13px / 700 / uppercase / 0.08em / color:#fff`
 - **Кнопки** `.gs-btn`: `13px / 700 / uppercase / 0.08em`
 - Бургер: без рамки, лінії `#F28D1B`
+
+### Анімація заголовків H1 / H2
+- JS `splitWords()` розбиває текст на `.w-wrap` (overflow:hidden) → `.w`
+- **Стартовий стан**: `yPercent:120, skewY:14, opacity:0, filter:blur(8px), transformOrigin:'0 bottom'`
+- **H1** (хіро): `duration:0.85s, stagger:0.1, ease:power3.out` — запускається при завантаженні
+- **H2**: `scrub:1, start:'top 88%', end:'top 45%'` — прив'язано до скролу
+- CSS: `.w-wrap{overflow:hidden}` `.w{transform-origin:0 bottom}`
 
 ### #hero
 - Фон: `images/Heroback3.webp` (вечірня сцена з туями/самшитом)
 - Кастомний курсор `#gs-dot` — помаранчева куля, `body{cursor:none}`
   - На `.gs-cta-orange` → **білий**
-- Scramble + word-reveal анімація заголовків
 
 ### #why
-- Фон: `images/backwhy.webp` з паралаксом GSAP (`yPercent:20`)
+- Фон: `images/backwhy3.webp` з паралаксом GSAP (`yPercent:20, scrub:1.5`)
+- **Шторка `.gs-why-curtain`**: темна (`#0a0b0a`), `skewY(-8deg)`, `transform-origin:0 100%`
+  - GSAP: `yPercent:-115`, `duration:1.4s`, `ease:power2.inOut`, `once:true`
+  - Шторка іде вгору по косій; не реверсується при скролі назад
+  - Тригер: `start:'top 80%'`
 
 ### #services — Картки послуг (`.gs-pcard`)
 - Вертикальні photo-картки, `aspect-ratio:3/4`, сітка `repeat(3,1fr)`, `column-gap:35px; row-gap:56px`
@@ -92,7 +102,7 @@ https://yaladnich.github.io/geometriya-sadu/
 | Консервація автополиву | `Обслуговування автополиву.webp` |
 | Корпоративним клієнтам | `Корпоративним клієнтам.webp` |
 
-### #cta — Форма заявки (актуальний стан після PR #188)
+### #cta — Форма заявки (актуальний стан після PR #201)
 - Секція: клас `.gs-cta-orange`, фон `#0c160e` + **меш-градієнт анімований**
   - `background-image`: 5 radial-gradient блобів (помаранчевий + зелений), `background-size:150-160%`
   - Анімація `gs-mesh-flow` 22s — плавне переливання кольорів через `background-position`
