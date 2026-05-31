@@ -38,9 +38,9 @@ https://yaladnich.github.io/geometriya-sadu/
 ## Git workflow (ВАЖЛИВО)
 Репозиторій: **`github.com/yaladnich/geometriya-sadu`** (owner=`yaladnich`, repo=`geometriya-sadu`).
 Прямий пуш у `main` заблоковано — працюємо через PR:
-1. Робоча гілка: `claude/beautiful-cannon-AWQJW`
+1. Робоча гілка: `claude/cool-cray-OVT0T`
 2. **Перед кожною правкою**: `git fetch origin main && git reset --hard origin/main` (бо squash-merge переписує історію — інакше будуть конфлікти)
-3. Внести правку → `git commit` → `git push -f origin claude/beautiful-cannon-AWQJW`
+3. Внести правку → `git commit` → `git push -f origin claude/cool-cray-OVT0T`
 4. PR через MCP (`mcp__github__create_pull_request`, base=main) → squash merge (`mcp__github__merge_pull_request`)
 - Claude GitHub App встановлено на репо (write-доступ). MCP **не може** створювати гілки (403) — гілку створювати через `git push`.
 
@@ -61,9 +61,16 @@ https://yaladnich.github.io/geometriya-sadu/
 - **НЕ ЗМІНЮВАТИ** форму пілюлі, не додавати full-width фон, не змінювати `top`
 - **Мобільний** `@media(max-width:600px)`: `height:56px; padding:0 18px` — фіксована висота пілюлі
 
+### Навбар (актуальний стан)
+- Пункти: **Послуги · Переваги · Портфоліо · Етапи · Ціни · Поширені питання · Контакти** (`#cta`)
+- Кожен пункт — `<a><span>текст</span><i class="gs-nav-plus">+ SVG</i></a>`
+- Іконка `.gs-nav-plus` — «+» (помаранч. `#F28D1B`); на hover лінія повертається на 90° (стає «×») + глітч `gs-close-glitch`, колір → `var(--accent-bright)`
+- Scramble навішений і на `.gs-nav a` (через внутрішній `<span>`)
+
 ### Типографіка (глобально)
-- **Навбар** `.gs-nav`: `0.875rem / 1.125rem / 700 / uppercase / color:#fff`, hover `var(--accent-bright)`
-- **Кнопка в навбарі** `.gs-cta-pill`: `0.875rem / 700 / uppercase / color:#fff`
+- **Навбар** `.gs-nav`: `0.875rem / 1.125rem / 600 / uppercase / color:#fff`, hover `var(--accent-bright)`
+- **Кнопка в навбарі** `.gs-cta-pill`: `0.875rem / 600 / uppercase / color:#fff`
+- **Заголовки** display/h1/h2: вага **400 (regular)**, збільшені розміри (display-1 до 160px, h1 до 96px), щільний letter-spacing (`-0.03em` / `-0.025em` / `-0.02em`)
 - **Кнопки** `.gs-btn`: `13px / 700 / uppercase / 0.08em`
 - Бургер: без рамки, лінії `#F28D1B`
 
@@ -129,20 +136,14 @@ https://yaladnich.github.io/geometriya-sadu/
 | Консервація автополиву | `Обслуговування автополиву.webp` |
 | Корпоративним клієнтам | `Корпоративним клієнтам.webp` |
 
-### #cta — Форма заявки (актуальний стан після PR #201)
-- Секція: клас `.gs-cta-orange`, фон `#0c160e` + **меш-градієнт анімований**
-  - `background-image`: 5 radial-gradient блобів (помаранчевий + зелений), `background-size:150-160%`
-  - Анімація `gs-mesh-flow` 22s — плавне переливання кольорів через `background-position`
-  - Шум `::before`: inline SVG fractalNoise, `opacity:0.30`, `mix-blend-mode:overlay`
-  - Скетч SVG **прибраний** (`display:none`)
+### #cta — Форма заявки (актуальний стан на гілці `claude/cool-cray-OVT0T`)
+- Секція: клас `.gs-cta-orange`, фон **просто `#0c160e`** (однотонний)
+  - ⚠️ **Меш-градієнт анімований ВИДАЛЕНО** (`::after` з 5 radial-gradient + `gs-mesh-flow` 22s) — прибраний
+  - ⚠️ **Шум `::before` (SVG fractalNoise) ВИДАЛЕНО**
+  - Скетч SVG лишається прибраним (`display:none`)
 - Курсор `#gs-dot` → **білий** на `.gs-cta-orange`
-- Форма-панель `.gs-oframe`:
-  - `background: rgba(255,255,255,0.06)`, `border: 1px solid rgba(255,255,255,0.12)`
-  - `backdrop-filter: blur(16px)`, `border-radius: 18px`
-  - `box-shadow: 0 24px 60px -30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.10)`
-- Кутові дужки `.gs-oframe-corner`:
-  - Колір **білий** `#fff`, радіус **18px** (як у форми)
-  - Анімація **ззовні всередину** (від кутів до форми)
+- Форма-панель `.gs-oframe`: **прозора, без рамки** — `background:transparent; border:0; backdrop-filter:none; box-shadow:none` (скляну панель прибрано)
+- ⚠️ **Кутові дужки `.gs-oframe-corner` ВИДАЛЕНО** — і HTML-спани, і GSAP-анімацію їх появи
 - Поля форми: `color:#fff`, `border-bottom: rgba(255,255,255,0.28)`, placeholder `#fff`
 - Кнопка `.gs-osend`: `color:#fff`, стрілка `#fff` → зелена на ховер
 - Нотатка `.gs-oform-note`: `color: rgba(255,255,255,0.38)`
