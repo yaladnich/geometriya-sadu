@@ -112,7 +112,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 
 .gs-btn{display:inline-flex;align-items:center;gap:0.5rem;border:0;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:0.8125rem;text-transform:uppercase;letter-spacing:0.08em;padding:1rem 1.625rem;border-radius:var(--r-pill);text-decoration:none;transition:all var(--dur-base) var(--ease-out);white-space:nowrap;overflow:hidden;box-sizing:border-box;}
 .gs-btn-lg{padding:1.125rem 1.875rem;font-size:1rem;}
-.gs-btn-primary{background:rgba(37,124,77,0.32);color:#fff;border:0.0625rem solid rgba(37,124,77,0.58);backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem);box-shadow:0 0.25rem 1.5rem -0.5rem rgba(37,124,77,0.28),inset 0 0.0625rem 0 rgba(255,255,255,0.08);}
+.gs-btn-primary{position:relative;background:rgba(37,124,77,0.32);color:#fff;border:0.0625rem solid rgba(37,124,77,0.58);backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem);box-shadow:0 0.25rem 1.5rem -0.5rem rgba(37,124,77,0.28),inset 0 0.0625rem 0 rgba(255,255,255,0.08);}
+.gs-btn-primary::after{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0.12;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 .gs-btn-primary:hover{background:rgba(37,124,77,0.50);border-color:rgba(37,124,77,0.82);box-shadow:0 0.5rem 2rem -0.5rem rgba(37,124,77,0.50),inset 0 0.0625rem 0 rgba(255,255,255,0.12);}
 .gs-btn svg,.gs-cta-pill .ti{transition:transform 0.35s var(--ease-in-out);}
 .gs-btn:hover svg,.gs-cta-pill:hover .ti{transform:rotate(180deg);}
@@ -123,7 +124,9 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-header-scrolled{top:0.75rem;}
 @keyframes gs-header-in{from{opacity:0;}to{opacity:1;}}
 .gs-header-inner{position:relative;box-sizing:border-box;width:var(--container-w);margin-inline:auto;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:0;height:5.0625rem;border-radius:var(--r-pill);background:transparent;border:0.0625rem solid transparent;backdrop-filter:none;-webkit-backdrop-filter:none;overflow:hidden;transform:translateZ(0);backface-visibility:hidden;transition:background 0.4s ease,border-color 0.4s ease,backdrop-filter 0.4s ease,box-shadow 0.4s ease,padding 0.4s ease;}
-.gs-header-scrolled .gs-header-inner{background:linear-gradient(135deg,rgba(20,40,28,0.32),rgba(12,22,15,0.4));border-color:rgba(120,200,150,0.18);backdrop-filter:blur(0.375rem);-webkit-backdrop-filter:blur(0.375rem);box-shadow:0.125rem 0.125rem 0.0625rem -0.125rem rgba(180,255,210,0.4) inset,-0.125rem -0.125rem 0.0625rem -0.125rem rgba(180,255,210,0.4) inset,0 0 0.5rem 0 rgba(120,180,140,0.45) inset,0 0.125rem 0.5rem 0.125rem rgba(0,0,0,0.12);padding:0 2rem;}
+.gs-header-scrolled .gs-header-inner{background:rgba(37,124,77,0.32);border-color:rgba(37,124,77,0.58);backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem);box-shadow:0 0.25rem 1.5rem -0.5rem rgba(37,124,77,0.28),inset 0 0.0625rem 0 rgba(255,255,255,0.08);padding:0 2rem;}
+.gs-header-inner::after{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity 0.4s ease;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.gs-header-scrolled .gs-header-inner::after{opacity:0.12;}
 .gs-brand{display:flex;align-items:center;gap:0.75rem;flex-shrink:0;}
 .gs-brand img,.gs-brand svg{display:block;width:auto;height:2.75rem;}
 .gs-nav{display:flex;align-items:center;flex-wrap:nowrap;gap:3.2vw;font-size:0.875rem;line-height:1.125rem;text-transform:uppercase;color:#fff;font-weight:600;white-space:nowrap;}
@@ -766,7 +769,7 @@ html,body{overflow-x:hidden;max-width:100%;}
 <section class="gs-section" id="services">
   <div class="gs-container">
     <div class="gs-section-head">
-      <div class="eyebrow"><span class="eb-dash">—</span> Послуги</div>
+      <div class="eyebrow"><span class="eb-dash">—</span> Пропонуємо</div>
       <h2 class="h-display-2">Послуги ландшафтного<br><span class="gs-accent-italic">дизайну</span></h2>
     </div>
     <div class="gs-services-grid">
