@@ -25,7 +25,7 @@ https://yaladnich.github.io/geometriya-sadu/
 - `index.html` — редірект на головний файл
 - `.github/workflows/pages.yml` — деплой на GitHub Pages з гілки `main`
 - Бекапи: `geometriya-sadu-VANILLA-backup-*.html`
-- Демо/превʼю (не в продакшені): `services-photo-preview.html`, `cta-sketch-variants-preview.html` та ін.
+- Демо/превʼю (не в продакшені): `services-photo-preview.html`, `hover-preview.html` та ін.
 
 ## Деплой
 - **GitHub Pages** через GitHub Actions, тригер — пуш у `main`
@@ -49,7 +49,22 @@ https://yaladnich.github.io/geometriya-sadu/
 
 ---
 
-## Поточний стан сайту (актуально на PR #145)
+## Поточний стан сайту (актуально на PR #188)
+
+### Типографіка (глобально)
+- **Навбар** `.gs-nav`: `13px / 700 / uppercase / 0.08em / color:#fff`
+- **Кнопка в навбарі** `.gs-cta-pill`: `13px / 700 / uppercase / 0.08em / color:#fff`
+- **Кнопки** `.gs-btn`: `13px / 700 / uppercase / 0.08em`
+- Бургер: без рамки, лінії `#F28D1B`
+
+### #hero
+- Фон: `images/Heroback3.webp` (вечірня сцена з туями/самшитом)
+- Кастомний курсор `#gs-dot` — помаранчева куля, `body{cursor:none}`
+  - На `.gs-cta-orange` → **білий**
+- Scramble + word-reveal анімація заголовків
+
+### #why
+- Фон: `images/backwhy.webp` з паралаксом GSAP (`yPercent:20`)
 
 ### #services — Картки послуг (`.gs-pcard`)
 - Вертикальні photo-картки, `aspect-ratio:3/4`, сітка `repeat(3,1fr)`, `column-gap:35px; row-gap:56px`
@@ -58,14 +73,12 @@ https://yaladnich.github.io/geometriya-sadu/
 
 #### Анімація появи (IntersectionObserver + клас `.is-in`)
 - `.gs-pcard::before` — діагональна шторка (`skewY(8deg)`), keyframe `gsBgEnter` сповзає вниз 1.2s
-- Фото — `gsBgZoomOut` 1.7s: `scale(1.1)→1` + `blur(10px)→0`
 - Заголовки — `gsTextUp`: `translateY(120%) skewY(6deg)` + `blur(8px)→0`, каскад label→title→sub
-- Каскад по колонках: `--reveal-delay: 0.1 + col*0.18s`
+- **ВАЖЛИВО**: `gsBgZoomOut` на фото видалена — фото стартує з `scale(1)`, hover дає `scale(1.08)` одразу
 
 #### Hover на картках
-- Фото: `transform:scale(1.08)`, `transition:1.2s cubic-bezier(0.22,1,0.36,1)` — працює одразу, без очікування анімації входу
-- Стрілка: зеленіє + glitch (`gs-icon-glitch`) + поворот 180°
-- **ВАЖЛИВО**: анімація входу фото (`gsBgZoomOut`) видалена — лишилась тільки шторка `::before` (`gsBgEnter`). Фото стартує з `scale(1)` одразу, hover дає `scale(1.08)`. Так реалізовано на lev-development.com.ua.
+- Фото: `transform:scale(1.08)`, `transition:1.2s cubic-bezier(0.22,1,0.36,1)`
+- Стрілка: зеленіє + glitch + поворот 180°
 
 #### Фото файли (`images/`)
 | Картка | Файл |
@@ -79,30 +92,27 @@ https://yaladnich.github.io/geometriya-sadu/
 | Консервація автополиву | `Обслуговування автополиву.webp` |
 | Корпоративним клієнтам | `Корпоративним клієнтам.webp` |
 
-### #services — Анімація заголовків секцій (PR #143–#145)
-- Заголовки `.h-display-2` та `.gs-cta-heading` розбиваються по словах через JS `splitWords()`
-- Кожне слово: `.w-wrap` (overflow:hidden) → `.w` (анімується знизу зі скосом + blur)
-- Стиль анімації аналогічний `.gs-pcard-title` (skew + blur rise)
-- CSS класи: `.w-wrap`, `.w`, анімація через `gsTextUp` keyframe
-
-### #cta — Форма заявки
-- Секція: клас `.gs-cta-orange`, фон `#f4f3ef`, колір тексту `#0a0b0a`
-- Фоновий скетч `images/cta-sketch.svg` — **прямий дочірній елемент `<section>`** (не у враппері!)
-  - CSS: `position:absolute; left:50%; bottom:0; transform:translateX(-50%); width:min(1400px,118%); opacity:0.5`
-  - Фільтр (зелений): `filter:invert(38%) sepia(40%) saturate(700%) hue-rotate(96deg) brightness(85%)`
-  - `mix-blend-mode:multiply` — **КРИТИЧНО**: якщо обгорнути в div зі своїм z-index/position — з'явиться білий прямокутник
-  - Анімація: `clip-path:inset(0 0 100% 0)` → `inset(0 0 0%)` (GSAP, 1.8s, scrollTrigger)
-- Форма-панель `.gs-oframe`: `background:#fff; border-radius:14px` (суцільно біла)
-- Кутові дужки `.gs-oframe-corner` — помаранчеві `#F28D1B`
-- Нотатка про персональні дані `.gs-oform-note` — **всередині** `.gs-oframe` після `</form>`
-- Кнопка `.gs-osend`: стрілка помаранчева → зелена на ховер + поворот 180°
-- Курсор `#gs-dot` при наведенні на `.gs-cta-orange` стає зеленим (клас `.on-orange` через JS)
+### #cta — Форма заявки (актуальний стан після PR #188)
+- Секція: клас `.gs-cta-orange`, фон `#0c160e` + **меш-градієнт анімований**
+  - `background-image`: 5 radial-gradient блобів (помаранчевий + зелений), `background-size:150-160%`
+  - Анімація `gs-mesh-flow` 22s — плавне переливання кольорів через `background-position`
+  - Шум `::before`: inline SVG fractalNoise, `opacity:0.30`, `mix-blend-mode:overlay`
+  - Скетч SVG **прибраний** (`display:none`)
+- Курсор `#gs-dot` → **білий** на `.gs-cta-orange`
+- Форма-панель `.gs-oframe`:
+  - `background: rgba(255,255,255,0.06)`, `border: 1px solid rgba(255,255,255,0.12)`
+  - `backdrop-filter: blur(16px)`, `border-radius: 18px`
+  - `box-shadow: 0 24px 60px -30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.10)`
+- Кутові дужки `.gs-oframe-corner`:
+  - Колір **білий** `#fff`, радіус **18px** (як у форми)
+  - Анімація **ззовні всередину** (від кутів до форми)
+- Поля форми: `color:#fff`, `border-bottom: rgba(255,255,255,0.28)`, placeholder `#fff`
+- Кнопка `.gs-osend`: `color:#fff`, стрілка `#fff` → зелена на ховер
+- Нотатка `.gs-oform-note`: `color: rgba(255,255,255,0.38)`
 
 ### Інші секції
-- **#hero**: кастомний курсор-куля (помаранчева `#gs-dot`, `body{cursor:none}`), scramble + word-reveal анімація заголовків
-- **#why**: фон `Back.webp` з паралаксом GSAP (yPercent:20)
 - **#process**: таби `.gs-chip` з text-scramble гліч-ефектом
-- **FAB-віджет**: зелені іконки, зациклена гліч-анімація, пульсація
+- **FAB-віджет**: кнопка форми через `openModal()` (без аргументів!)
 - **#marquee**: іконки з гліч-ефектом (rotation + orange flash)
 - **Таблиці цін**: 4 таби
 
