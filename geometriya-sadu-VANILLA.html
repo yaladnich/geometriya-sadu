@@ -112,16 +112,10 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 
 .gs-btn{display:inline-flex;align-items:center;gap:0.5rem;border:0;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:0.8125rem;text-transform:uppercase;letter-spacing:0.08em;padding:1rem 1.625rem;border-radius:0.3125rem;text-decoration:none;transition:all var(--dur-base) var(--ease-out);white-space:nowrap;overflow:hidden;box-sizing:border-box;}
 .gs-btn-lg{padding:1.125rem 1.875rem;font-size:1rem;}
-.gs-btn-primary{position:relative;overflow:hidden;background:linear-gradient(110deg,#2c3a33 0%,#243029 55%,#1d2823 100%);background-size:200% 100%;background-position:0% 50%;color:#fff;border:0;box-shadow:0 0.375rem 1.25rem -0.5rem rgba(0,0,0,0.5);transition:background-position 0.6s var(--ease-out),box-shadow 0.4s var(--ease-out),transform 0.35s var(--ease-out);}
-.gs-btn-primary::after{content:'';position:absolute;top:0;bottom:0;left:-80%;width:55%;background:linear-gradient(100deg,transparent,rgba(255,255,255,0.5),transparent);transform:skewX(-20deg);pointer-events:none;z-index:2;}
-.gs-btn-primary:hover{background-position:100% 50%;transform:translateY(-0.125rem);box-shadow:0 0.75rem 2rem -0.4rem rgba(46,157,95,0.35);}
-.gs-btn-primary:hover::after{animation:gs-btn-sheen 0.85s ease;}
-@keyframes gs-btn-sheen{0%{left:-80%;}100%{left:160%;}}
-.gs-btn-primary span{position:relative;z-index:1;}
-.gs-btn-primary svg{position:relative;z-index:1;color:#fff!important;}
+.gs-btn-primary{position:relative;background:#243029;color:#fff;border:0;box-shadow:0 0.375rem 1.25rem -0.5rem rgba(0,0,0,0.5);transition:background var(--dur-base) var(--ease-out),box-shadow var(--dur-base) var(--ease-out);}
+.gs-btn-primary:hover{background:#2c3a33;box-shadow:0 0.5rem 1.75rem -0.5rem rgba(0,0,0,0.55);}
 .gs-btn svg,.gs-cta-pill .ti{transition:transform 0.35s var(--ease-in-out);}
 .gs-btn:hover svg,.gs-cta-pill:hover .ti{transform:rotate(180deg);}
-.gs-btn-primary:hover svg{transform:translateX(0.25rem);}
 .gs-btn-secondary{background:transparent;color:var(--fg-1);border:0.0625rem solid var(--border);}
 .gs-btn-secondary:hover{background:rgba(255,255,255,0.04);border-color:var(--border-strong);}
 
