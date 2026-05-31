@@ -1573,7 +1573,7 @@ function updateHeaderAndProgress() {
   const header = document.getElementById('gs-header');
   const progress = document.getElementById('gs-scroll-prog');
   const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-  const scrolled = window.scrollY > 16;
+  const scrolled = window.scrollY > (header ? header.offsetHeight : 72);
 
   if (header) header.classList.toggle('gs-header-scrolled', scrolled);
   if (progress) progress.style.width = maxScroll > 0 ? `${(window.scrollY / maxScroll) * 100}%` : '0%';
