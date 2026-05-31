@@ -59,6 +59,7 @@ https://yaladnich.github.io/geometriya-sadu/
 - Завжди скляна пілюля: `.gs-header-inner` — `border-radius:var(--r-pill); background:rgba(10,11,10,0.55); border:1px solid var(--border); backdrop-filter:blur(16px); overflow:hidden`
 - При скролі темнішає: `background:rgba(10,11,10,0.85); border-color:var(--border-strong); padding:0 1%`
 - **НЕ ЗМІНЮВАТИ** форму пілюлі, не додавати full-width фон, не змінювати `top`
+- **Мобільний** `@media(max-width:600px)`: `height:56px; padding:0 18px` — фіксована висота пілюлі
 
 ### Типографіка (глобально)
 - **Навбар** `.gs-nav`: `0.875rem / 1.125rem / 700 / uppercase / color:#fff`, hover `var(--accent-bright)`
