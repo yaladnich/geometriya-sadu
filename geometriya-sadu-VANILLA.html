@@ -112,8 +112,10 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 
 .gs-btn{display:inline-flex;align-items:center;gap:0.5rem;border:0;cursor:pointer;font-family:var(--font-body);font-weight:700;font-size:0.8125rem;text-transform:uppercase;letter-spacing:0.08em;padding:1rem 1.625rem;border-radius:0;text-decoration:none;transition:all var(--dur-base) var(--ease-out);white-space:nowrap;overflow:hidden;box-sizing:border-box;}
 .gs-btn-lg{padding:1.125rem 1.875rem;font-size:1rem;}
-.gs-btn-primary{position:relative;background:linear-gradient(160deg,rgba(255,255,255,0.16),rgba(255,255,255,0.04) 60%),rgba(37,124,77,0.26);color:#fff;border:0.0625rem solid rgba(255,255,255,0.22);backdrop-filter:blur(1rem) saturate(1.4);-webkit-backdrop-filter:blur(1rem) saturate(1.4);box-shadow:0 0.25rem 1.5rem -0.5rem rgba(0,0,0,0.35),inset 0 0.0625rem 0 rgba(255,255,255,0.30);}
-.gs-btn-primary:hover{background:linear-gradient(160deg,rgba(255,255,255,0.22),rgba(255,255,255,0.06) 60%),rgba(37,124,77,0.38);border-color:rgba(255,255,255,0.34);box-shadow:0 0.5rem 2rem -0.5rem rgba(0,0,0,0.4),inset 0 0.0625rem 0 rgba(255,255,255,0.42);}
+.gs-btn-primary{position:relative;background:linear-gradient(160deg,rgba(255,255,255,0.30),rgba(255,255,255,0.10) 55%,rgba(255,255,255,0.16)),rgba(37,124,77,0.28);color:#fff;border:0.0625rem solid rgba(255,255,255,0.34);backdrop-filter:blur(1.25rem) saturate(1.5);-webkit-backdrop-filter:blur(1.25rem) saturate(1.5);box-shadow:0 0.5rem 1.75rem -0.5rem rgba(0,0,0,0.4),inset 0 0.0625rem 0 rgba(255,255,255,0.5),inset 0 -0.0625rem 0.0625rem rgba(0,0,0,0.15);}
+.gs-btn-primary::before{content:'';position:absolute;top:0;left:0;right:0;height:55%;background:linear-gradient(180deg,rgba(255,255,255,0.22),rgba(255,255,255,0));pointer-events:none;z-index:0;}
+.gs-btn-primary>*{position:relative;z-index:1;}
+.gs-btn-primary:hover{background:linear-gradient(160deg,rgba(255,255,255,0.40),rgba(255,255,255,0.14) 55%,rgba(255,255,255,0.20)),rgba(37,124,77,0.40);border-color:rgba(255,255,255,0.48);box-shadow:0 0.75rem 2.25rem -0.5rem rgba(0,0,0,0.45),inset 0 0.0625rem 0 rgba(255,255,255,0.6),inset 0 -0.0625rem 0.0625rem rgba(0,0,0,0.18);}
 .gs-btn svg,.gs-cta-pill .ti{transition:transform 0.35s var(--ease-in-out);}
 .gs-btn:hover svg,.gs-cta-pill:hover .ti{transform:rotate(180deg);}
 .gs-btn-secondary{background:transparent;color:var(--fg-1);border:0.0625rem solid var(--border);}
