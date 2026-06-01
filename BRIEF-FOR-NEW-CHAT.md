@@ -14,8 +14,8 @@ https://yaladnich.github.io/geometriya-sadu/
 
 ## Стек
 - Чистий **vanilla HTML/CSS/JS** в одному файлі
-- **GSAP + ScrollTrigger** — скрол-анімації
-- **Lenis** (`@studio-freight/lenis@1.0.42`) — плавний скрол
+- **GSAP + ScrollTrigger** — скрол-анімації (працює на нативному скролі)
+- ~~Lenis~~ — **видалено** (плавний скрол прибрано, скрол нативний)
 - **Tabler Icons webfont** (`@tabler/icons-webfont@3.19.0`)
 - **EmailJS** — форма заявки
   - publicKey: `jo5qqxaBsOw0U6wKb`
@@ -38,11 +38,17 @@ https://yaladnich.github.io/geometriya-sadu/
 ## Git workflow (ВАЖЛИВО)
 Репозиторій: **`github.com/yaladnich/geometriya-sadu`** (owner=`yaladnich`, repo=`geometriya-sadu`).
 Прямий пуш у `main` заблоковано — працюємо через PR:
-1. Робоча гілка: `claude/cool-cray-OVT0T`
-2. **Перед кожною правкою**: `git fetch origin main && git reset --hard origin/main` (бо squash-merge переписує історію — інакше будуть конфлікти)
-3. Внести правку → `git commit` → `git push -f origin claude/cool-cray-OVT0T`
+1. Робоча гілка: `claude/zen-brahmagupta-bEWVk`
+2. **Перед кожною правкою**: `git fetch origin main && git reset --soft origin/main` (складати зміни в один чистий коміт поверх свіжого main)
+3. Внести правку → `git commit` → `git push -f origin claude/zen-brahmagupta-bEWVk`
 4. PR через MCP (`mcp__github__create_pull_request`, base=main) → squash merge (`mcp__github__merge_pull_request`)
 - Claude GitHub App встановлено на репо (write-доступ). MCP **не може** створювати гілки (403) — гілку створювати через `git push`.
+
+### Стиль роботи (домовленість для економії токенів)
+- **Не мерджити автоматично.** Робити правки, пушити в гілку, а мерджити (`merge_pull_request`) **лише коли користувач каже «залий»/«заливай»**.
+- **Батчити правки**: користувач часто кидає кілька правок поспіль — складати їх в одну гілку/PR, а не цикл на кожну.
+- Скріншоти й довгі дампи коду — головні пожирачі токенів. Описувати словами де можливо.
+- Прев'ю на `github.io` до мерджу зробити НЕ можна (Pages лише з main, контейнер без доступу). Браузер для локального скріншоту теж не підняти (мережа блокує завантаження). Для прев'ю SVG-макетів є `cairosvg` (рендер у PNG → SendUserFile).
 
 ### Робота з кількома сесіями Claude
 Користувач іноді паралельно має дві активні сесії Claude. Щоб уникнути конфліктів:
@@ -52,26 +58,41 @@ https://yaladnich.github.io/geometriya-sadu/
 
 ---
 
-## Поточний стан сайту (актуально на PR #246+)
+## Свіжі зміни дизайну (актуально на PR #298, червень 2026)
 
-### ВАЖЛИВО: усі розміри в `rem` + глобальне root-scale масштабування
-- Весь CSS у `<style>` переведено в `rem` (база `1rem = 16px`). **Нові розміри задавати в `rem`**, не в px (крім умов `@media`).
-- `html{font-size:var(--root-scale)}`, `:root{--root-scale:1rem}`.
-- Брейкпоінти (як у референсі Redstone): `@media(1200–1380px){--root-scale:0.875rem}`, `@media(min-width:2100px){html{font-size:1.25rem}}`, `@media(min-width:2600px){html{font-size:1.5rem}}`.
+**Лого:** `images/logo-geom.webp` (зелений напис, 1000×277) у хедері (`?v=9`) та футері.
+
+**Хедер:** повноширинна **плашка** (НЕ пілюля) — фон/бордер на `.gs-header`, без заокруглення. Прозорий угорі, на скролі — **чорне скло** `rgba(10,11,10,0.6)`+blur. Контент у центрованому контейнері 92vw, лого вирівняне по лівому краю H1. Угорі **скрім** `.gs-header::before` (затемнення-градієнт для контрасту лого/меню на світлому небі; зникає на скролі). Навменю «+» білі, на hover зелені (#2e9d5f).
+
+**Хіро:** фон `images/Backv5.webp` (дім+сад на заході). Висота рівно `100svh` (`box-sizing:border-box`), наповнення опущене вниз через `padding-top:clamp(7rem,20vh,19rem)` (desktop) і clamp на мобільному. Оверлей `.gs-hero-overlay` — **затемнення зліва** (під текст), правий бік чистий + мʼякий верх/низ; на мобільному окремий вертикальний градієнт. H1 — звичайний регістр, вага 600. Eyebrow сірий, риска помаранчева, текст «КИЇВ ТА ОБЛАСТЬ · ОБ’ЄКТИ БУДЬ-ЯКОГО МАСШТАБУ». Підзаголовок білий.
+
+**Кнопки `.gs-btn-primary`:** зелене скло `rgba(37,124,77,0.32)`+blur+шум(`::after` fractalNoise), кути 2px (`border-radius:0.125rem`), без бордера. Іконка — **помаранчевий трикутник вправо** (path `M5 4 L19 12 L5 20 Z`, viewBox 0 0 24 24), на hover **глітч (`gs-close-glitch` на svg) + поворот path на 180°**. Те саме на «Зателефонувати» (`.gs-cta-pill`, трикутник `top:1px`).
+
+**Типографіка:** H2 та H3 (усі: `h2,.h2`, `.h-display-2`, `.gs-pcard-title`, `.gs-why-title`, `.gs-cta-heading`) — вага 600, **звичайний регістр** (`text-transform:none`). Бігуча строка (`.gs-marquee-track`) — теж 600, звичайний регістр.
+
+**Картки послуг:** кути 2px; **низ фото зливається з фоном** секції (#0A0B0A) через `mask-image:linear-gradient(to bottom,#000 68%,transparent 99%)` на `.gs-pcard-img/.gs-pcard-ph/.gs-pcard-overlay`. Текст поверх лишається чітким.
+
+**Модалка:** фон — **чорне скло** `rgba(10,11,10,0.6)`+blur (як плашка).
+
+**Обладнання:** бренд **Irritec** (раніше Unidelta) — у картці, ноті цін, FAQ, бренд-ротаторі хіро.
+
+**Секція «Переваги» (#why) — переробка під стиль baseone.uk (PR #298):**
+- 4 рядки `.gs-why-row` (зліва номер+H3+опис, справа `.gs-why-dots canvas`), розділені тонкими лініями. Звичайний потік (НЕ sticky/pin).
+- JS `initWhyDots`: **реактивна сітка крапок** 11×14, ізумрудні (`rgba(46,157,95,…)`), відштовхуються від курсора (радіус R=72, lerp 0.12), яскравішають поблизу. Поява рядків на скролі через ScrollTrigger.
+- Теми/тексти 4 переваг: 01 Власне озеленення · 02 Рулонний газон під ключ · 03 Автополив, що працює сам · 04 Власна спецтехніка.
+- ⚠️ Раніше пробували scroll-stepper з морфом частинок у силуети (туя/газон) — **відмовились**, бо у baseone насправді проста реактивна сітка крапок (`.dots` з `data-dots-h/v`, `data-k`), а не морф. Старий код степпера прибрано.
+- Можливе допрацювання: підкрутити щільність крапок/радіус; за бажання — додати pin-stack як у baseone (`.pin-spacer`).
+
+---
+
+## Поточний стан сайту (актуально на PR #233+)
 
 ### Хедер (актуальний стан)
-- `.gs-header`: `position:fixed; top:0; left:0; right:0; z-index:50`. При скролі (`.gs-header-scrolled`) `top:0.75rem` — пілюля відходить від верху.
-- **Пілюля `.gs-header-inner`** (капсула `border-radius:var(--r-pill)`, `overflow:hidden`, `height:5.0625rem`):
-  - **У спокої — прозора** (без фону/рамки/блюру), лого й меню на хіро.
-  - **При скролі — зелене скло** (рецепт як у кнопки): `background:rgba(37,124,77,0.32); border:rgba(37,124,77,0.58); backdrop-filter:blur(0.75rem); box-shadow:0 0.25rem 1.5rem -0.5rem rgba(37,124,77,0.28),inset 0 1px 0 rgba(255,255,255,0.08)`.
-  - **Шум** `.gs-header-inner::after` (SVG fractalNoise, `opacity:0.12`, БЕЗ `mix-blend-mode` — blend ламає backdrop-filter!), `z-index:-1`.
-  - `transform:translateZ(0); backface-visibility:hidden` — анти-мерехтіння.
-  - **НЕ повертати `animation:gs-header-in` (opacity)** — анімований opacity робить хедер backdrop-root і вимикає `backdrop-filter`!
-  - Внутрішній паддінг `0 2rem` лише при скролі (у спокої `0` — лого збігається з початком H1).
-- **Мобільний** `@media(max-width:600px)`: плашка на всю ширину (`width:100%; border-radius:0`), паддінг `1.125rem`, `top:0` завжди.
-- **Відоме**: текст під склом трохи мерехтить через субпіксельний скрол Lenis (не вирішено).
-- **Перехід на бургер — на 1200px** (`@media(max-width:1200px)`: nav `display:none`, бургер `display:flex`).
-- `.gs-nav`: `flex-wrap:nowrap`, адаптивний `gap:3.2vw → 2vw(≤1700) → 1.4vw(≤1400)`. Іконки `.gs-nav-plus` — **зелені** `var(--accent-bright)`, розмір `1em`.
+- `position:fixed; top:12px; left:0; right:0; z-index:50; height:81px`
+- Завжди скляна пілюля: `.gs-header-inner` — `border-radius:var(--r-pill); background:rgba(10,11,10,0.55); border:1px solid var(--border); backdrop-filter:blur(16px); overflow:hidden`
+- При скролі темнішає: `background:rgba(10,11,10,0.85); border-color:var(--border-strong); padding:0 1%`
+- **НЕ ЗМІНЮВАТИ** форму пілюлі, не додавати full-width фон, не змінювати `top`
+- **Мобільний** `@media(max-width:600px)`: `height:56px; padding:0 18px` — фіксована висота пілюлі
 
 ### Навбар (актуальний стан)
 - Пункти: **Послуги · Переваги · Портфоліо · Етапи · Ціни · Поширені питання · Контакти** (`#cta`)
@@ -79,16 +100,12 @@ https://yaladnich.github.io/geometriya-sadu/
 - Іконка `.gs-nav-plus` — «+» (помаранч. `#F28D1B`); на hover лінія повертається на 90° (стає «×») + глітч `gs-close-glitch`, колір → `var(--accent-bright)`
 - Scramble навішений і на `.gs-nav a` (через внутрішній `<span>`)
 
-### Типографіка (глобально) — МІКС регістрів (актуально!)
-- **UPPERCASE + вага 400**: H1, `.h-display-1`, `.display-1/2` (хіро-заголовок).
-- **Звичайний регістр + вага 600** (`text-transform:none`): H2, `.h-display-2` (секційні заголовки), `.gs-marquee-track`, `.gs-pcard-title`, `.gs-cta-heading`.
-- H3 — `var(--w-bold)`.
-- **Бейджі `.eyebrow`** — помаранчевий `#F28D1B` (база, секційні + стат-лейбли). Виняток: `.gs-hero-eyebrow` — білий `rgba(255,255,255,0.6)`; `.gs-section-orange` — контраст. Бейдж секції послуг — текст «Пропонуємо».
-- **Навбар** `.gs-nav` / **кнопка** `.gs-cta-pill`: `0.875rem / 600 / uppercase / #fff`, hover `var(--accent-bright)`.
-- **Кнопки** `.gs-btn`: `0.8125rem / 700 / uppercase / 0.08em`. `.gs-btn-primary` — зелене скло **без рамки** (`border:0`) + шум `::after`.
-- Бургер: без рамки, лінії `#F28D1B`.
-- **Скролбар сторінки — зелений** (`#257c4d`), НЕ чіпати.
-- ⚠️ **Паралельна сесія активно править файл** — перед роботою обов'язково `reset --hard origin/main` і звіряй фактичні регістри/ваги (могли знову змінитись).
+### Типографіка (глобально)
+- **Навбар** `.gs-nav`: `0.875rem / 1.125rem / 600 / uppercase / color:#fff`, hover `var(--accent-bright)`
+- **Кнопка в навбарі** `.gs-cta-pill`: `0.875rem / 600 / uppercase / color:#fff`
+- **Заголовки** display/h1/h2: вага **400 (regular)**, збільшені розміри (display-1 до 160px, h1 до 96px), щільний letter-spacing (`-0.03em` / `-0.025em` / `-0.02em`)
+- **Кнопки** `.gs-btn`: `13px / 700 / uppercase / 0.08em`
+- Бургер: без рамки, лінії `#F28D1B`
 
 ### Scramble ефект при hover (ВАЖЛИВО)
 - Функція `scrambleNode(node)` — глітч-анімація тексту при наведенні
@@ -115,8 +132,7 @@ https://yaladnich.github.io/geometriya-sadu/
 - CSS: `.w-wrap{overflow:hidden}` `.w{transform-origin:0 bottom}`
 
 ### #hero
-- Фон: `images/Backv5.webp` (`.gs-hero-bg`, паралакс GSAP)
-- Хіро-бейдж текст: «КИЇВ ТА ОБЛАСТЬ · ОБ'ЄКТИ БУДЬ-ЯКОГО МАСШТАБУ» (колір білий `rgba(255,255,255,0.6)`)
+- Фон: `images/Heroback3.webp` (вечірня сцена з туями/самшитом)
 - Кастомний курсор `#gs-dot` — помаранчева куля, `body{cursor:none}`
   - На `.gs-cta-orange` → **білий**
 

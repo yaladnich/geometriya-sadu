@@ -120,7 +120,6 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-btn-primary svg path{transition:transform 0.4s var(--ease-out);transform-origin:50% 50%;transform-box:fill-box;}
 .gs-btn-primary:hover svg{transform:none;animation:gs-close-glitch 0.44s linear;}
 .gs-btn-primary:hover svg path{transform:rotate(180deg);}
-.gs-cta-pill svg{position:relative;top:1px;}
 .gs-cta-pill svg path{transition:transform 0.4s var(--ease-out);transform-origin:50% 50%;transform-box:fill-box;}
 .gs-cta-pill:hover svg{animation:gs-close-glitch 0.44s linear;}
 .gs-cta-pill:hover svg path{transform:rotate(180deg);}
@@ -150,7 +149,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 @media(max-width:1200px){.gs-nav{display:none;}}
 
 .gs-hero{position:relative;box-sizing:border-box;height:100svh;min-height:100svh;padding-top:clamp(7rem,20vh,19rem);padding-bottom:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.gs-hero-bg{position:absolute;inset:0;background:url('images/Backv5.webp') center/cover no-repeat;z-index:0;will-change:transform;}
+.gs-hero-bg{position:absolute;top:-15%;left:0;right:0;height:130%;background:url('images/Backv5.webp') center/cover no-repeat;z-index:0;will-change:transform;}
 .gs-hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,11,10,0.72) 0%,rgba(10,11,10,0.5) 30%,rgba(10,11,10,0.12) 60%,transparent 80%),linear-gradient(180deg,rgba(10,11,10,0.38) 0%,transparent 22%,transparent 78%,rgba(10,11,10,0.45) 100%);z-index:1;}
 .gs-hero-inner{position:relative;z-index:2;}
 .gs-hero-eyebrow{color:rgba(255,255,255,0.6);margin-bottom:2rem;}
