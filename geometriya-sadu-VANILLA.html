@@ -117,6 +117,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-btn-primary:hover{background:rgba(37,124,77,0.50);box-shadow:0 0.5rem 2rem -0.5rem rgba(37,124,77,0.5),inset 0 0.0625rem 0 rgba(255,255,255,0.18);}
 .gs-btn svg,.gs-cta-pill .ti{transition:transform 0.35s var(--ease-in-out);}
 .gs-btn:hover svg,.gs-cta-pill:hover .ti{transform:rotate(180deg);}
+.gs-btn-primary:hover svg{transform:translateY(-0.15rem) scale(1.06);}
 .gs-btn-secondary{background:transparent;color:var(--fg-1);border:0.0625rem solid var(--border);}
 .gs-btn-secondary:hover{background:rgba(255,255,255,0.04);border-color:var(--border-strong);}
 
@@ -147,7 +148,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,11,10,0.72) 0%,rgba(10,11,10,0.5) 30%,rgba(10,11,10,0.12) 60%,transparent 80%),linear-gradient(180deg,rgba(10,11,10,0.38) 0%,transparent 22%,transparent 78%,rgba(10,11,10,0.45) 100%);z-index:1;}
 .gs-hero-inner{position:relative;z-index:2;}
 .gs-hero-eyebrow{color:rgba(255,255,255,0.6);margin-bottom:2rem;}
-.gs-hero-eyebrow::before{content:"— ";color:rgba(255,255,255,0.6);margin-right:0.25rem;}
+.gs-hero-eyebrow::before{content:"— ";color:#F28D1B;margin-right:0.25rem;}
 .gs-hero-title{color:#fff;margin:0 0 1.75rem;max-width:20ch;font-weight:600;text-transform:none;}
 .gs-hero-sub{color:#fff;max-width:60ch;margin:0 0 2.5rem;}
 .gs-hero-ctas{display:flex;gap:0.875rem;margin-bottom:5rem;flex-wrap:wrap;}
@@ -714,11 +715,11 @@ html,body{overflow-x:hidden;max-width:100%;}
   <div class="gs-hero-bg"></div>
   <div class="gs-hero-overlay"></div>
   <div class="gs-container gs-hero-inner">
-    <div class="eyebrow gs-hero-eyebrow">КИЇВ ТА ОБЛАСТЬ · БЕРЕМО НАВІТЬ НЕВЕЛИКІ ОБ’ЄКТИ</div>
+    <div class="eyebrow gs-hero-eyebrow">КИЇВ ТА ОБЛАСТЬ · ОБ’ЄКТИ БУДЬ-ЯКОГО МАСШТАБУ</div>
     <h1 class="display-2 gs-hero-title">Ландшафтний дизайн<br>під ключ у Києві</h1>
     <p class="body-lg gs-hero-sub">Ландшафтні роботи під ключ — рулонний газон, автополив, озеленення, земляні роботи. Власна спецтехніка.</p>
     <div class="gs-hero-ctas">
-      <button class="gs-btn gs-btn-primary" onclick="openModal()"><span>Замовити консультацію</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" style="color:#F28D1B"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
+      <button class="gs-btn gs-btn-primary" onclick="openModal()"><span>Замовити консультацію</span><svg width="17" height="17" viewBox="-2 -2 28 28" fill="none" aria-hidden="true"><path d="M12 3 L22 20 L2 20 Z" fill="#F28D1B" transform="rotate(45 12 12)"/></svg></button>
     </div>
     <div class="gs-hero-stats">
       <div class="gs-stat">
@@ -1209,7 +1210,7 @@ html,body{overflow-x:hidden;max-width:100%;}
       </label>
       <label>Коментар <textarea name="message" id="modal-message" rows="3" placeholder="Коротко про задачу"></textarea></label>
       <span class="gs-field-err" id="modal-submit-err"></span>
-      <button class="gs-btn gs-btn-primary" type="submit" id="modal-btn"><span>Відправити</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" style="color:#F28D1B"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
+      <button class="gs-btn gs-btn-primary" type="submit" id="modal-btn"><span>Відправити</span><svg width="17" height="17" viewBox="-2 -2 28 28" fill="none" aria-hidden="true"><path d="M12 3 L22 20 L2 20 Z" fill="#F28D1B" transform="rotate(45 12 12)"/></svg></button>
     </form>
     <div id="modal-success" style="display:none" class="gs-cta-success">
       <div class="gs-cta-check">✓</div>
