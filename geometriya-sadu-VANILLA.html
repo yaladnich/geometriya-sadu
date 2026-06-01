@@ -243,7 +243,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.1;margin:0 0 1rem;color:#fff;text-transform:none;}
 .gs-why-desc{margin:0;font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:40ch;}
 .gs-why-dots{flex-shrink:0;}
-.gs-why-dots canvas{display:block;width:clamp(20rem,36vw,40rem);height:clamp(15rem,20vw,22rem);}
+.gs-why-dots canvas{display:block;width:clamp(24rem,46vw,54rem);height:clamp(18rem,28vw,32rem);}
 @media(max-width:900px){
   .gs-why-panel{height:auto;min-height:auto;padding-block:clamp(3rem,9vh,6rem);}
   .gs-why-inner{grid-template-columns:1fr;gap:1.5rem;justify-items:center;text-align:center;}
@@ -2194,7 +2194,7 @@ updateHeaderAndProgress();
   const canvases = Array.from(document.querySelectorAll('.gs-why-dots canvas'));
   if (!canvases.length) return;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const COL = [46, 157, 95], N = 460, R = 150, PULL = 30;
+  const COL = [46, 157, 95], N = 640, R = 150, PULL = 30;
   // фігури під слайди: 01 дерево, 02 рулон газону, 03 автополив, 04 трактор (тимчасові, заміняться іконками)
   const SHAPES = [
     "M8.5 13.5 C5.5 13.5 4.5 10.5 6.6 8.8 C5.6 6.8 7.8 4.8 9.8 5.9 C10.8 3.8 14 3.8 15 5.9 C17 5.1 19.2 7 18 9 C19.6 10.6 18.5 13.5 15.5 13.5 Z M12 13.5 L12 21 M12 16.4 L9.6 14.3 M12 18 L14.6 15.9",
@@ -2223,7 +2223,7 @@ updateHeaderAndProgress();
       g.w = r.width; g.h = r.height;
       canvas.width = r.width * dpr; canvas.height = r.height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const size = Math.min(r.width, r.height) * 0.78, ox = r.width / 2, oy = r.height / 2;
+      const size = Math.min(r.width, r.height) * 0.88, ox = r.width / 2, oy = r.height / 2;
       if (g.parts.length !== N) {
         g.parts = [];
         for (let i = 0; i < N; i++) g.parts.push({ x: Math.random() * r.width, y: Math.random() * r.height, sx: 0, sy: 0, rainX: Math.random() * r.width, seed: Math.random(), sp: 0.5 + Math.random() * 0.9, af: (Math.random() * 200) | 0, ai: Math.random() < 0.5 });
@@ -2242,8 +2242,8 @@ updateHeaderAndProgress();
   window.addEventListener('resize', () => grids.forEach(g => g.layout()));
 
   function viewForm(rect) {
-    const cc = rect.top + rect.height / 2, dist = Math.abs(cc - window.innerHeight / 2) / (window.innerHeight * 0.55);
-    return Math.max(0, 1 - dist);
+    // прогрес входу: 0 коли панель унизу (дощ) → 1 коли дійшла й вище (фігура, без розпаду на виході)
+    return Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight * 0.75)));
   }
 
   function tick() {
@@ -2294,9 +2294,9 @@ updateHeaderAndProgress();
           end: 'bottom top',
           scrub: true,
           pin: true,
-          pinSpacing: false,
+          pinSpacing: true,
           invalidateOnRefresh: true,
-          onUpdate: self => { if (g) g.form = 1 - Math.abs(self.progress - 0.5) * 2; }
+          onUpdate: self => { if (g) g.form = Math.min(1, self.progress * 2.2); }
         });
       });
       return () => { pinned = false; triggers.forEach(t => t.kill()); };
