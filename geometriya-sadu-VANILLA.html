@@ -234,7 +234,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 
 .gs-why{position:relative;background:#0a0b0a;overflow:visible;}
 .gs-why-track{position:relative;height:380vh;}
-.gs-why-sticky{position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden;}
+.gs-why-sticky{position:relative;height:100vh;display:flex;align-items:center;overflow:hidden;}
 .gs-why-head{margin-bottom:2.5rem;}
 .gs-why-head .h-display-2{color:#fff;font-size:clamp(2.25rem,5vw,4rem);margin:0;}
 .gs-why-stage{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;}
@@ -2243,24 +2243,30 @@ updateHeaderAndProgress();
     }
     requestAnimationFrame(tick);
   }
-  function onScroll() {
-    const rect = track.getBoundingClientRect();
-    const total = rect.height - window.innerHeight;
-    let prog = total > 0 ? (-rect.top) / total : 0;
-    prog = Math.max(0, Math.min(0.9999, prog));
-    const idx = Math.floor(prog * emojis.length);
-    if (idx !== current) { assign(idx, false); setActive(idx); }
-  }
-  nums.forEach((n, i) => n.addEventListener('click', () => {
-    const rect = track.getBoundingClientRect();
-    const total = rect.height - window.innerHeight;
-    window.scrollTo({ top: window.scrollY + rect.top + (i + 0.4) / emojis.length * total, behavior: 'smooth' });
-  }));
   resize();
   window.addEventListener('resize', resize);
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
   tick();
+
+  let st = null;
+  if (window.gsap && window.ScrollTrigger) {
+    st = ScrollTrigger.create({
+      trigger: section,
+      start: 'top top',
+      end: 'bottom bottom',
+      pin: '.gs-why-sticky',
+      pinSpacing: false,
+      invalidateOnRefresh: true,
+      onUpdate: self => {
+        const idx = Math.min(emojis.length - 1, Math.floor(self.progress * emojis.length));
+        if (idx !== current) { assign(idx, false); setActive(idx); }
+      }
+    });
+  }
+  nums.forEach((n, i) => n.addEventListener('click', () => {
+    if (!st) return;
+    const y = st.start + (i + 0.4) / emojis.length * (st.end - st.start);
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }));
 })();
 
 // Бургер-меню
