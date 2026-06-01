@@ -232,17 +232,20 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 @media(prefers-reduced-motion:reduce){.gs-pcard::before{display:none;}.gs-pcard-img,.gs-pcard-ph,.gs-pcard-label,.gs-pcard-title,.gs-pcard-sub{transform:none;opacity:1;animation:none;}}
 
 .gs-why{position:relative;background:#0a0b0a;}
-.gs-why-rows{display:flex;flex-direction:column;gap:clamp(2.5rem,5vw,5rem);margin-top:1rem;}
-.gs-why-row{display:grid;grid-template-columns:1fr auto;gap:2.5rem;align-items:center;padding-bottom:clamp(2.5rem,5vw,5rem);border-bottom:0.0625rem solid rgba(255,255,255,0.1);}
-.gs-why-row:last-child{border-bottom:0;padding-bottom:0;}
+.gs-why-intro{padding-block:clamp(4rem,10vh,9rem) clamp(2rem,5vh,4rem);}
+.gs-why-h{color:#fff;}
+.gs-why-panels{position:relative;}
+.gs-why-panel{height:100vh;min-height:40rem;display:flex;align-items:center;background:#0a0b0a;overflow:hidden;will-change:transform;}
+.gs-why-inner{width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr auto;gap:2.5rem;align-items:center;width:100%;}
+.gs-why-side{will-change:transform,opacity,filter;}
 .gs-why-text{max-width:40rem;}
 .gs-why-num{font-family:var(--font-display);font-weight:800;font-size:clamp(2.5rem,4vw,3.75rem);line-height:0.9;color:var(--accent-bright);letter-spacing:-0.02em;margin-bottom:0.75rem;}
-.gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.5rem,2.6vw,2.25rem);line-height:1.1;margin:0 0 0.875rem;color:#fff;text-transform:none;}
-.gs-why-desc{margin:0;font-size:1.0625rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:38ch;}
+.gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.1;margin:0 0 1rem;color:#fff;text-transform:none;}
+.gs-why-desc{margin:0;font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:40ch;}
 .gs-why-dots{flex-shrink:0;}
 .gs-why-dots canvas{display:block;width:clamp(20rem,36vw,40rem);height:clamp(15rem,20vw,22rem);}
 @media(max-width:900px){
-  .gs-why-row{grid-template-columns:1fr;gap:1.5rem;}
+  .gs-why-inner{grid-template-columns:1fr;gap:1.5rem;}
   .gs-why-dots{order:-1;}
   .gs-why-dots canvas{width:100%;height:12rem;}
 }
@@ -877,44 +880,52 @@ html,body{overflow-x:hidden;max-width:100%;}
 </section>
 
 <!-- WHY -->
-<section class="gs-section gs-section-orange gs-why" id="why">
-  <div class="gs-container">
-    <div class="gs-section-head">
+<section class="gs-section-orange gs-why" id="why">
+  <div class="gs-why-intro">
+    <div class="gs-container">
       <div class="eyebrow"><span class="eb-dash">—</span> Переваги</div>
-      <h2 class="h-display-2">Чому обирають <span class="gs-accent-italic">нас</span></h2>
+      <h2 class="h-display-2 gs-why-h">Чому обирають <span class="gs-accent-italic">нас</span></h2>
     </div>
-    <div class="gs-why-rows">
-      <div class="gs-why-row">
-        <div class="gs-why-text">
+  </div>
+  <div class="gs-why-panels">
+    <div class="gs-why-panel">
+      <div class="gs-container gs-why-inner">
+        <div class="gs-why-side gs-why-text">
           <div class="num gs-why-num">01</div>
           <h3 class="gs-why-title">Власне озеленення</h3>
           <p class="gs-why-desc">Туї, хвойні та кущі з перевірених розсадників — приживаються й тримають форму роками.</p>
         </div>
-        <div class="gs-why-dots"><canvas></canvas></div>
+        <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
       </div>
-      <div class="gs-why-row">
-        <div class="gs-why-text">
+    </div>
+    <div class="gs-why-panel">
+      <div class="gs-container gs-why-inner">
+        <div class="gs-why-side gs-why-text">
           <div class="num gs-why-num">02</div>
           <h3 class="gs-why-title">Рулонний газон під ключ</h3>
           <p class="gs-why-desc">Готуємо ґрунт і стелемо газон — рівне зелене поле вже за день, без бур'янів і ям.</p>
         </div>
-        <div class="gs-why-dots"><canvas></canvas></div>
+        <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
       </div>
-      <div class="gs-why-row">
-        <div class="gs-why-text">
+    </div>
+    <div class="gs-why-panel">
+      <div class="gs-container gs-why-inner">
+        <div class="gs-why-side gs-why-text">
           <div class="num gs-why-num">03</div>
           <h3 class="gs-why-title">Автополив, що працює сам</h3>
           <p class="gs-why-desc">Hunter, Rain Bird, Irritec — полив за розкладом, газон зелений без вашої участі.</p>
         </div>
-        <div class="gs-why-dots"><canvas></canvas></div>
+        <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
       </div>
-      <div class="gs-why-row">
-        <div class="gs-why-text">
+    </div>
+    <div class="gs-why-panel">
+      <div class="gs-container gs-why-inner">
+        <div class="gs-why-side gs-why-text">
           <div class="num gs-why-num">04</div>
           <h3 class="gs-why-title">Власна спецтехніка</h3>
           <p class="gs-why-desc">Міні-навантажувачі та обладнання — земляні роботи будь-якої складності точно й у строк.</p>
         </div>
-        <div class="gs-why-dots"><canvas></canvas></div>
+        <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
       </div>
     </div>
   </div>
@@ -2212,59 +2223,36 @@ updateHeaderAndProgress();
       const { ctx } = g;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, g.w, g.h);
-      ctx.lineCap = 'round';
-      ctx.lineWidth = 3.5;
-      const rect = g.canvas.getBoundingClientRect();
-      const lmx = mx - rect.left, lmy = my - rect.top;
-      const over = lmx >= 0 && lmx <= g.w && lmy >= 0 && lmy <= g.h;
-      const maxMag = Math.min(g.w, g.h) / 6;
       for (const d of g.dots) {
         if ((d.af >= 200 && d.ai) || (d.af <= 0 && !d.ai)) d.ai = !d.ai;
         d.af += d.ai ? 1 : -1;
         const tw = d.af / 200;
-        let tMag = 0.6, tAng = d.ang;
-        if (over) {
-          const dx = lmx - d.left, dy = lmy - d.top, dist = Math.hypot(dx, dy) || 1;
-          tMag = Math.min(Math.max(window.innerWidth / dist, 0.6), maxMag);
-          tAng = Math.atan2(dy, dx);
-        }
-        d.mag += (tMag - d.mag) * 0.15;
-        let da = tAng - d.ang; da = Math.atan2(Math.sin(da), Math.cos(da));
-        d.ang += da * 0.2;
-        const a = over ? (0.5 + tw * 0.5) : (0.28 + tw * 0.6);
-        ctx.strokeStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + a + ')';
-        ctx.setTransform(dpr, 0, 0, dpr, d.left * dpr, d.top * dpr);
-        ctx.rotate(d.ang);
+        const a = 0.28 + tw * 0.6;
+        ctx.fillStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + a + ')';
         ctx.beginPath();
-        ctx.moveTo(-d.mag / 2, 0);
-        ctx.lineTo(d.mag / 2, 0);
-        ctx.stroke();
+        ctx.arc(d.left, d.top, 1.9, 0, Math.PI * 2);
+        ctx.fill();
       }
     }
     requestAnimationFrame(tick);
   }
   tick();
 
-  function splitW(el) {
-    if (!el || el.dataset.words === 'true') return;
-    el.innerHTML = el.textContent.trim().split(/\s+/)
-      .map(w => '<span class="w-wrap"><span class="w">' + w + '</span></span>').join(' ');
-    el.dataset.words = 'true';
-  }
+  // Пінований слайдер 1:1 як у baseone: текст блюриться+зменшується+їде вгору, колонка крапок виїжджає вгору
   if (window.gsap && window.ScrollTrigger) {
-    document.querySelectorAll('.gs-why-row').forEach(row => {
-      const title = row.querySelector('.gs-why-title');
-      splitW(title);
-      const words = title ? Array.from(title.querySelectorAll('.w')) : [];
-      const others = [row.querySelector('.gs-why-num'), row.querySelector('.gs-why-desc'), row.querySelector('.gs-why-dots')].filter(Boolean);
-      gsap.set(words, { yPercent: 120, opacity: 0 });
-      gsap.set(others, { opacity: 0, y: 18, filter: 'blur(6px)' });
+    gsap.utils.toArray('.gs-why-panel').forEach(panel => {
+      const side1 = panel.querySelector('.gs-why-side:nth-child(1)');
+      const side2 = panel.querySelector('.gs-why-side:nth-child(2)');
       ScrollTrigger.create({
-        trigger: row, start: 'top 82%', once: true,
-        onEnter: () => {
-          gsap.to(words, { yPercent: 0, opacity: 1, duration: 0.7, stagger: 0.05, ease: 'power3.out' });
-          gsap.to(others, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, stagger: 0.08, ease: 'power2.out', onComplete: () => gsap.set(others, { clearProps: 'filter' }) });
-        }
+        animation: gsap.timeline()
+          .to(side1, { opacity: 0, filter: 'blur(10px)', scale: 0.8, y: () => -0.05 * panel.offsetHeight })
+          .to(side2, { y: () => -panel.offsetHeight, ease: 'none' }, 0),
+        trigger: panel,
+        start: 'top top',
+        scrub: true,
+        pin: true,
+        pinSpacing: false,
+        invalidateOnRefresh: true
       });
     });
   }
