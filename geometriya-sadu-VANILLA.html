@@ -232,30 +232,20 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-pcard-soon .ct{font-family:var(--font-display);font-size:clamp(1.25rem,2.5vw,1.75rem);font-weight:800;letter-spacing:-0.02em;color:#fff;}
 @media(prefers-reduced-motion:reduce){.gs-pcard::before{display:none;}.gs-pcard-img,.gs-pcard-ph,.gs-pcard-label,.gs-pcard-title,.gs-pcard-sub{transform:none;opacity:1;animation:none;}}
 
-.gs-why{position:relative;background:#0a0b0a;overflow:visible;}
-.gs-why-track{position:relative;height:380vh;}
-.gs-why-sticky{position:relative;height:100vh;display:flex;align-items:center;overflow:hidden;}
-.gs-why-head{margin-bottom:2.5rem;}
-.gs-why-head .h-display-2{color:#fff;font-size:clamp(2.25rem,5vw,4rem);margin:0;}
-.gs-why-stage{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;}
-.gs-why-left{position:relative;}
-.gs-why-slides{position:relative;min-height:16rem;}
-.gs-why-slide{position:absolute;inset:0;opacity:0;transform:translateY(1.75rem);transition:opacity 0.55s var(--ease-out),transform 0.55s var(--ease-out);pointer-events:none;}
-.gs-why-slide.is-active{opacity:1;transform:none;pointer-events:auto;}
-.gs-why-num{font-family:var(--font-display);font-weight:800;font-size:4.5rem;line-height:0.9;color:var(--accent-bright);letter-spacing:-0.02em;margin-bottom:1rem;}
-.gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.1;margin:0 0 1rem;color:#fff;text-transform:none;}
-.gs-why-desc{margin:0;font-size:1.0625rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:34ch;}
-.gs-why-nums{display:flex;gap:1.25rem;margin-top:2.5rem;}
-.gs-why-n{font-family:var(--font-display);font-weight:600;font-size:1rem;color:rgba(255,255,255,0.32);letter-spacing:0.05em;cursor:pointer;transition:color 0.3s var(--ease-out);}
-.gs-why-n.is-active{color:var(--accent-bright);}
-.gs-why-right{position:relative;height:60vh;}
-#gs-why-canvas{width:100%;height:100%;display:block;}
+.gs-why{position:relative;background:#0a0b0a;}
+.gs-why-rows{display:flex;flex-direction:column;gap:clamp(2.5rem,5vw,5rem);margin-top:1rem;}
+.gs-why-row{display:grid;grid-template-columns:1fr auto;gap:2.5rem;align-items:center;padding-bottom:clamp(2.5rem,5vw,5rem);border-bottom:0.0625rem solid rgba(255,255,255,0.1);}
+.gs-why-row:last-child{border-bottom:0;padding-bottom:0;}
+.gs-why-text{max-width:40rem;}
+.gs-why-num{font-family:var(--font-display);font-weight:800;font-size:clamp(2.5rem,4vw,3.75rem);line-height:0.9;color:var(--accent-bright);letter-spacing:-0.02em;margin-bottom:0.75rem;}
+.gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.5rem,2.6vw,2.25rem);line-height:1.1;margin:0 0 0.875rem;color:#fff;text-transform:none;}
+.gs-why-desc{margin:0;font-size:1.0625rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:38ch;}
+.gs-why-dots{flex-shrink:0;}
+.gs-why-dots canvas{display:block;width:14rem;height:17.5rem;}
 @media(max-width:900px){
-  .gs-why-track{height:340vh;}
-  .gs-why-stage{grid-template-columns:1fr;gap:1.25rem;}
-  .gs-why-right{height:36vh;order:-1;}
-  .gs-why-slides{min-height:13rem;}
-  .gs-why-num{font-size:3.25rem;}
+  .gs-why-row{grid-template-columns:1fr;gap:1.5rem;}
+  .gs-why-dots{order:-1;}
+  .gs-why-dots canvas{width:10rem;height:12.5rem;}
 }
 
 .gs-pf-slider{display:flex;flex-direction:column;gap:0.875rem;}
@@ -888,30 +878,44 @@ html,body{overflow-x:hidden;max-width:100%;}
 </section>
 
 <!-- WHY -->
-<section class="gs-section-orange gs-why" id="why">
-  <div class="gs-why-track">
-    <div class="gs-why-sticky">
-      <div class="gs-container gs-why-inner">
-        <div class="gs-section-head gs-why-head">
-          <div class="eyebrow"><span class="eb-dash">—</span> Переваги</div>
-          <h2 class="h-display-2">Чому обирають <span class="gs-accent-italic">нас</span></h2>
+<section class="gs-section gs-section-orange gs-why" id="why">
+  <div class="gs-container">
+    <div class="gs-section-head">
+      <div class="eyebrow"><span class="eb-dash">—</span> Переваги</div>
+      <h2 class="h-display-2">Чому обирають <span class="gs-accent-italic">нас</span></h2>
+    </div>
+    <div class="gs-why-rows">
+      <div class="gs-why-row">
+        <div class="gs-why-text">
+          <div class="num gs-why-num">01</div>
+          <h3 class="gs-why-title">Власне озеленення</h3>
+          <p class="gs-why-desc">Туї, хвойні та кущі з перевірених розсадників — приживаються й тримають форму роками.</p>
         </div>
-        <div class="gs-why-stage">
-          <div class="gs-why-left">
-            <div class="gs-why-slides">
-              <div class="gs-why-slide is-active"><div class="num gs-why-num">01</div><h3 class="gs-why-title">Власне озеленення</h3><p class="gs-why-desc">Туї, хвойні та кущі з перевірених розсадників — приживаються й тримають форму роками.</p></div>
-              <div class="gs-why-slide"><div class="num gs-why-num">02</div><h3 class="gs-why-title">Рулонний газон під ключ</h3><p class="gs-why-desc">Готуємо ґрунт і стелемо газон — рівне зелене поле вже за день, без бур'янів і ям.</p></div>
-              <div class="gs-why-slide"><div class="num gs-why-num">03</div><h3 class="gs-why-title">Автополив, що працює сам</h3><p class="gs-why-desc">Hunter, Rain Bird, Irritec — полив за розкладом, газон зелений без вашої участі.</p></div>
-              <div class="gs-why-slide"><div class="num gs-why-num">04</div><h3 class="gs-why-title">Власна спецтехніка</h3><p class="gs-why-desc">Міні-навантажувачі та обладнання — земляні роботи будь-якої складності точно й у строк.</p></div>
-            </div>
-            <div class="gs-why-nums">
-              <span class="gs-why-n is-active">01</span><span class="gs-why-n">02</span><span class="gs-why-n">03</span><span class="gs-why-n">04</span>
-            </div>
-          </div>
-          <div class="gs-why-right">
-            <canvas id="gs-why-canvas"></canvas>
-          </div>
+        <div class="gs-why-dots"><canvas></canvas></div>
+      </div>
+      <div class="gs-why-row">
+        <div class="gs-why-text">
+          <div class="num gs-why-num">02</div>
+          <h3 class="gs-why-title">Рулонний газон під ключ</h3>
+          <p class="gs-why-desc">Готуємо ґрунт і стелемо газон — рівне зелене поле вже за день, без бур'янів і ям.</p>
         </div>
+        <div class="gs-why-dots"><canvas></canvas></div>
+      </div>
+      <div class="gs-why-row">
+        <div class="gs-why-text">
+          <div class="num gs-why-num">03</div>
+          <h3 class="gs-why-title">Автополив, що працює сам</h3>
+          <p class="gs-why-desc">Hunter, Rain Bird, Irritec — полив за розкладом, газон зелений без вашої участі.</p>
+        </div>
+        <div class="gs-why-dots"><canvas></canvas></div>
+      </div>
+      <div class="gs-why-row">
+        <div class="gs-why-text">
+          <div class="num gs-why-num">04</div>
+          <h3 class="gs-why-title">Власна спецтехніка</h3>
+          <p class="gs-why-desc">Міні-навантажувачі та обладнання — земляні роботи будь-якої складності точно й у строк.</p>
+        </div>
+        <div class="gs-why-dots"><canvas></canvas></div>
       </div>
     </div>
   </div>
@@ -2173,100 +2177,69 @@ initPortfolio();
 restartPortfolioTimer();
 updateHeaderAndProgress();
 
-// Секція «Переваги» — скрол-степпер + піксельна анімація (туя/газон/автополив/техніка)
-(function initWhyStepper() {
-  const section = document.getElementById('why');
-  const track = section && section.querySelector('.gs-why-track');
-  const canvas = document.getElementById('gs-why-canvas');
-  if (!section || !track || !canvas) return;
-  const ctx = canvas.getContext('2d');
-  const slides = Array.from(section.querySelectorAll('.gs-why-slide'));
-  const nums = Array.from(section.querySelectorAll('.gs-why-n'));
-  const emojis = ['🌲', '🌿', '💦', '🚜'];
-  const N = 1300;
+// Секція «Переваги» — рядки + реактивна сітка крапок (стиль baseone)
+(function initWhyDots() {
+  const canvases = Array.from(document.querySelectorAll('.gs-why-dots canvas'));
+  if (!canvases.length) return;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  let W = 0, H = 0, current = -1;
-  const shapes = [];
-  const particles = [];
-  for (let i = 0; i < N; i++) particles.push({ x: 0, y: 0, tx: 0, ty: 0 });
-
-  function sampleEmoji(ch) {
-    const S = 300, off = document.createElement('canvas');
-    off.width = S; off.height = S;
-    const o = off.getContext('2d');
-    o.font = (S * 0.8) + 'px serif'; o.textAlign = 'center'; o.textBaseline = 'middle';
-    o.fillText(ch, S / 2, S / 2);
-    const d = o.getImageData(0, 0, S, S).data, pts = [];
-    for (let y = 0; y < S; y += 3) for (let x = 0; x < S; x += 3) if (d[(y * S + x) * 4 + 3] > 128) pts.push([x, y]);
-    return pts.length ? pts : [[150, 150]];
-  }
-  function buildShapes() {
-    shapes.length = 0;
-    const size = Math.min(W, H) * 0.82, ox = W / 2, oy = H / 2;
-    emojis.forEach(ch => {
-      const pts = sampleEmoji(ch), arr = [];
-      for (let i = 0; i < N; i++) {
-        const p = pts[(Math.random() * pts.length) | 0];
-        arr.push([ox + (p[0] / 300 - 0.5) * size, oy + (p[1] / 300 - 0.5) * size]);
+  const cols = 11, rows = 14, R = 72;
+  let mx = -9999, my = -9999;
+  const grids = canvases.map(canvas => {
+    const ctx = canvas.getContext('2d');
+    const g = { canvas, ctx, dots: [], w: 0, h: 0 };
+    g.layout = function () {
+      const r = canvas.getBoundingClientRect();
+      g.w = r.width; g.h = r.height;
+      canvas.width = r.width * dpr; canvas.height = r.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const padX = r.width * 0.09, padY = r.height * 0.06;
+      const gx = (r.width - padX * 2) / (cols - 1), gy = (r.height - padY * 2) / (rows - 1);
+      g.dots.length = 0;
+      for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+        const ox = padX + i * gx, oy = padY + j * gy;
+        g.dots.push({ ox, oy, x: ox, y: oy });
       }
-      shapes.push(arr);
-    });
-  }
-  function assign(idx, instant) {
-    const sh = shapes[idx]; if (!sh) return;
-    for (let i = 0; i < N; i++) {
-      particles[i].tx = sh[i][0]; particles[i].ty = sh[i][1];
-      if (instant) { particles[i].x = sh[i][0]; particles[i].y = sh[i][1]; }
-    }
-    current = idx;
-  }
-  function setActive(idx) {
-    slides.forEach((s, i) => s.classList.toggle('is-active', i === idx));
-    nums.forEach((n, i) => n.classList.toggle('is-active', i === idx));
-  }
-  function resize() {
-    const r = canvas.getBoundingClientRect();
-    W = r.width; H = r.height;
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    buildShapes();
-    const keep = current < 0 ? 0 : current;
-    assign(keep, true); setActive(keep);
-  }
+    };
+    g.layout();
+    return g;
+  });
+
+  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+  window.addEventListener('resize', () => grids.forEach(g => g.layout()));
+
   function tick() {
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = 'rgba(46,157,95,0.9)';
-    for (let i = 0; i < N; i++) {
-      const p = particles[i];
-      p.x += (p.tx - p.x) * 0.085; p.y += (p.ty - p.y) * 0.085;
-      ctx.fillRect(p.x, p.y, 2, 2);
+    for (const g of grids) {
+      const { ctx } = g;
+      ctx.clearRect(0, 0, g.w, g.h);
+      const rect = g.canvas.getBoundingClientRect();
+      const lmx = mx - rect.left, lmy = my - rect.top;
+      for (const d of g.dots) {
+        const dx = d.ox - lmx, dy = d.oy - lmy;
+        const dist = Math.hypot(dx, dy);
+        let tx = d.ox, ty = d.oy, prox = 0;
+        if (dist < R) {
+          prox = 1 - dist / R;
+          if (dist > 0.01) { const f = prox * 24; tx = d.ox + dx / dist * f; ty = d.oy + dy / dist * f; }
+        }
+        d.x += (tx - d.x) * 0.12; d.y += (ty - d.y) * 0.12;
+        ctx.fillStyle = 'rgba(46,157,95,' + (0.32 + prox * 0.6) + ')';
+        const s = 2 + prox * 1.8;
+        ctx.fillRect(d.x - s / 2, d.y - s / 2, s, s);
+      }
     }
     requestAnimationFrame(tick);
   }
-  resize();
-  window.addEventListener('resize', resize);
   tick();
 
-  let st = null;
   if (window.gsap && window.ScrollTrigger) {
-    st = ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      end: 'bottom bottom',
-      pin: '.gs-why-sticky',
-      pinSpacing: false,
-      invalidateOnRefresh: true,
-      onUpdate: self => {
-        const idx = Math.min(emojis.length - 1, Math.floor(self.progress * emojis.length));
-        if (idx !== current) { assign(idx, false); setActive(idx); }
-      }
+    document.querySelectorAll('.gs-why-row').forEach(row => {
+      gsap.set(row, { opacity: 0, y: 36 });
+      ScrollTrigger.create({
+        trigger: row, start: 'top 85%', once: true,
+        onEnter: () => gsap.to(row, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+      });
     });
   }
-  nums.forEach((n, i) => n.addEventListener('click', () => {
-    if (!st) return;
-    const y = st.start + (i + 0.4) / emojis.length * (st.end - st.start);
-    window.scrollTo({ top: y, behavior: 'smooth' });
-  }));
 })();
 
 // Бургер-меню
