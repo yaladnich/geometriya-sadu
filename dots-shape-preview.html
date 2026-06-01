@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Дощ → SVG-фігура + магніт · Геометрія саду</title>
+<style>
+  :root{--bg:#0a0b0a;--green:46,157,95;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:#fff;font-family:"Onest",system-ui,sans-serif;overflow:hidden;}
+  .wrap{position:relative;width:100vw;height:100svh;}
+  canvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  .bar{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:8px;background:rgba(20,22,20,0.8);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.12);border-radius:999px;padding:8px;}
+  .bar button{cursor:pointer;border:0;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;background:transparent;color:rgba(255,255,255,0.7);}
+  .bar button.on{background:rgba(var(--green),0.9);color:#fff;}
+  .panel{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center;background:rgba(20,22,20,0.8);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:10px 16px;font-size:12px;}
+  .panel label{display:flex;flex-direction:column;gap:4px;color:rgba(255,255,255,0.7);}
+  .panel input[type=range]{accent-color:rgb(var(--green));width:160px;}
+  .panel button{cursor:pointer;border:0;border-radius:8px;padding:8px 12px;font-weight:600;background:rgba(var(--green),0.9);color:#fff;}
+  .note{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:10;color:rgba(255,255,255,0.5);font-size:12px;}
+</style>
+</head>
+<body>
+<div class="bar">
+  <button data-s="drop" class="on">💧 Крапля</button>
+  <button data-s="leaf">🌿 Листок</button>
+  <button data-s="grass">🌱 Газон</button>
+  <button data-s="gear">⚙ Шестерня</button>
+</div>
+<div class="note">0 = дощ (вхід) · 0.5 = фігура по центру · 1 = розпад (вихід). Веди мишею — магніт.</div>
+<div class="wrap"><canvas id="c"></canvas></div>
+<div class="panel">
+  <button id="play">▶ Авто</button>
+  <label>Формування (скрол) <input id="prog" type="range" min="0" max="100" value="50"></label>
+  <label>Магніт R <span id="vR">150</span><input id="R" type="range" min="0" max="300" value="150"></label>
+  <label>Сила <span id="vF">34</span><input id="F" type="range" min="0" max="90" value="34"></label>
+</div>
+<script>
+(function(){
+  const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+  const dpr=Math.min(devicePixelRatio||1,2);
+  const COL=[46,157,95];
+  let W=0,H=0,N=720,parts=[],mx=-9999,my=-9999,R=150,F=34,prog=0.5,t=0,shape='drop',auto=false;
+
+  // SVG-шляхи (viewBox 24×24)
+  const PATHS={
+    drop:"M12 2 C12 2 5 11 5 15 a7 7 0 0 0 14 0 C19 11 12 2 12 2 Z",
+    leaf:"M5 19 C5 9 12 3 20 3 C20 12 14 20 5 19 Z M8 16 C12 12 15 9 18 6",
+    grass:"M12 22 L12 8 M12 12 C9 10 7 6 7 3 M12 12 C15 10 17 6 17 3 M12 14 C10 13 8 11 7 8 M12 14 C14 13 16 11 17 8",
+    gear:"M12 8 a4 4 0 1 0 0 8 a4 4 0 0 0 0-8 Z M12 1 l1.5 3 h-3 Z M12 23 l1.5-3 h-3 Z M1 12 l3 1.5 v-3 Z M23 12 l-3 1.5 v-3 Z M4 4 l3 1 -1 2 Z M20 20 l-3-1 1-2 Z M20 4 l-1 3 -2-1 Z M4 20 l1-3 2 1 Z"
+  };
+
+  function samplePath(dpath){
+    const S=240,off=document.createElement('canvas');off.width=S;off.height=S;
+    const o=off.getContext('2d');
+    o.fillStyle='#fff';o.strokeStyle='#fff';o.lineWidth=2.4;
+    o.setTransform(S/24,0,0,S/24,0,0);
+    const p=new Path2D(dpath);
+    o.fill(p);o.stroke(p);
+    const d=o.getImageData(0,0,S,S).data,pts=[];
+    for(let y=0;y<S;y+=2)for(let x=0;x<S;x+=2)if(d[(y*S+x)*4+3]>120)pts.push([x/S,y/S]);
+    return pts.length?pts:[[0.5,0.5]];
+  }
+
+  function assignShape(){
+    const pts=samplePath(PATHS[shape]);
+    const size=Math.min(W,H)*0.62, ox=W/2, oy=H/2;
+    for(let i=0;i<N;i++){
+      const p=pts[(Math.random()*pts.length)|0];
+      parts[i].sx=ox+(p[0]-0.5)*size;
+      parts[i].sy=oy+(p[1]-0.5)*size;
+    }
+  }
+  function layout(){
+    const r=canvas.getBoundingClientRect();W=r.width;H=r.height;
+    canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    if(parts.length!==N){parts=[];for(let i=0;i<N;i++)parts.push({x:Math.random()*W,y:Math.random()*H,sx:0,sy:0,rainX:Math.random()*W,seed:Math.random(),sp:0.5+Math.random()*0.9,af:(Math.random()*200)|0,ai:Math.random()<0.5});}
+    else parts.forEach(p=>{p.rainX=Math.random()*W;});
+    assignShape();
+  }
+  addEventListener('resize',layout);
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+  addEventListener('touchmove',e=>{const a=e.touches[0];if(a){mx=a.clientX;my=a.clientY;}},{passive:true});
+
+  function tick(){
+    t+=0.016;
+    if(auto){ prog=(Math.sin(t*0.5)*0.5+0.5); document.getElementById('prog').value=prog*100; }
+    // формування: трикутник — пік (фігура) при prog=0.5
+    const form=Math.max(0,1-Math.abs(prog-0.5)*2);
+    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+    const cs=COL.join(',');
+    for(const p of parts){
+      if((p.af>=200&&p.ai)||(p.af<=0&&!p.ai))p.ai=!p.ai;p.af+=p.ai?1:-1;
+      // дощ: падіння згори
+      const rainY=((p.seed*H + t*p.sp*120)%(H+40))-20;
+      const rainX=p.rainX+Math.sin(t*0.6+p.seed*6)*8;
+      // ціль = мікс дощ↔фігура
+      let fx=rainX+(p.sx-rainX)*form;
+      let fy=rainY+(p.sy-rainY)*form;
+      // магніт
+      const rx=fx-mx,ry=fy-my,dist=Math.hypot(rx,ry);let near=0;
+      if(dist<R){near=1-dist/R;const dd=dist||1;fx-=(rx/dd)*near*F;fy-=(ry/dd)*near*F;}
+      // плавність руху
+      const k=form>0.6?0.18:0.12;
+      p.x+=(fx-p.x)*k;p.y+=(fy-p.y)*k;
+      const tw=p.af/200;const a=Math.min(1,0.22+tw*0.4+form*0.4+near*0.4);
+      ctx.fillStyle='rgba('+cs+','+a+')';
+      ctx.beginPath();ctx.arc(p.x,p.y,1.7+form*0.6+near*1.3,0,6.2832);ctx.fill();
+    }
+    requestAnimationFrame(tick);
+  }
+  layout();tick();
+
+  document.querySelectorAll('.bar button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.bar button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+    shape=b.dataset.s;assignShape();
+  }));
+  const pr=document.getElementById('prog');pr.oninput=()=>{auto=false;document.getElementById('play').textContent='▶ Авто';prog=pr.value/100;};
+  document.getElementById('play').onclick=function(){auto=!auto;this.textContent=auto?'⏸ Стоп':'▶ Авто';};
+  const R_=document.getElementById('R'),F_=document.getElementById('F');
+  R_.oninput=()=>{R=+R_.value;document.getElementById('vR').textContent=R;};
+  F_.oninput=()=>{F=+F_.value;document.getElementById('vF').textContent=F;};
+})();
+</script>
+</body>
+</html>
