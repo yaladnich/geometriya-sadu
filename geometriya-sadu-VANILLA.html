@@ -235,8 +235,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-intro{padding-block:clamp(4rem,10vh,9rem) clamp(2rem,5vh,4rem);}
 .gs-why-h{color:#fff;}
 .gs-why-panels{position:relative;}
-.gs-why-panel{height:100vh;min-height:40rem;display:flex;align-items:center;background:#0a0b0a;overflow:hidden;will-change:transform;}
-.gs-why-inner{width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr auto;gap:2.5rem;align-items:center;width:100%;}
+.gs-why-panel{height:100svh;min-height:40rem;display:flex;align-items:center;justify-content:center;background:#0a0b0a;overflow:hidden;will-change:transform;}
+.gs-why-inner{width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:auto auto;justify-content:center;gap:clamp(2rem,5vw,5rem);align-items:center;}
 .gs-why-side{will-change:transform,opacity,filter;}
 .gs-why-text{max-width:40rem;}
 .gs-why-num{font-family:var(--font-display);font-weight:800;font-size:clamp(2.5rem,4vw,3.75rem);line-height:0.9;color:var(--accent-bright);letter-spacing:-0.02em;margin-bottom:0.75rem;}
@@ -245,7 +245,9 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-dots{flex-shrink:0;}
 .gs-why-dots canvas{display:block;width:clamp(20rem,36vw,40rem);height:clamp(15rem,20vw,22rem);}
 @media(max-width:900px){
-  .gs-why-inner{grid-template-columns:1fr;gap:1.5rem;}
+  .gs-why-panel{height:auto;min-height:auto;padding-block:clamp(3rem,9vh,6rem);}
+  .gs-why-inner{grid-template-columns:1fr;gap:1.5rem;justify-items:center;text-align:center;}
+  .gs-why-desc{margin-inline:auto;}
   .gs-why-dots{order:-1;}
   .gs-why-dots canvas{width:100%;height:12rem;}
 }
@@ -2208,7 +2210,7 @@ updateHeaderAndProgress();
       const sx = (r.width - 2 * pad) / (cols - 1), sy = (r.height - 2 * pad) / (rows - 1);
       g.dots.length = 0;
       for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
-        g.dots.push({ left: pad + i * sx, top: pad + j * sy, mag: 0.6, ang: 0, af: (Math.random() * 200) | 0, ai: Math.random() < 0.5 });
+        g.dots.push({ left: pad + i * sx, top: pad + j * sy, dx: 0, dy: 0, af: (Math.random() * 200) | 0, ai: Math.random() < 0.5 });
       }
     };
     g.layout();
@@ -2218,19 +2220,34 @@ updateHeaderAndProgress();
   window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
   window.addEventListener('resize', () => grids.forEach(g => g.layout()));
 
+  const R = 110, PUSH = 26;
   function tick() {
     for (const g of grids) {
       const { ctx } = g;
+      const rect = g.canvas.getBoundingClientRect();
+      const lmx = mx - rect.left, lmy = my - rect.top;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, g.w, g.h);
       for (const d of g.dots) {
         if ((d.af >= 200 && d.ai) || (d.af <= 0 && !d.ai)) d.ai = !d.ai;
         d.af += d.ai ? 1 : -1;
         const tw = d.af / 200;
-        const a = 0.28 + tw * 0.6;
+        // відштовхування від курсора
+        const rx = d.left - lmx, ry = d.top - lmy;
+        const dist = Math.hypot(rx, ry);
+        let tx = 0, ty = 0, near = 0;
+        if (dist < R) {
+          near = 1 - dist / R;
+          const dd = dist || 1;
+          tx = (rx / dd) * near * PUSH;
+          ty = (ry / dd) * near * PUSH;
+        }
+        d.dx += (tx - d.dx) * 0.12;
+        d.dy += (ty - d.dy) * 0.12;
+        const a = Math.min(1, 0.28 + tw * 0.6 + near * 0.5);
         ctx.fillStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + a + ')';
         ctx.beginPath();
-        ctx.arc(d.left, d.top, 1.9, 0, Math.PI * 2);
+        ctx.arc(d.left + d.dx, d.top + d.dy, 1.9 + near * 1.4, 0, Math.PI * 2);
         ctx.fill();
       }
     }
@@ -2239,21 +2256,27 @@ updateHeaderAndProgress();
   tick();
 
   // Пінований слайдер 1:1 як у baseone: текст блюриться+зменшується+їде вгору, колонка крапок виїжджає вгору
-  if (window.gsap && window.ScrollTrigger) {
-    gsap.utils.toArray('.gs-why-panel').forEach(panel => {
-      const side1 = panel.querySelector('.gs-why-side:nth-child(1)');
-      const side2 = panel.querySelector('.gs-why-side:nth-child(2)');
-      ScrollTrigger.create({
-        animation: gsap.timeline()
-          .to(side1, { opacity: 0, filter: 'blur(10px)', scale: 0.8, y: () => -0.05 * panel.offsetHeight })
-          .to(side2, { y: () => -panel.offsetHeight, ease: 'none' }, 0),
-        trigger: panel,
-        start: 'top top',
-        scrub: true,
-        pin: true,
-        pinSpacing: false,
-        invalidateOnRefresh: true
+  // Пін лише на десктопі. На мобільному панелі — звичайний потік (коректний зворотний скрол).
+  if (window.gsap && window.ScrollTrigger && gsap.matchMedia) {
+    const mm = gsap.matchMedia();
+    mm.add('(min-width: 901px)', () => {
+      const triggers = gsap.utils.toArray('.gs-why-panel').map(panel => {
+        const side1 = panel.querySelector('.gs-why-text');
+        const side2 = panel.querySelector('.gs-why-dots');
+        return ScrollTrigger.create({
+          animation: gsap.timeline()
+            .to(side1, { opacity: 0, filter: 'blur(10px)', scale: 0.8, y: () => -0.05 * panel.offsetHeight })
+            .to(side2, { y: () => -panel.offsetHeight, ease: 'none' }, 0),
+          trigger: panel,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+          pin: true,
+          pinSpacing: false,
+          invalidateOnRefresh: true
+        });
       });
+      return () => triggers.forEach(t => t.kill());
     });
   }
 })();
