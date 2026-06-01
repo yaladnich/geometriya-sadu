@@ -52,14 +52,26 @@ https://yaladnich.github.io/geometriya-sadu/
 
 ---
 
-## Поточний стан сайту (актуально на PR #233+)
+## Поточний стан сайту (актуально на PR #246+)
+
+### ВАЖЛИВО: усі розміри в `rem` + глобальне root-scale масштабування
+- Весь CSS у `<style>` переведено в `rem` (база `1rem = 16px`). **Нові розміри задавати в `rem`**, не в px (крім умов `@media`).
+- `html{font-size:var(--root-scale)}`, `:root{--root-scale:1rem}`.
+- Брейкпоінти (як у референсі Redstone): `@media(1200–1380px){--root-scale:0.875rem}`, `@media(min-width:2100px){html{font-size:1.25rem}}`, `@media(min-width:2600px){html{font-size:1.5rem}}`.
 
 ### Хедер (актуальний стан)
-- `position:fixed; top:12px; left:0; right:0; z-index:50; height:81px`
-- Завжди скляна пілюля: `.gs-header-inner` — `border-radius:var(--r-pill); background:rgba(10,11,10,0.55); border:1px solid var(--border); backdrop-filter:blur(16px); overflow:hidden`
-- При скролі темнішає: `background:rgba(10,11,10,0.85); border-color:var(--border-strong); padding:0 1%`
-- **НЕ ЗМІНЮВАТИ** форму пілюлі, не додавати full-width фон, не змінювати `top`
-- **Мобільний** `@media(max-width:600px)`: `height:56px; padding:0 18px` — фіксована висота пілюлі
+- `.gs-header`: `position:fixed; top:0; left:0; right:0; z-index:50`. При скролі (`.gs-header-scrolled`) `top:0.75rem` — пілюля відходить від верху.
+- **Пілюля `.gs-header-inner`** (капсула `border-radius:var(--r-pill)`, `overflow:hidden`, `height:5.0625rem`):
+  - **У спокої — прозора** (без фону/рамки/блюру), лого й меню на хіро.
+  - **При скролі — зелене скло** (рецепт як у кнопки): `background:rgba(37,124,77,0.32); border:rgba(37,124,77,0.58); backdrop-filter:blur(0.75rem); box-shadow:0 0.25rem 1.5rem -0.5rem rgba(37,124,77,0.28),inset 0 1px 0 rgba(255,255,255,0.08)`.
+  - **Шум** `.gs-header-inner::after` (SVG fractalNoise, `opacity:0.12`, БЕЗ `mix-blend-mode` — blend ламає backdrop-filter!), `z-index:-1`.
+  - `transform:translateZ(0); backface-visibility:hidden` — анти-мерехтіння.
+  - **НЕ повертати `animation:gs-header-in` (opacity)** — анімований opacity робить хедер backdrop-root і вимикає `backdrop-filter`!
+  - Внутрішній паддінг `0 2rem` лише при скролі (у спокої `0` — лого збігається з початком H1).
+- **Мобільний** `@media(max-width:600px)`: плашка на всю ширину (`width:100%; border-radius:0`), паддінг `1.125rem`, `top:0` завжди.
+- **Відоме**: текст під склом трохи мерехтить через субпіксельний скрол Lenis (не вирішено).
+- **Перехід на бургер — на 1200px** (`@media(max-width:1200px)`: nav `display:none`, бургер `display:flex`).
+- `.gs-nav`: `flex-wrap:nowrap`, адаптивний `gap:3.2vw → 2vw(≤1700) → 1.4vw(≤1400)`. Іконки `.gs-nav-plus` — **зелені** `var(--accent-bright)`, розмір `1em`.
 
 ### Навбар (актуальний стан)
 - Пункти: **Послуги · Переваги · Портфоліо · Етапи · Ціни · Поширені питання · Контакти** (`#cta`)
@@ -68,11 +80,12 @@ https://yaladnich.github.io/geometriya-sadu/
 - Scramble навішений і на `.gs-nav a` (через внутрішній `<span>`)
 
 ### Типографіка (глобально)
-- **Навбар** `.gs-nav`: `0.875rem / 1.125rem / 600 / uppercase / color:#fff`, hover `var(--accent-bright)`
-- **Кнопка в навбарі** `.gs-cta-pill`: `0.875rem / 600 / uppercase / color:#fff`
-- **Заголовки** display/h1/h2: вага **400 (regular)**, збільшені розміри (display-1 до 160px, h1 до 96px), щільний letter-spacing (`-0.03em` / `-0.025em` / `-0.02em`)
-- **Кнопки** `.gs-btn`: `13px / 700 / uppercase / 0.08em`
-- Бургер: без рамки, лінії `#F28D1B`
+- **Усі заголовки — UPPERCASE + вага 400 (regular)**: H1/H2/H3, `.display-1/2`, `.h-display-1/2`, `.gs-cta-heading`, `.gs-pcard-title`, біжучий рядок `.gs-marquee-track`. Щільний letter-spacing.
+- **Бейджі `.eyebrow`** (хіро, секційні, стат-лейбли) — наш помаранчевий `#F28D1B`. Виняток: `.gs-section-orange .eyebrow` (контраст). Бейдж секції послуг — текст «Пропонуємо».
+- **Навбар** `.gs-nav` / **кнопка** `.gs-cta-pill`: `0.875rem / 600 / uppercase / #fff`, hover `var(--accent-bright)`.
+- **Кнопки** `.gs-btn`: `0.8125rem / 700 / uppercase / 0.08em`. `.gs-btn-primary` — зелене скло + шум `::after` (як пілюля).
+- Бургер: без рамки, лінії `#F28D1B`.
+- **Скролбар сторінки — зелений** (`#257c4d`), НЕ чіпати.
 
 ### Scramble ефект при hover (ВАЖЛИВО)
 - Функція `scrambleNode(node)` — глітч-анімація тексту при наведенні
