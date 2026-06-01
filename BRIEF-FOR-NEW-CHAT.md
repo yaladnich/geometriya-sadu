@@ -79,13 +79,16 @@ https://yaladnich.github.io/geometriya-sadu/
 - Іконка `.gs-nav-plus` — «+» (помаранч. `#F28D1B`); на hover лінія повертається на 90° (стає «×») + глітч `gs-close-glitch`, колір → `var(--accent-bright)`
 - Scramble навішений і на `.gs-nav a` (через внутрішній `<span>`)
 
-### Типографіка (глобально)
-- **Усі заголовки — UPPERCASE + вага 400 (regular)**: H1/H2/H3, `.display-1/2`, `.h-display-1/2`, `.gs-cta-heading`, `.gs-pcard-title`, біжучий рядок `.gs-marquee-track`. Щільний letter-spacing.
-- **Бейджі `.eyebrow`** (хіро, секційні, стат-лейбли) — наш помаранчевий `#F28D1B`. Виняток: `.gs-section-orange .eyebrow` (контраст). Бейдж секції послуг — текст «Пропонуємо».
+### Типографіка (глобально) — МІКС регістрів (актуально!)
+- **UPPERCASE + вага 400**: H1, `.h-display-1`, `.display-1/2` (хіро-заголовок).
+- **Звичайний регістр + вага 600** (`text-transform:none`): H2, `.h-display-2` (секційні заголовки), `.gs-marquee-track`, `.gs-pcard-title`, `.gs-cta-heading`.
+- H3 — `var(--w-bold)`.
+- **Бейджі `.eyebrow`** — помаранчевий `#F28D1B` (база, секційні + стат-лейбли). Виняток: `.gs-hero-eyebrow` — білий `rgba(255,255,255,0.6)`; `.gs-section-orange` — контраст. Бейдж секції послуг — текст «Пропонуємо».
 - **Навбар** `.gs-nav` / **кнопка** `.gs-cta-pill`: `0.875rem / 600 / uppercase / #fff`, hover `var(--accent-bright)`.
-- **Кнопки** `.gs-btn`: `0.8125rem / 700 / uppercase / 0.08em`. `.gs-btn-primary` — зелене скло + шум `::after` (як пілюля).
+- **Кнопки** `.gs-btn`: `0.8125rem / 700 / uppercase / 0.08em`. `.gs-btn-primary` — зелене скло **без рамки** (`border:0`) + шум `::after`.
 - Бургер: без рамки, лінії `#F28D1B`.
 - **Скролбар сторінки — зелений** (`#257c4d`), НЕ чіпати.
+- ⚠️ **Паралельна сесія активно править файл** — перед роботою обов'язково `reset --hard origin/main` і звіряй фактичні регістри/ваги (могли знову змінитись).
 
 ### Scramble ефект при hover (ВАЖЛИВО)
 - Функція `scrambleNode(node)` — глітч-анімація тексту при наведенні
