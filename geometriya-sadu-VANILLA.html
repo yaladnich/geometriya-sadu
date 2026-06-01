@@ -117,7 +117,9 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-btn-primary:hover{background:rgba(37,124,77,0.50);box-shadow:0 0.5rem 2rem -0.5rem rgba(37,124,77,0.5),inset 0 0.0625rem 0 rgba(255,255,255,0.18);}
 .gs-btn svg,.gs-cta-pill .ti{transition:transform 0.35s var(--ease-in-out);}
 .gs-btn:hover svg,.gs-cta-pill:hover .ti{transform:rotate(180deg);}
-.gs-btn-primary:hover svg{transform:translateY(-0.15rem) scale(1.06);}
+.gs-btn-primary svg path{transition:transform 0.4s var(--ease-out);transform-origin:50% 50%;transform-box:fill-box;}
+.gs-btn-primary:hover svg{transform:none;animation:gs-close-glitch 0.44s linear;}
+.gs-btn-primary:hover svg path{transform:rotate(180deg);}
 .gs-btn-secondary{background:transparent;color:var(--fg-1);border:0.0625rem solid var(--border);}
 .gs-btn-secondary:hover{background:rgba(255,255,255,0.04);border-color:var(--border-strong);}
 
