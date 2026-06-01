@@ -2294,9 +2294,9 @@ updateHeaderAndProgress();
           end: 'bottom top',
           scrub: true,
           pin: true,
-          pinSpacing: false,
+          pinSpacing: true,
           invalidateOnRefresh: true,
-          onUpdate: self => { if (g) g.form = Math.min(1, self.progress * 2); }
+          onUpdate: self => { if (g) g.form = Math.min(1, self.progress * 2.2); }
         });
       });
       return () => { pinned = false; triggers.forEach(t => t.kill()); };
