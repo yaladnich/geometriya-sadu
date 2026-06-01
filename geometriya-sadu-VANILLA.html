@@ -240,11 +240,11 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.5rem,2.6vw,2.25rem);line-height:1.1;margin:0 0 0.875rem;color:#fff;text-transform:none;}
 .gs-why-desc{margin:0;font-size:1.0625rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:38ch;}
 .gs-why-dots{flex-shrink:0;}
-.gs-why-dots canvas{display:block;width:14rem;height:17.5rem;}
+.gs-why-dots canvas{display:block;width:clamp(20rem,36vw,40rem);height:clamp(15rem,20vw,22rem);}
 @media(max-width:900px){
   .gs-why-row{grid-template-columns:1fr;gap:1.5rem;}
   .gs-why-dots{order:-1;}
-  .gs-why-dots canvas{width:10rem;height:12.5rem;}
+  .gs-why-dots canvas{width:100%;height:12rem;}
 }
 
 .gs-pf-slider{display:flex;flex-direction:column;gap:0.875rem;}
@@ -2181,21 +2181,21 @@ updateHeaderAndProgress();
   const canvases = Array.from(document.querySelectorAll('.gs-why-dots canvas'));
   if (!canvases.length) return;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const cols = 11, rows = 14, R = 72;
+  const GAP = 38, R = 120;
   let mx = -9999, my = -9999;
   const grids = canvases.map(canvas => {
     const ctx = canvas.getContext('2d');
-    const g = { canvas, ctx, dots: [], w: 0, h: 0 };
+    const g = { canvas, ctx, dots: [], w: 0, h: 0, gx: 0, gy: 0, ga: 0 };
     g.layout = function () {
       const r = canvas.getBoundingClientRect();
       g.w = r.width; g.h = r.height;
       canvas.width = r.width * dpr; canvas.height = r.height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const padX = r.width * 0.09, padY = r.height * 0.06;
-      const gx = (r.width - padX * 2) / (cols - 1), gy = (r.height - padY * 2) / (rows - 1);
+      const cols = Math.max(2, Math.round(r.width / GAP)), rows = Math.max(2, Math.round(r.height / GAP));
+      const sx = r.width / (cols - 1), sy = r.height / (rows - 1);
       g.dots.length = 0;
       for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
-        const ox = padX + i * gx, oy = padY + j * gy;
+        const ox = i * sx, oy = j * sy;
         g.dots.push({ ox, oy, x: ox, y: oy });
       }
     };
@@ -2212,17 +2212,27 @@ updateHeaderAndProgress();
       ctx.clearRect(0, 0, g.w, g.h);
       const rect = g.canvas.getBoundingClientRect();
       const lmx = mx - rect.left, lmy = my - rect.top;
+      const inside = lmx >= -R && lmx <= g.w + R && lmy >= -R && lmy <= g.h + R;
+      const tgx = inside ? lmx : g.w * 0.5, tgy = inside ? lmy : g.h * 0.5, tga = inside ? 1 : 0;
+      g.gx += (tgx - g.gx) * 0.08; g.gy += (tgy - g.gy) * 0.08; g.ga += (tga - g.ga) * 0.06;
+      if (g.ga > 0.01) {
+        const rad = Math.min(g.w, g.h) * 0.65;
+        const grad = ctx.createRadialGradient(g.gx, g.gy, 0, g.gx, g.gy, rad);
+        grad.addColorStop(0, 'rgba(46,157,95,' + (0.2 * g.ga) + ')');
+        grad.addColorStop(1, 'rgba(46,157,95,0)');
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, g.w, g.h);
+      }
       for (const d of g.dots) {
         const dx = d.ox - lmx, dy = d.oy - lmy;
         const dist = Math.hypot(dx, dy);
         let tx = d.ox, ty = d.oy, prox = 0;
         if (dist < R) {
           prox = 1 - dist / R;
-          if (dist > 0.01) { const f = prox * 24; tx = d.ox + dx / dist * f; ty = d.oy + dy / dist * f; }
+          if (dist > 0.01) { const f = prox * 14; tx = d.ox + dx / dist * f; ty = d.oy + dy / dist * f; }
         }
-        d.x += (tx - d.x) * 0.12; d.y += (ty - d.y) * 0.12;
-        ctx.fillStyle = 'rgba(46,157,95,' + (0.32 + prox * 0.6) + ')';
-        const s = 2 + prox * 1.8;
+        d.x += (tx - d.x) * 0.1; d.y += (ty - d.y) * 0.1;
+        ctx.fillStyle = 'rgba(46,157,95,' + (0.16 + prox * 0.6) + ')';
+        const s = 2 + prox * 1.4;
         ctx.fillRect(d.x - s / 2, d.y - s / 2, s, s);
       }
     }
