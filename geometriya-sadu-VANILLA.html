@@ -817,7 +817,7 @@ html,body{overflow-x:hidden;max-width:100%;}
         <div class="gs-pcard-body">
           <div class="gs-pcard-label">Прорахувати вартість</div>
           <h3 class="gs-pcard-title">Монтаж автополиву</h3>
-          <p class="gs-pcard-sub">Проєктування та монтаж Hunter, Rain Bird, Unidelta</p>
+          <p class="gs-pcard-sub">Проєктування та монтаж Hunter, Rain Bird, Irritec</p>
         </div>
       </article>
       <article class="gs-pcard" onclick="openModal(this.querySelector('.gs-pcard-title').textContent)">
@@ -1002,7 +1002,7 @@ html,body{overflow-x:hidden;max-width:100%;}
       <div class="gs-price-row"><div>5–8 зон</div><div class="gs-price-unit">1 зона</div><div class="gs-price-num"><span class="num">450 грн</span></div></div>
       <div class="gs-price-row"><div>9–16 зон</div><div class="gs-price-unit">1 зона</div><div class="gs-price-num"><span class="num">400 грн</span></div></div>
       <div class="gs-price-row"><div>17–24 зони</div><div class="gs-price-unit">1 зона</div><div class="gs-price-num"><span class="num">350 грн</span></div></div>
-      <div class="gs-price-note">У вартість входить: діагностика системи, налаштування контролера, налаштування радіусів поливу та чистка основного фільтра, встановлення насоса. Працюємо з обладнанням: Hunter, Rain Bird, Unidelta, K-Rain, SOLEM.</div>
+      <div class="gs-price-note">У вартість входить: діагностика системи, налаштування контролера, налаштування радіусів поливу та чистка основного фільтра, встановлення насоса. Працюємо з обладнанням: Hunter, Rain Bird, Irritec, K-Rain, SOLEM.</div>
       <div class="gs-price-cat">Ремонт та обслуговування — ціна</div>
       <div class="gs-price-row"><div>Виклик на діагностику (до 10 зон)</div><div class="gs-price-unit">виклик</div><div class="gs-price-num"><span class="num">2 000 грн</span></div></div>
       <div class="gs-price-row"><div>Виклик на діагностику (до 20 зон)</div><div class="gs-price-unit">виклик</div><div class="gs-price-num"><span class="num">3 000 грн</span></div></div>
@@ -1039,7 +1039,7 @@ html,body{overflow-x:hidden;max-width:100%;}
       <div class="gs-faq-group">
         <div class="gs-faq-group-name">Автополив</div>
         <div class="gs-faq-list">
-          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">З яким обладнанням ви працюєте?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Hunter, Rain Bird, Unidelta, K-Rain, SOLEM. Монтаж, весняний запуск та ремонт систем будь-якої складності.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">З яким обладнанням ви працюєте?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Hunter, Rain Bird, Irritec, K-Rain, SOLEM. Монтаж, весняний запуск та ремонт систем будь-якої складності.</div></div>
           <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Чи потрібна консервація автополиву на зиму?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, обов'язково. Продування системи запобігає пошкодженню труб при заморозках. Виконуємо консервацію восени та запуск навесні.</div></div>
           <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Чи обслуговуєте систему, яку монтували не ви?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, виконуємо діагностику, ремонт та обслуговування будь-яких систем незалежно від того, хто їх монтував.</div></div>
         </div>
@@ -1644,14 +1644,14 @@ function initCustomAnimations() {
   gsap.registerPlugin(window.ScrollTrigger);
 
   const brandWord = document.getElementById('brand-word');
-  const brands = ['Hunter', 'Rain\u00a0Bird', 'Unidelta', 'Husqvarna', 'STIHL', 'Bobcat'];
+  const brands = ['Hunter', 'Rain\u00a0Bird', 'Irritec', 'Husqvarna', 'STIHL', 'Bobcat'];
 
   if (brandWord) {
     let brandIndex = 0;
     const glitchChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&';
 
     function setBrand(value) {
-      brandWord.innerHTML = value.replace('Unidelta', '<span>Unidelta</span>');
+      brandWord.innerHTML = value.replace('Irritec', '<span>Irritec</span>');
     }
 
     function glitchToBrand(nextBrand) {
