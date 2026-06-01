@@ -2221,15 +2221,15 @@ updateHeaderAndProgress();
   window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
   window.addEventListener('resize', () => grids.forEach(g => g.layout()));
 
-  const R = 150, PUSH = 22, CSTR = 'rgb(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ')';
+  const R = 160, PULL = 30;
   function tick() {
     for (const g of grids) {
-      const { ctx, cols, rows } = g;
+      const { ctx } = g;
       const rect = g.canvas.getBoundingClientRect();
       const lmx = mx - rect.left, lmy = my - rect.top;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, g.w, g.h);
-      // 1) оновити позиції + близькість до курсора
+      // 1) магніт: крапки тягнуться до курсора
       for (const d of g.dots) {
         if ((d.af >= 200 && d.ai) || (d.af <= 0 && !d.ai)) d.ai = !d.ai;
         d.af += d.ai ? 1 : -1;
@@ -2239,22 +2239,14 @@ updateHeaderAndProgress();
         if (dist < R) {
           d.near = 1 - dist / R;
           const dd = dist || 1;
-          tx = (rx / dd) * d.near * PUSH;
-          ty = (ry / dd) * d.near * PUSH;
+          tx = -(rx / dd) * d.near * PULL;
+          ty = -(ry / dd) * d.near * PULL;
         }
         d.dx += (tx - d.dx) * 0.12;
         d.dy += (ty - d.dy) * 0.12;
         d.x = d.left + d.dx; d.y = d.top + d.dy;
       }
-      // 2) лінії-зв'язки між сусідами сітки (підсвічуються біля курсора)
-      ctx.lineWidth = 1;
-      const idx = (i, j) => i * rows + j;
-      for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
-        const a = g.dots[idx(i, j)];
-        if (i + 1 < cols) { const b = g.dots[idx(i + 1, j)]; const lp = Math.max(a.near, b.near); if (lp > 0.02) { ctx.strokeStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + (lp * 0.55).toFixed(3) + ')'; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); } }
-        if (j + 1 < rows) { const b = g.dots[idx(i, j + 1)]; const lp = Math.max(a.near, b.near); if (lp > 0.02) { ctx.strokeStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + (lp * 0.55).toFixed(3) + ')'; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); } }
-      }
-      // 3) крапки
+      // 2) крапки
       for (const d of g.dots) {
         const tw = d.af / 200;
         const a = Math.min(1, 0.28 + tw * 0.6 + d.near * 0.5);
