@@ -115,7 +115,8 @@ https://yaladnich.github.io/geometriya-sadu/
 - CSS: `.w-wrap{overflow:hidden}` `.w{transform-origin:0 bottom}`
 
 ### #hero
-- Фон: `images/Heroback3.webp` (вечірня сцена з туями/самшитом)
+- Фон: `images/Backv5.webp` (`.gs-hero-bg`, паралакс GSAP)
+- Хіро-бейдж текст: «КИЇВ ТА ОБЛАСТЬ · ОБ'ЄКТИ БУДЬ-ЯКОГО МАСШТАБУ» (колір білий `rgba(255,255,255,0.6)`)
 - Кастомний курсор `#gs-dot` — помаранчева куля, `body{cursor:none}`
   - На `.gs-cta-orange` → **білий**
 
