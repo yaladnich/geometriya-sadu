@@ -2181,22 +2181,23 @@ updateHeaderAndProgress();
   const canvases = Array.from(document.querySelectorAll('.gs-why-dots canvas'));
   if (!canvases.length) return;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const GAP = 38, R = 120;
+  const GAP = 40, COL = [76, 200, 142];
   let mx = -9999, my = -9999;
   const grids = canvases.map(canvas => {
     const ctx = canvas.getContext('2d');
-    const g = { canvas, ctx, dots: [], w: 0, h: 0, gx: 0, gy: 0, ga: 0 };
+    const g = { canvas, ctx, dots: [], w: 0, h: 0 };
     g.layout = function () {
       const r = canvas.getBoundingClientRect();
       g.w = r.width; g.h = r.height;
       canvas.width = r.width * dpr; canvas.height = r.height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const cols = Math.max(2, Math.round(r.width / GAP)), rows = Math.max(2, Math.round(r.height / GAP));
-      const sx = r.width / (cols - 1), sy = r.height / (rows - 1);
+      const pad = Math.min(r.width, r.height) * 0.05;
+      const cols = Math.max(2, Math.round((r.width - 2 * pad) / GAP) + 1);
+      const rows = Math.max(2, Math.round((r.height - 2 * pad) / GAP) + 1);
+      const sx = (r.width - 2 * pad) / (cols - 1), sy = (r.height - 2 * pad) / (rows - 1);
       g.dots.length = 0;
-      for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
-        const ox = i * sx, oy = j * sy;
-        g.dots.push({ ox, oy, x: ox, y: oy });
+      for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+        g.dots.push({ left: pad + i * sx, top: pad + j * sy, mag: 0.6, ang: 0, af: (Math.random() * 200) | 0, ai: Math.random() < 0.5 });
       }
     };
     g.layout();
@@ -2209,43 +2210,61 @@ updateHeaderAndProgress();
   function tick() {
     for (const g of grids) {
       const { ctx } = g;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, g.w, g.h);
+      ctx.lineCap = 'round';
+      ctx.lineWidth = 3.5;
       const rect = g.canvas.getBoundingClientRect();
       const lmx = mx - rect.left, lmy = my - rect.top;
-      const inside = lmx >= -R && lmx <= g.w + R && lmy >= -R && lmy <= g.h + R;
-      const tgx = inside ? lmx : g.w * 0.5, tgy = inside ? lmy : g.h * 0.5, tga = inside ? 1 : 0;
-      g.gx += (tgx - g.gx) * 0.08; g.gy += (tgy - g.gy) * 0.08; g.ga += (tga - g.ga) * 0.06;
-      if (g.ga > 0.01) {
-        const rad = Math.min(g.w, g.h) * 0.65;
-        const grad = ctx.createRadialGradient(g.gx, g.gy, 0, g.gx, g.gy, rad);
-        grad.addColorStop(0, 'rgba(46,157,95,' + (0.2 * g.ga) + ')');
-        grad.addColorStop(1, 'rgba(46,157,95,0)');
-        ctx.fillStyle = grad; ctx.fillRect(0, 0, g.w, g.h);
-      }
+      const over = lmx >= 0 && lmx <= g.w && lmy >= 0 && lmy <= g.h;
+      const maxMag = Math.min(g.w, g.h) / 6;
       for (const d of g.dots) {
-        const dx = d.ox - lmx, dy = d.oy - lmy;
-        const dist = Math.hypot(dx, dy);
-        let tx = d.ox, ty = d.oy, prox = 0;
-        if (dist < R) {
-          prox = 1 - dist / R;
-          if (dist > 0.01) { const f = prox * 14; tx = d.ox + dx / dist * f; ty = d.oy + dy / dist * f; }
+        if ((d.af >= 200 && d.ai) || (d.af <= 0 && !d.ai)) d.ai = !d.ai;
+        d.af += d.ai ? 1 : -1;
+        const tw = d.af / 200;
+        let tMag = 0.6, tAng = d.ang;
+        if (over) {
+          const dx = lmx - d.left, dy = lmy - d.top, dist = Math.hypot(dx, dy) || 1;
+          tMag = Math.min(Math.max(window.innerWidth / dist, 0.6), maxMag);
+          tAng = Math.atan2(dy, dx);
         }
-        d.x += (tx - d.x) * 0.1; d.y += (ty - d.y) * 0.1;
-        ctx.fillStyle = 'rgba(46,157,95,' + (0.16 + prox * 0.6) + ')';
-        const s = 2 + prox * 1.4;
-        ctx.fillRect(d.x - s / 2, d.y - s / 2, s, s);
+        d.mag += (tMag - d.mag) * 0.15;
+        let da = tAng - d.ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+        d.ang += da * 0.2;
+        const a = over ? (0.5 + tw * 0.5) : (0.28 + tw * 0.6);
+        ctx.strokeStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + a + ')';
+        ctx.setTransform(dpr, 0, 0, dpr, d.left * dpr, d.top * dpr);
+        ctx.rotate(d.ang);
+        ctx.beginPath();
+        ctx.moveTo(-d.mag / 2, 0);
+        ctx.lineTo(d.mag / 2, 0);
+        ctx.stroke();
       }
     }
     requestAnimationFrame(tick);
   }
   tick();
 
+  function splitW(el) {
+    if (!el || el.dataset.words === 'true') return;
+    el.innerHTML = el.textContent.trim().split(/\s+/)
+      .map(w => '<span class="w-wrap"><span class="w">' + w + '</span></span>').join(' ');
+    el.dataset.words = 'true';
+  }
   if (window.gsap && window.ScrollTrigger) {
     document.querySelectorAll('.gs-why-row').forEach(row => {
-      gsap.set(row, { opacity: 0, y: 36 });
+      const title = row.querySelector('.gs-why-title');
+      splitW(title);
+      const words = title ? Array.from(title.querySelectorAll('.w')) : [];
+      const others = [row.querySelector('.gs-why-num'), row.querySelector('.gs-why-desc'), row.querySelector('.gs-why-dots')].filter(Boolean);
+      gsap.set(words, { yPercent: 120, opacity: 0 });
+      gsap.set(others, { opacity: 0, y: 18, filter: 'blur(6px)' });
       ScrollTrigger.create({
-        trigger: row, start: 'top 85%', once: true,
-        onEnter: () => gsap.to(row, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+        trigger: row, start: 'top 82%', once: true,
+        onEnter: () => {
+          gsap.to(words, { yPercent: 0, opacity: 1, duration: 0.7, stagger: 0.05, ease: 'power3.out' });
+          gsap.to(others, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, stagger: 0.08, ease: 'power2.out', onComplete: () => gsap.set(others, { clearProps: 'filter' }) });
+        }
       });
     });
   }
