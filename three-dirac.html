@@ -41,12 +41,19 @@ const freq = new Float32Array(BINS);   // поточний «спектр»
 
 // симульований звук: кілька генераторів-«ударів» (як у Dirac, без реальної музики)
 const GENS = [
-  { lo: 0.00, hi: 0.18, prob: 0.05, amp: 1.0, width: 6 },  // бас — рідко, потужно
-  { lo: 0.15, hi: 0.55, prob: 0.16, amp: 0.6, width: 4 },  // середина — частіше
-  { lo: 0.45, hi: 1.00, prob: 0.10, amp: 0.4, width: 3 },  // верх — дрібні сплески
+  { lo: 0.00, hi: 0.20, prob: 0.018, amp: 0.5, width: 7 },  // бас — зрідка, мʼяко
+  { lo: 0.15, hi: 0.60, prob: 0.05, amp: 0.30, width: 5 },  // середина
+  { lo: 0.45, hi: 1.00, prob: 0.03, amp: 0.20, width: 4 },  // верх — поодинокі
 ];
+let phase = 0;
 function stepAudio() {
-  for (let b = 0; b < BINS; b++) freq[b] *= 0.88;          // згасання
+  phase += 0.02;
+  for (let b = 0; b < BINS; b++) freq[b] *= 0.93;          // повільніше згасання → плавніше
+  // легке загальне «дихання» — спокійна базова брижа
+  for (let b = 0; b < BINS; b++) {
+    const u = b / (BINS - 1), win = Math.exp(-Math.pow((u - 0.5) * 2.4, 2));
+    freq[b] += win * 0.04 * (0.6 + 0.4 * Math.sin(phase + u * 5));
+  }
   for (const g of GENS) {
     if (Math.random() < g.prob) {
       const center = ((g.lo + Math.random() * (g.hi - g.lo)) * BINS) | 0;
