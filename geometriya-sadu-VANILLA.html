@@ -2227,11 +2227,8 @@ updateHeaderAndProgress();
         g.parts = [];
         for (let i = 0; i < N; i++) g.parts.push({ x: Math.random() * r.width, y: Math.random() * r.height, sx: 0, sy: 0, rainX: Math.random() * r.width, seed: Math.random(), sp: 0.5 + Math.random() * 0.9, af: (Math.random() * 200) | 0, ai: Math.random() < 0.5 });
       }
-      // рівномірний розподіл по контуру (детермінований індекс, без згущень)
-      const np = g.pts.length;
-      for (let i = 0; i < g.parts.length; i++) {
-        const p = g.parts[i];
-        const q = g.pts[Math.floor(i * np / N) % np];
+      for (const p of g.parts) {
+        const q = g.pts[(Math.random() * g.pts.length) | 0];
         p.sx = ox + (q[0] - 0.5) * size; p.sy = oy + (q[1] - 0.5) * size;
         p.rainX = Math.random() * r.width;
       }
