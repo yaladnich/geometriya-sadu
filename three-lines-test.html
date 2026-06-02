@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glowing Line Terrain — тест (Геометрія саду)</title>
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:system-ui,sans-serif;}
+  #c{display:block;width:100vw;height:100vh;}
+  #label{position:fixed;right:6vw;top:8vh;color:#fff;font-size:clamp(28px,6vw,84px);font-weight:600;letter-spacing:-0.02em;pointer-events:none;}
+  #label small{display:block;font-size:0.3em;font-weight:400;color:#2e9d5f;letter-spacing:0.2em;text-transform:uppercase;margin-top:0.4em;}
+  .hint{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);color:rgba(255,255,255,0.4);font-size:13px;pointer-events:none;}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="label">that.<small id="sub">морфиться сам</small></div>
+<div class="hint">Світний каркас із ліній → рельєф обʼєктів · <b style="color:#2e9d5f">Three.js + bloom</b></div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+const COLS = 240, ROWS = 90;     // точок у лінії × кількість ліній
+const WIDTH = 14, DEPTH = 9;     // розмір рельєфу
+const AMP = 3.4;                 // висота піків
+
+// ── поле висот: масив ROWS×COLS значень 0..1 ────────────────────────────
+const zeros = () => new Float32Array(ROWS * COLS);
+
+// плоска брижа (стан спокою) — легка хвиля
+function fieldWave() {
+  const f = zeros();
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    const u = c / (COLS - 1), v = r / (ROWS - 1);
+    f[r * COLS + c] = 0.12 * Math.sin(u * 9 + v * 5) * Math.exp(-Math.pow((u - 0.5) * 2.2, 2));
+  }
+  return f;
+}
+
+// семпл рельєфу з SVG-іконки: яскравість силуету → висота
+function fieldFromSVG(src) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const S = 200, cv = document.createElement('canvas'); cv.width = cv.height = S;
+      const o = cv.getContext('2d');
+      const sc = Math.min(S / img.width, S / img.height) * 0.82;
+      o.drawImage(img, (S - img.width * sc) / 2, (S - img.height * sc) / 2, img.width * sc, img.height * sc);
+      let d; try { d = o.getImageData(0, 0, S, S).data; } catch (e) { resolve(fieldWave()); return; }
+      const f = zeros();
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+        const x = Math.min(S - 1, (c / (COLS - 1) * S) | 0);
+        const y = Math.min(S - 1, (r / (ROWS - 1) * S) | 0);
+        f[r * COLS + c] = d[(y * S + x) * 4 + 3] > 80 ? 1 : 0;
+      }
+      // легке розмиття, щоб лінії плавно сходили (3×3)
+      const g = zeros();
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+        let s = 0, n = 0;
+        for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+          const rr = r + dr, cc = c + dc;
+          if (rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS) { s += f[rr * COLS + cc]; n++; }
+        }
+        g[r * COLS + c] = s / n;
+      }
+      resolve(g);
+    };
+    img.onerror = () => resolve(fieldWave());
+    img.src = src;
+  });
+}
+
+// ── стани ───────────────────────────────────────────────────────────────
+const STATES = [], LABELS = [];
+let cur = 0, next = 1, morph = 0, started = false;
+const fA = zeros(), fB = zeros();
+
+// геометрія: ROWS ліній по COLS точок
+const lines = [];
+const scene = new THREE.Scene();
+const lineMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 });
+for (let r = 0; r < ROWS; r++) {
+  const pos = new Float32Array(COLS * 3);
+  for (let c = 0; c < COLS; c++) {
+    pos[c * 3] = (c / (COLS - 1) - 0.5) * WIDTH;
+    pos[c * 3 + 1] = 0;
+    pos[c * 3 + 2] = (r / (ROWS - 1) - 0.5) * DEPTH;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const line = new THREE.Line(g, lineMat);
+  lines.push(line); scene.add(line);
+}
+
+// ── сцена ───────────────────────────────────────────────────────────────
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0x000000, 1);
+const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(0, 4.2, 9.5);
+camera.lookAt(0, 0.4, 0);
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 1.1, 0.7, 0.0);
+composer.addPass(bloom);
+function resize() {
+  renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+
+// ── оновлення висот ─────────────────────────────────────────────────────
+function ease(t) { return t * t * (3 - 2 * t); }
+const clock = new THREE.Clock();
+function updateHeights(t) {
+  const m = ease(morph);
+  for (let r = 0; r < ROWS; r++) {
+    const arr = lines[r].geometry.attributes.position.array;
+    for (let c = 0; c < COLS; c++) {
+      const idx = r * COLS + c;
+      const h = fA[idx] + (fB[idx] - fA[idx]) * m;
+      const u = c / (COLS - 1);
+      // жива брижа поверх рельєфу
+      const ripple = 0.10 * Math.sin(u * 12 - t * 1.4 + r * 0.25);
+      arr[c * 3 + 1] = h * AMP + ripple;
+    }
+    lines[r].geometry.attributes.position.needsUpdate = true;
+  }
+}
+
+const subEl = document.getElementById('sub');
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  if (started) {
+    morph += clock.getDelta() * 0.18;
+    if (morph >= 1) {
+      morph = 0; cur = next; next = (next + 1) % STATES.length;
+      fA.set(STATES[cur]); fB.set(STATES[next]);
+    }
+    subEl.textContent = morph < 0.5 ? LABELS[cur] : LABELS[next];
+  }
+  updateHeights(t);
+  composer.render();
+}
+animate();
+
+(async () => {
+  STATES.push(fieldWave()); LABELS.push('хвиля');
+  STATES.push(await fieldFromSVG('icons/tree.svg')); LABELS.push('дерево');
+  STATES.push(await fieldFromSVG('icons/grass.svg')); LABELS.push('газон');
+  STATES.push(await fieldFromSVG('icons/sprinkler.svg')); LABELS.push('автополив');
+  STATES.push(await fieldFromSVG('icons/tractor.svg')); LABELS.push('техніка');
+  fA.set(STATES[0]); fB.set(STATES[1]);
+  started = true;
+})();
+</script>
+</body>
+</html>
