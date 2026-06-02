@@ -67,11 +67,14 @@ function stepAudio() {
 
 // ── лінії: по одній на кожен часовий зріз (timeLines) ───────────────────
 const lines = [];
-const lmat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
+const lmat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.7 });
+const EM = [0.18, 0.61, 0.37], OR = [0.95, 0.55, 0.11]; // ізумруд → помаранчевий
 for (let t = 0; t < HIST; t++) {
-  const pos = new Float32Array(BINS * 3);
+  const pos = new Float32Array(BINS * 3), col = new Float32Array(BINS * 3);
   for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 2] = (0.5 - t / (HIST - 1)) * DEPTH; }
-  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
   const ln = new THREE.Line(g, lmat); lines.push(ln); scene.add(ln);
 }
 
@@ -99,9 +102,16 @@ function animate() {
   // оновлюємо «звук» з фіксованим кроком (~30/с) — як аналізатор
   while (acc > 0.033) { stepAudio(); acc -= 0.033; }
   for (let t = 0; t < HIST; t++) {
-    const h = history[t], arr = lines[t].geometry.attributes.position.array;
-    for (let b = 0; b < BINS; b++) arr[b * 3 + 1] = h[b] * AMP;
+    const h = history[t], arr = lines[t].geometry.attributes.position.array, col = lines[t].geometry.attributes.color.array;
+    for (let b = 0; b < BINS; b++) {
+      arr[b * 3 + 1] = h[b] * AMP;
+      const m = Math.min(1, h[b] * 1.2); // висота гребеня → частка помаранчевого
+      col[b * 3] = EM[0] + (OR[0] - EM[0]) * m;
+      col[b * 3 + 1] = EM[1] + (OR[1] - EM[1]) * m;
+      col[b * 3 + 2] = EM[2] + (OR[2] - EM[2]) * m;
+    }
     lines[t].geometry.attributes.position.needsUpdate = true;
+    lines[t].geometry.attributes.color.needsUpdate = true;
   }
   composer.render();
 }
