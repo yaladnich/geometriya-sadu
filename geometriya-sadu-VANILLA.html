@@ -2246,19 +2246,9 @@ updateHeaderAndProgress();
   window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
   window.addEventListener('resize', () => grids.forEach(g => g.layout()));
 
-  // енергія скролу: росте при прокрутці, плавно згасає — піднімає форму з поля
-  let scrollE = 0, lastY = window.scrollY;
-  window.addEventListener('scroll', () => {
-    scrollE = Math.min(1, scrollE + Math.min(0.5, Math.abs(window.scrollY - lastY) * 0.025));
-    lastY = window.scrollY;
-  }, { passive: true });
-
-  const C = 0.16, DAMP = 0.992, AMP = 14; // швидкість хвилі, згасання, амплітуда зсуву
-  const at = (D, i, j) => D[j * cols + i];
   let T = 0;
   function tick() {
     T += 0.016;
-    scrollE *= 0.95; // плавне згасання форми після зупинки скролу
     for (const g of grids) {
       const { ctx } = g;
       const D = g.dots;
@@ -2271,70 +2261,34 @@ updateHeaderAndProgress();
       ctx.fillStyle = glow; ctx.fillRect(0, 0, g.w, g.h);
       const rect = g.canvas.getBoundingClientRect();
       const lmx = mx - rect.left, lmy = my - rect.top;
-
-      // 1) джерела хвиль: дві пульсуючі точки збурюють поле — звідти хвилі розходяться
-      const calm = 1 - scrollE * 0.9; // під час скролу хаотичні хвилі затихають
-      const s1 = at(D, (cols * 0.28) | 0, (rows * 0.3) | 0);
-      const s2 = at(D, (cols * 0.7) | 0, (rows * 0.68) | 0);
-      s1.h += Math.sin(T * 2.1) * 0.5 * calm;
-      s2.h += Math.sin(T * 1.5 + 1.3) * 0.45 * calm;
-
-      // 2) реальна хвильова симуляція: прискорення ∝ лапласіан (різниця із сусідами)
-      for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
-        const d = at(D, i, j);
-        const l = i > 0 ? at(D, i - 1, j).h : d.h;
-        const rr = i < cols - 1 ? at(D, i + 1, j).h : d.h;
-        const u = j > 0 ? at(D, i, j - 1).h : d.h;
-        const dn = j < rows - 1 ? at(D, i, j + 1).h : d.h;
-        d.v += (l + rr + u + dn - 4 * d.h) * C;
-      }
-      let mean = 0;
-      for (const d of D) { d.v *= DAMP; d.h += d.v; mean += d.h; }
-      mean /= D.length;
-      for (const d of D) d.h -= mean; // прибрати DC-дрейф, щоб поле не «спливало»
-
-      // ease: 0 — перспективна хвиля, 1 — крапки зібрані в 3D-фігури (на скролі)
-      const stand = Math.min(1, scrollE * 1.3);
-      const ease = stand * stand * (3 - 2 * stand); // smoothstep
-      // кути обертання фігур
-      const ay = T * 0.6, by2 = Math.sin(T * 0.4) * 0.5;
-      const cay = Math.cos(ay), say = Math.sin(ay), cax = Math.cos(by2), sax = Math.sin(by2);
-      const focal = g.RAD * 3.2;
+      // курсор трохи підкручує обертання
+      const drag = (lmx - g.w / 2) / g.w;
+      // кути обертання сфери
+      const ay = T * 0.5 + drag * 1.2, ax = Math.sin(T * 0.35) * 0.45;
+      const cay = Math.cos(ay), say = Math.sin(ay), cax = Math.cos(ax), sax = Math.sin(ax);
+      const focal = g.RAD * 3.2, C2 = g.sphC;
       ctx.shadowColor = 'rgba(79,214,136,0.9)';
       for (const d of D) {
-        // хвильова позиція (перспективна підлога)
-        const wy = d.py - d.h * AMP * d.sc;
-        let tx = d.px, ty = wy, depth = 0, fig = 0;
-        if (ease > 0.001) {
-          // обертання 3D-точки навколо Y, потім X
-          let X = d.X, Y = d.Y, Z = d.Z;
-          let x1 = X * cay + Z * say, z1 = -X * say + Z * cay;
-          let y2 = Y * cax - z1 * sax, z2 = Y * sax + z1 * cax;
-          const C2 = g.sphC;
-          const pscale = focal / (focal + z2); // перспектива: ближче — більше
-          tx = d.px + (C2[0] + x1 * pscale - d.px) * ease;
-          ty = wy + (C2[1] + y2 * pscale - wy) * ease;
-          depth = (1 - z2 / g.RAD) * 0.5; // 0..1 ближче=яскравіше
-          fig = ease * pscale;
-        }
-        const dx = tx - lmx, dy = ty - lmy, dist = Math.hypot(dx, dy);
-        let prox = 0;
-        if (dist < R && ease < 0.3) { prox = 1 - dist / R; d.v -= prox * 0.5; }
+        // обертання 3D-точки навколо Y, потім X + перспективна проєкція
+        const x1 = d.X * cay + d.Z * say, z1 = -d.X * say + d.Z * cay;
+        const y2 = d.Y * cax - z1 * sax, z2 = d.Y * sax + z1 * cax;
+        const pscale = focal / (focal + z2);
+        const tx = C2[0] + x1 * pscale, ty = C2[1] + y2 * pscale;
+        const depth = Math.min(1, Math.max(0, (1 - z2 / g.RAD) * 0.5)); // ближче = яскравіше
         if (d.spk <= 0 && Math.random() < 0.0012) d.spk = 1;
         d.spk *= 0.94;
-        d.x += (tx - d.x) * 0.2; d.y += (ty - d.y) * 0.3;
-        const lvl = Math.min(1, Math.abs(d.h) * 0.7 * (1 - ease) + d.spk + prox * 0.5 + fig * (0.35 + depth * 0.65));
-        const a = Math.min(1, 0.2 + lvl * 0.78);
-        // фігури — фірмовий помаранчевий; поле — зелене
-        const o = Math.min(1, ease * (0.5 + depth * 0.5) + d.spk * 0.5);
+        d.x += (tx - d.x) * 0.5; d.y += (ty - d.y) * 0.5;
+        const lvl = Math.min(1, 0.2 + depth * 0.8 + d.spk);
+        const a = Math.min(1, 0.18 + lvl * 0.8);
+        // помаранчевий акцент на ближньому боці сфери
+        const o = Math.min(1, depth * 0.7 + d.spk * 0.5);
         const rr2 = (90 + lvl * 110) + (242 - (90 + lvl * 110)) * o;
         const gg2 = (200 + lvl * 45) + (141 - (200 + lvl * 45)) * o;
         const bb2 = (150 + lvl * 75) + (27 - (150 + lvl * 75)) * o;
         ctx.fillStyle = 'rgba(' + rr2 + ',' + gg2 + ',' + bb2 + ',' + a + ')';
         ctx.shadowColor = o > 0.4 ? 'rgba(242,141,27,0.9)' : 'rgba(79,214,136,0.9)';
         ctx.shadowBlur = 3 + lvl * 10;
-        const sizeSc = d.sc + (Math.max(0.5, fig) - d.sc) * ease;
-        const s = (4 + lvl * 3) * sizeSc;
+        const s = (3 + depth * 4) * pscale;
         ctx.fillRect(d.x - s / 2, d.y - s / 2, s, s);
       }
       ctx.shadowBlur = 0;
