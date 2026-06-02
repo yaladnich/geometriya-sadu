@@ -13,7 +13,7 @@
 </head>
 <body>
 <canvas id="c"></canvas>
-<div id="label">that.</div>
+<div id="label">Геометрія<small id="sub" style="display:block;font-size:0.32em;color:#2e9d5f;letter-spacing:0.2em;text-transform:uppercase;margin-top:0.4em"></small></div>
 <div class="hint">Спектрограма-водоспад (симульований звук) · <b style="color:#2e9d5f">Three.js + bloom</b></div>
 
 <script type="importmap">
@@ -46,23 +46,55 @@ const GENS = [
   { lo: 0.45, hi: 1.00, prob: 0.03, amp: 0.20, width: 4 },  // верх — поодинокі
 ];
 let phase = 0;
+// режими: спокійні хвилі / гори / ліс — циклічно
+const MODES = ['хвилі', 'гори', 'ліс'];
+let mode = 0, modeT = 0;
+const target = new Float32Array(BINS); // цільовий профіль для гір/лісу
+
+function buildProfile() {
+  if (MODES[mode] === 'гори') {
+    // кілька великих хребтів (низькочастотний рельєф), що повільно дрейфують
+    for (let b = 0; b < BINS; b++) {
+      const u = b / (BINS - 1);
+      let h = 0.55 * Math.abs(Math.sin(u * 2.3 + phase * 0.3))
+            + 0.30 * Math.abs(Math.sin(u * 4.1 - phase * 0.2 + 1.0))
+            + 0.16 * Math.abs(Math.sin(u * 7.0 + phase * 0.15));
+      target[b] = h * Math.exp(-Math.pow((u - 0.5) * 2.0, 2)) * 1.6;
+    }
+  } else if (MODES[mode] === 'ліс') {
+    // багато вузьких високих піків — «дерева»
+    for (let b = 0; b < BINS; b++) target[b] = 0.08;
+    const trees = 16;
+    for (let i = 0; i < trees; i++) {
+      const u = (i + 0.5) / trees + Math.sin(phase * 0.25 + i) * 0.01;
+      const center = (u * BINS) | 0, height = 0.7 + 0.5 * ((Math.sin(i * 12.9) * 43758.5) % 1 + 1) % 1;
+      for (let k = -2; k <= 2; k++) { const b = center + k; if (b < 0 || b >= BINS) continue; target[b] = Math.max(target[b], height * Math.exp(-(k * k) / 1.4)); }
+    }
+  }
+}
+
 function stepAudio() {
   phase += 0.02;
-  for (let b = 0; b < BINS; b++) freq[b] *= 0.93;          // повільніше згасання → плавніше
-  // легке загальне «дихання» — спокійна базова брижа
-  for (let b = 0; b < BINS; b++) {
-    const u = b / (BINS - 1), win = Math.exp(-Math.pow((u - 0.5) * 2.4, 2));
-    freq[b] += win * 0.04 * (0.6 + 0.4 * Math.sin(phase + u * 5));
-  }
-  for (const g of GENS) {
-    if (Math.random() < g.prob) {
-      const center = ((g.lo + Math.random() * (g.hi - g.lo)) * BINS) | 0;
-      const a = g.amp * (0.5 + Math.random() * 0.6);
-      for (let k = -g.width; k <= g.width; k++) {
-        const b = center + k; if (b < 0 || b >= BINS) continue;
-        freq[b] += a * Math.exp(-(k * k) / (g.width * g.width * 0.5));
+  modeT += 0.033;
+  if (modeT > 7) { modeT = 0; mode = (mode + 1) % MODES.length; }
+
+  if (MODES[mode] === 'хвилі') {
+    for (let b = 0; b < BINS; b++) freq[b] *= 0.93;
+    for (let b = 0; b < BINS; b++) {
+      const u = b / (BINS - 1), win = Math.exp(-Math.pow((u - 0.5) * 2.4, 2));
+      freq[b] += win * 0.04 * (0.6 + 0.4 * Math.sin(phase + u * 5));
+    }
+    for (const g of GENS) {
+      if (Math.random() < g.prob) {
+        const center = ((g.lo + Math.random() * (g.hi - g.lo)) * BINS) | 0;
+        const a = g.amp * (0.5 + Math.random() * 0.6);
+        for (let k = -g.width; k <= g.width; k++) { const b = center + k; if (b < 0 || b >= BINS) continue; freq[b] += a * Math.exp(-(k * k) / (g.width * g.width * 0.5)); }
       }
     }
+  } else {
+    // гори/ліс: плавно ведемо спектр до цільового профілю (рельєф пливе у глибину)
+    buildProfile();
+    for (let b = 0; b < BINS; b++) freq[b] += (target[b] - freq[b]) * 0.18;
   }
   // згладити по сусідах (округлі піки)
   for (let pass = 0; pass < 2; pass++) {
@@ -108,6 +140,7 @@ function animate() {
   acc += clock.getDelta();
   // оновлюємо «звук» з фіксованим кроком (~30/с) — як аналізатор
   while (acc > 0.033) { stepAudio(); acc -= 0.033; }
+  document.getElementById('sub').textContent = MODES[mode];
   for (let t = 0; t < HIST; t++) {
     const h = history[t], arr = lines[t].geometry.attributes.position.array, col = lines[t].geometry.attributes.color.array;
     for (let b = 0; b < BINS; b++) {
