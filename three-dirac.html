@@ -3,19 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dirac-style waveform + фігури на гребені — тест</title>
+<title>Dirac-style spectrogram waterfall — тест</title>
 <style>
   html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:system-ui,sans-serif;}
   #c{display:block;width:100vw;height:100vh;}
   #label{position:fixed;right:6vw;top:7vh;color:#fff;font-size:clamp(34px,7vw,96px);font-weight:600;letter-spacing:-0.02em;pointer-events:none;text-align:right;}
-  #label small{display:block;font-size:0.3em;font-weight:400;color:#2e9d5f;letter-spacing:0.2em;text-transform:uppercase;margin-top:0.4em;}
   .hint{position:fixed;left:6vw;bottom:6vh;color:rgba(255,255,255,0.5);font-size:14px;pointer-events:none;}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-<div id="label">Геометрія саду<small id="sub">…</small></div>
-<div class="hint">Світна хвиля + фігура на гребені · <b style="color:#2e9d5f">Three.js + bloom</b></div>
+<div id="label">that.</div>
+<div class="hint">Спектрограма-водоспад (симульований звук) · <b style="color:#2e9d5f">Three.js + bloom</b></div>
 
 <script type="importmap">
 { "imports": {
@@ -30,64 +29,50 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
-const COLS = 260, ROWS = 70, WIDTH = 18, DEPTH = 4.2, AMP = 2.7;
+const BINS = 90;        // частотні смуги (вісь X)
+const HIST = 80;        // довжина історії в часі (вісь Z, як timeHistoryLength у Dirac)
+const WIDTH = 18, DEPTH = 7.5, AMP = 3.2;
 const scene = new THREE.Scene();
 
-// ── світна хвиля (Dirac-вайб) ───────────────────────────────────────────
+// ── історія спектра: HIST зрізів по BINS значень ────────────────────────
+const history = [];
+for (let t = 0; t < HIST; t++) history.push(new Float32Array(BINS));
+const freq = new Float32Array(BINS);   // поточний «спектр»
+
+// симульований звук: кілька генераторів-«ударів» (як у Dirac, без реальної музики)
+const GENS = [
+  { lo: 0.00, hi: 0.18, prob: 0.05, amp: 1.0, width: 6 },  // бас — рідко, потужно
+  { lo: 0.15, hi: 0.55, prob: 0.16, amp: 0.6, width: 4 },  // середина — частіше
+  { lo: 0.45, hi: 1.00, prob: 0.10, amp: 0.4, width: 3 },  // верх — дрібні сплески
+];
+function stepAudio() {
+  for (let b = 0; b < BINS; b++) freq[b] *= 0.88;          // згасання
+  for (const g of GENS) {
+    if (Math.random() < g.prob) {
+      const center = ((g.lo + Math.random() * (g.hi - g.lo)) * BINS) | 0;
+      const a = g.amp * (0.5 + Math.random() * 0.6);
+      for (let k = -g.width; k <= g.width; k++) {
+        const b = center + k; if (b < 0 || b >= BINS) continue;
+        freq[b] += a * Math.exp(-(k * k) / (g.width * g.width * 0.5));
+      }
+    }
+  }
+  // згладити по сусідах (округлі піки)
+  for (let pass = 0; pass < 2; pass++) {
+    for (let b = 1; b < BINS - 1; b++) freq[b] = (freq[b - 1] + freq[b] * 2 + freq[b + 1]) / 4;
+  }
+  // зсув історії назад у часі: новий зріз спереду
+  history.pop(); history.unshift(Float32Array.from(freq));
+}
+
+// ── лінії: по одній на кожен часовий зріз (timeLines) ───────────────────
 const lines = [];
-const lmat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 });
-for (let r = 0; r < ROWS; r++) {
-  const pos = new Float32Array(COLS * 3);
-  for (let c = 0; c < COLS; c++) { pos[c * 3] = (c / (COLS - 1) - 0.5) * WIDTH; pos[c * 3 + 2] = (r / (ROWS - 1) - 0.5) * DEPTH; }
+const lmat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
+for (let t = 0; t < HIST; t++) {
+  const pos = new Float32Array(BINS * 3);
+  for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 2] = (0.5 - t / (HIST - 1)) * DEPTH; }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   const ln = new THREE.Line(g, lmat); lines.push(ln); scene.add(ln);
-}
-let mxn = 0;
-addEventListener('pointermove', e => { mxn = (e.clientX / innerWidth - 0.5); });
-function chaos(u, v, t, rOff) {
-  const x = u - 0.5 - mxn * 0.15, win = Math.exp(-Math.pow(x * 2.7, 2));
-  const n = 0.55 * Math.sin(u * 6 + t * 1.1 + rOff) + 0.40 * Math.sin(u * 11 - t * 1.6 + rOff * 1.7)
-    + 0.32 * Math.sin(u * 18 + t * 0.8 + v * 5) + 0.26 * Math.sin(u * 27 - t * 2.1 + rOff * 2.4)
-    + 0.18 * Math.sin(u * 41 + t * 1.4 + v * 9);
-  return win * n * AMP;
-}
-
-// ── ФІГУРА з точок, що виростає з гребеня ───────────────────────────────
-const NP = 7000;
-const PROFS = [], LABELS = [];
-const fig = { pos: new Float32Array(NP * 3), tgt: new Float32Array(NP * 3) };
-const figGeo = new THREE.BufferGeometry();
-figGeo.setAttribute('position', new THREE.BufferAttribute(fig.pos, 3));
-const figMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.04, transparent: true, opacity: 0, sizeAttenuation: true });
-const figPts = new THREE.Points(figGeo, figMat); scene.add(figPts);
-const PEAK_X = 0, PEAK_Y = AMP * 0.7; // де стоїть фігура (на центральному гребені)
-
-// семпл точок із силуету іконки → цільові позиції (фронтально, по центру)
-function sampleSVG(src) {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.onload = () => {
-      const S = 200, cv = document.createElement('canvas'); cv.width = cv.height = S;
-      const o = cv.getContext('2d');
-      const sc = Math.min(S / img.width, S / img.height) * 0.85;
-      o.drawImage(img, (S - img.width * sc) / 2, (S - img.height * sc) / 2, img.width * sc, img.height * sc);
-      let d; try { d = o.getImageData(0, 0, S, S).data; } catch (e) { resolve(null); return; }
-      const cand = [];
-      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++)
-        if (d[(y * S + x) * 4 + 3] > 80) cand.push([(x / S - 0.5), -(y / S - 0.5)]);
-      if (!cand.length) { resolve(null); return; }
-      const a = new Float32Array(NP * 3), SZ = 3.4;
-      for (let i = 0; i < NP; i++) {
-        const p = cand[(Math.random() * cand.length) | 0];
-        a[i * 3] = PEAK_X + p[0] * SZ;
-        a[i * 3 + 1] = PEAK_Y + (p[1] + 0.5) * SZ;   // піднята над хвилею
-        a[i * 3 + 2] = (Math.random() - 0.5) * 0.4;  // тонкий обʼєм
-      }
-      resolve(a);
-    };
-    img.onerror = () => resolve(null);
-    img.src = src;
-  });
 }
 
 const canvas = document.getElementById('c');
@@ -95,10 +80,10 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setClearColor(0x000000, 1);
 const camera = new THREE.PerspectiveCamera(46, innerWidth / innerHeight, 0.1, 100);
-camera.position.set(0, 1.35, 9.2); camera.lookAt(0, 0.8, 0);
+camera.position.set(0, 2.4, 9.5); camera.lookAt(0, 0.1, -1.2);
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 1.4, 0.85, 0.0);
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 1.5, 0.85, 0.0);
 composer.addPass(bloom);
 function resize() {
   renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight);
@@ -106,49 +91,21 @@ function resize() {
 }
 addEventListener('resize', resize); resize();
 
-let idx = 0, reveal = 0, dir = 1, started = false;
-const ease = t => t * t * (3 - 2 * t);
+let acc = 0;
 const clock = new THREE.Clock();
-const subEl = document.getElementById('sub');
-
 function animate() {
   requestAnimationFrame(animate);
-  const t = clock.getElapsedTime(), dt = clock.getDelta();
-  // хвиля
-  for (let r = 0; r < ROWS; r++) {
-    const v = r / (ROWS - 1), rOff = v * 7, arr = lines[r].geometry.attributes.position.array;
-    for (let c = 0; c < COLS; c++) arr[c * 3 + 1] = chaos(c / (COLS - 1), v, t, rOff);
-    lines[r].geometry.attributes.position.needsUpdate = true;
-  }
-  // фігура: піднімається з гребеня (reveal 0→1) і розчиняється (1→0)
-  if (started && PROFS[idx]) {
-    reveal += dir * dt * 0.3;
-    if (reveal >= 1) { reveal = 1; dir = -1; }
-    if (reveal <= 0) { reveal = 0; dir = 1; idx = (idx + 1) % PROFS.length; if (PROFS[idx]) fig.tgt.set(PROFS[idx]); }
-    const m = ease(reveal), tg = PROFS[idx];
-    for (let i = 0; i < NP; i++) {
-      // старт — у точці гребеня, ціль — позиція у фігурі
-      const tx = tg[i * 3], ty = tg[i * 3 + 1], tz = tg[i * 3 + 2];
-      fig.pos[i * 3] = tx * m + PEAK_X * (1 - m);
-      fig.pos[i * 3 + 1] = ty * m + PEAK_Y * (1 - m);
-      fig.pos[i * 3 + 2] = tz * m;
-    }
-    figGeo.attributes.position.needsUpdate = true;
-    figMat.opacity = m * 0.9;
-    subEl.textContent = m > 0.4 ? LABELS[idx] : 'хвиля';
+  acc += clock.getDelta();
+  // оновлюємо «звук» з фіксованим кроком (~30/с) — як аналізатор
+  while (acc > 0.033) { stepAudio(); acc -= 0.033; }
+  for (let t = 0; t < HIST; t++) {
+    const h = history[t], arr = lines[t].geometry.attributes.position.array;
+    for (let b = 0; b < BINS; b++) arr[b * 3 + 1] = h[b] * AMP;
+    lines[t].geometry.attributes.position.needsUpdate = true;
   }
   composer.render();
 }
 animate();
-
-(async () => {
-  PROFS.push(await sampleSVG('icons/tree.svg')); LABELS.push('дерево');
-  PROFS.push(await sampleSVG('icons/sprinkler.svg')); LABELS.push('автополив');
-  PROFS.push(await sampleSVG('icons/tractor.svg')); LABELS.push('техніка');
-  PROFS.push(await sampleSVG('icons/grass.svg')); LABELS.push('газон');
-  if (PROFS[0]) fig.tgt.set(PROFS[0]);
-  started = true;
-})();
 </script>
 </body>
 </html>
