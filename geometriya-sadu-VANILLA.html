@@ -2191,7 +2191,7 @@ initPortfolio();
 restartPortfolioTimer();
 updateHeaderAndProgress();
 
-// Секція «Переваги» — крапки: дощ (вхід) → SVG-фігура (центр) → розпад (вихід) + магніт
+// Секція «Переваги» — два шари: постійний фоновий дощ + SVG-фігура, що просвічується зі скролом, + магніт
 (function initWhyDots() {
   const canvases = Array.from(document.querySelectorAll('.gs-why-dots canvas'));
   if (!canvases.length) return;
@@ -2225,7 +2225,7 @@ updateHeaderAndProgress();
       const size = Math.min(r.width, r.height) * 0.82, ox = r.width / 2, oy = r.height / 2;
       if (g.parts.length !== N) {
         g.parts = [];
-        for (let i = 0; i < N; i++) g.parts.push({ x: Math.random() * r.width, y: Math.random() * r.height, sx: 0, sy: 0, rainX: Math.random() * r.width, seed: Math.random(), sp: 0.5 + Math.random() * 0.9, af: (Math.random() * 200) | 0, ai: Math.random() < 0.5 });
+        for (let i = 0; i < N; i++) g.parts.push({ x: Math.random() * r.width, y: Math.random() * r.height, sx: 0, sy: 0, rainX: Math.random() * r.width, seed: Math.random(), sp: 0.5 + Math.random() * 0.9, af: (Math.random() * 200) | 0, ai: Math.random() < 0.5, fig: Math.random() < 0.45 });
       }
       for (const p of g.parts) {
         const q = g.pts[(Math.random() * g.pts.length) | 0];
@@ -2263,7 +2263,8 @@ updateHeaderAndProgress();
         p.af += p.ai ? 1 : -1;
         const rainY = ((p.seed * g.h + t * p.sp * 110) % (g.h + 40)) - 20;
         const rainX = p.rainX + Math.sin(t * 0.6 + p.seed * 6) * 7;
-        let fx = rainX + (p.sx - rainX) * form, fy = rainY + (p.sy - rainY) * form;
+        const pf = p.fig ? form : 0; // фоновий дощ іде завжди, фігура реагує на скрол
+        let fx = rainX + (p.sx - rainX) * pf, fy = rainY + (p.sy - rainY) * pf;
         const rx = fx - lmx, ry = fy - lmy, dist = Math.hypot(rx, ry); p.near = 0;
         if (dist < R) { p.near = 1 - dist / R; const dd = dist || 1; fx -= (rx / dd) * p.near * PULL; fy -= (ry / dd) * p.near * PULL; }
         const k = form > 0.6 ? 0.18 : 0.12;
@@ -2271,10 +2272,15 @@ updateHeaderAndProgress();
       }
       // 2) крапки
       for (const p of g.parts) {
-        const tw = p.af / 200, a = Math.min(1, 0.2 + tw * 0.4 + form * 0.4 + p.near * 0.4);
+        const tw = p.af / 200;
+        // фоновий дощ — постійна приглушена яскравість; фігура — просвічується зі скролом
+        const a = p.fig
+          ? Math.min(1, 0.18 + tw * 0.25 + form * 0.62 + p.near * 0.4)
+          : Math.min(1, 0.16 + tw * 0.32 + p.near * 0.4);
+        const rad = p.fig ? 1.7 + form * 0.7 + p.near * 1.2 : 1.5 + p.near * 1.2;
         ctx.fillStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + a + ')';
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 1.7 + form * 0.6 + p.near * 1.2, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
         ctx.fill();
       }
     }
