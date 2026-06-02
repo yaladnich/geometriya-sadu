@@ -2196,7 +2196,12 @@ updateHeaderAndProgress();
   const canvases = Array.from(document.querySelectorAll('.gs-why-dots canvas'));
   if (!canvases.length) return;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const cols = 26, rows = 32, R = 72, ANGLE = -0.16;
+  const cols = 26, rows = 32, R = 72;
+  // перспектива: площина лежить під кутом до глядача, рядки йдуть у глибину
+  const FAR = 2.6;       // у скільки разів дальній край далі за ближній (більше = різкіша перспектива)
+  const SPANX = 1.18;    // ширина площини відносно канваса
+  const HORIZON = 0.16;  // вертикальне положення точки сходу (частка висоти зверху)
+  const GROUND = 0.62;   // «глибина» площини вниз від горизонту (частка висоти)
   let mx = -9999, my = -9999;
 
   const grids = canvases.map((canvas) => {
@@ -2207,17 +2212,19 @@ updateHeaderAndProgress();
       g.w = r.width; g.h = r.height;
       canvas.width = r.width * dpr; canvas.height = r.height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const padX = r.width * 0.09, padY = r.height * 0.06;
-      const gx = (r.width - padX * 2) / (cols - 1), gy = (r.height - padY * 2) / (rows - 1);
-      const cx = r.width / 2, cy = r.height / 2, ca = Math.cos(ANGLE), sa = Math.sin(ANGLE);
+      const cx = r.width / 2, cyv = r.height * HORIZON; // точка сходу (vanishing point)
+      const ground = r.height * GROUND;                 // глибина площини вниз
+      g.cyv = cyv; g.ground = ground;
       g.dots.length = 0;
       for (let j = 0; j < rows; j++) {
+        const dep = j / (rows - 1);                     // 0 — близько, 1 — далеко
+        const sc = 1 / (1 + dep * (FAR - 1));           // перспективний масштаб: дальні менші
         for (let i = 0; i < cols; i++) {
-          // вихідна позиція + поворот усієї сітки на кут ANGLE навколо центру
-          const px = padX + i * gx - cx, py = padY + j * gy - cy;
-          const ox = cx + px * ca - py * sa, oy = cy + px * sa + py * ca;
-          // h — висота хвилі в цій точці, v — швидкість (реальна хвильова симуляція)
-          g.dots.push({ ox, oy, x: ox, y: oy, i, j, h: 0, v: 0, spk: 0 });
+          const u = i / (cols - 1) - 0.5;
+          const ox = cx + u * (r.width * SPANX) * sc;    // дальні рядки вужчі (сходяться)
+          const oy = cyv + ground * sc;                  // дальні рядки вище (до горизонту)
+          // h — висота хвилі, v — швидкість; sc — масштаб для розміру/амплітуди
+          g.dots.push({ ox, oy, x: ox, y: oy, i, j, h: 0, v: 0, spk: 0, sc });
         }
       }
     };
@@ -2275,8 +2282,8 @@ updateHeaderAndProgress();
         // спалахи-іскри
         if (d.spk <= 0 && Math.random() < 0.0012) d.spk = 1;
         d.spk *= 0.94;
-        // зсув по висоті хвилі
-        const ty = d.oy + d.h * AMP;
+        // зсув по висоті хвилі (підйом до глядача), масштабований перспективою
+        const ty = d.oy - d.h * AMP * d.sc;
         d.x += (d.ox - d.x) * 0.2; d.y += (ty - d.y) * 0.3;
         const lvl = Math.min(1, Math.abs(d.h) * 0.7 + d.spk + prox * 0.5); // яскравість від амплітуди
         const a = Math.min(1, 0.22 + lvl * 0.7);
@@ -2291,14 +2298,14 @@ updateHeaderAndProgress();
         // на гребенях хвилі (висока висота) проступає геометрична фігура — ромб
         if (d.h > 0.45) {
           const cr = Math.min(1, (d.h - 0.45) * 1.2);
-          const sz = 4 + cr * 9;
+          const sz = (4 + cr * 9) * d.sc;
           ctx.save();
           ctx.translate(d.x, d.y);
-          ctx.rotate(Math.PI / 4 + ANGLE + T * 0.6);
+          ctx.rotate(Math.PI / 4 + T * 0.6);
           ctx.fillRect(-sz / 2, -sz / 2, sz, sz); // повернутий квадрат = ромб
           ctx.restore();
         } else {
-          const s = 4 + lvl * 3;
+          const s = (4 + lvl * 3) * d.sc;
           ctx.fillRect(d.x - s / 2, d.y - s / 2, s, s);
         }
       }
