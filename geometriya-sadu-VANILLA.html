@@ -2223,8 +2223,16 @@ updateHeaderAndProgress();
           const u = i / (cols - 1) - 0.5;
           const ox = cx + u * (r.width * SPANX) * sc;    // дальні рядки вужчі (сходяться)
           const oy = cyv + ground * sc;                  // дальні рядки вище (до горизонту)
-          // h — висота хвилі, v — швидкість; sc — масштаб для розміру/амплітуди
-          g.dots.push({ ox, oy, x: ox, y: oy, i, j, h: 0, v: 0, spk: 0, sc });
+          // цільова висота форми (трикутник як на лого): піраміда з вершиною вгорі
+          const nx = i / (cols - 1), ny = j / (rows - 1);
+          const apexY = 0.16, baseY = 0.82;
+          let shapeH = 0;
+          if (ny >= apexY && ny <= baseY) {
+            const hw = ((ny - apexY) / (baseY - apexY)) * 0.34; // піврозмах росте до основи
+            if (Math.abs(nx - 0.5) <= hw) shapeH = (baseY - ny) / (baseY - apexY); // 0 біля основи → 1 на вершині
+          }
+          // h — висота хвилі, v — швидкість; sc — масштаб; shapeH — форма при скролі
+          g.dots.push({ ox, oy, x: ox, y: oy, i, j, h: 0, v: 0, spk: 0, sc, shapeH });
         }
       }
     };
@@ -2235,11 +2243,19 @@ updateHeaderAndProgress();
   window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
   window.addEventListener('resize', () => grids.forEach(g => g.layout()));
 
+  // енергія скролу: росте при прокрутці, плавно згасає — піднімає форму з поля
+  let scrollE = 0, lastY = window.scrollY;
+  window.addEventListener('scroll', () => {
+    scrollE = Math.min(1, scrollE + Math.min(0.5, Math.abs(window.scrollY - lastY) * 0.025));
+    lastY = window.scrollY;
+  }, { passive: true });
+
   const C = 0.16, DAMP = 0.992, AMP = 14; // швидкість хвилі, згасання, амплітуда зсуву
   const at = (D, i, j) => D[j * cols + i];
   let T = 0;
   function tick() {
     T += 0.016;
+    scrollE *= 0.95; // плавне згасання форми після зупинки скролу
     for (const g of grids) {
       const { ctx } = g;
       const D = g.dots;
@@ -2271,7 +2287,12 @@ updateHeaderAndProgress();
       let mean = 0;
       for (const d of D) { d.v *= DAMP; d.h += d.v; mean += d.h; }
       mean /= D.length;
-      for (const d of D) d.h -= mean; // прибрати DC-дрейф, щоб поле не «спливало»
+      // при скролі піднімаємо трикутник з поля (форма проступає, хвилі брижаться поверх)
+      const m = scrollE * 0.14;
+      for (const d of D) {
+        d.h -= mean; // прибрати DC-дрейф, щоб поле не «спливало»
+        if (m > 0.001) d.h += (d.shapeH * 2.4 - d.h) * m;
+      }
 
       // 3) брижі від курсора — штовхають поле вниз навколо миші
       ctx.shadowColor = 'rgba(79,214,136,0.9)';
