@@ -2196,7 +2196,7 @@ updateHeaderAndProgress();
   const canvases = Array.from(document.querySelectorAll('.gs-why-dots canvas'));
   if (!canvases.length) return;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const COL = [46, 157, 95], N = 1100, R = 150, PULL = 30;
+  const COL = [46, 157, 95], N = 820, R = 150, PULL = 30;
   // іконки під слайди: 01 озеленення, 02 рулонний газон, 03 автополив, 04 спецтехніка
   const SRC = ['icons/tree.svg', 'icons/grass.svg', 'icons/sprinkler.svg', 'icons/tractor.svg'];
   let mx = -9999, my = -9999, t = 0, pinned = false;
@@ -2227,10 +2227,23 @@ updateHeaderAndProgress();
         g.parts = [];
         for (let i = 0; i < N; i++) g.parts.push({ x: Math.random() * r.width, y: Math.random() * r.height, sx: 0, sy: 0, rainX: Math.random() * r.width, seed: Math.random(), sp: 0.5 + Math.random() * 0.9, af: (Math.random() * 200) | 0, ai: Math.random() < 0.5 });
       }
-      for (const p of g.parts) {
-        const q = g.pts[(Math.random() * g.pts.length) | 0];
+      // рівномірний розподіл по контуру (детермінований індекс, без згущень)
+      const np = g.pts.length;
+      for (let i = 0; i < g.parts.length; i++) {
+        const p = g.parts[i];
+        const q = g.pts[Math.floor(i * np / N) % np];
         p.sx = ox + (q[0] - 0.5) * size; p.sy = oy + (q[1] - 0.5) * size;
         p.rainX = Math.random() * r.width;
+      }
+      // ребра-зв'язки між близькими точками контуру
+      g.edges = [];
+      const D2 = Math.pow(Math.min(r.width, r.height) * 0.045, 2);
+      for (let i = 0; i < g.parts.length; i++) {
+        let cnt = 0;
+        for (let j = i + 1; j < g.parts.length && cnt < 2; j++) {
+          const dx = g.parts[i].sx - g.parts[j].sx, dy = g.parts[i].sy - g.parts[j].sy;
+          if (dx * dx + dy * dy < D2) { g.edges.push(i, j); cnt++; }
+        }
       }
     };
     g.layout();
@@ -2257,20 +2270,35 @@ updateHeaderAndProgress();
       const lmx = mx - rect.left, lmy = my - rect.top;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, g.w, g.h);
+      // 1) оновити позиції
       for (const p of g.parts) {
         if ((p.af >= 200 && p.ai) || (p.af <= 0 && !p.ai)) p.ai = !p.ai;
         p.af += p.ai ? 1 : -1;
         const rainY = ((p.seed * g.h + t * p.sp * 110) % (g.h + 40)) - 20;
         const rainX = p.rainX + Math.sin(t * 0.6 + p.seed * 6) * 7;
         let fx = rainX + (p.sx - rainX) * form, fy = rainY + (p.sy - rainY) * form;
-        const rx = fx - lmx, ry = fy - lmy, dist = Math.hypot(rx, ry); let near = 0;
-        if (dist < R) { near = 1 - dist / R; const dd = dist || 1; fx -= (rx / dd) * near * PULL; fy -= (ry / dd) * near * PULL; }
+        const rx = fx - lmx, ry = fy - lmy, dist = Math.hypot(rx, ry); p.near = 0;
+        if (dist < R) { p.near = 1 - dist / R; const dd = dist || 1; fx -= (rx / dd) * p.near * PULL; fy -= (ry / dd) * p.near * PULL; }
         const k = form > 0.6 ? 0.18 : 0.12;
         p.x += (fx - p.x) * k; p.y += (fy - p.y) * k;
-        const tw = p.af / 200, a = Math.min(1, 0.2 + tw * 0.4 + form * 0.4 + near * 0.4);
+      }
+      // 2) лінії-зв'язки (проявляються разом із фігурою)
+      if (g.edges && form > 0.15) {
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + (form * 0.28).toFixed(3) + ')';
+        ctx.beginPath();
+        for (let e = 0; e < g.edges.length; e += 2) {
+          const a = g.parts[g.edges[e]], b = g.parts[g.edges[e + 1]];
+          ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+        }
+        ctx.stroke();
+      }
+      // 3) крапки
+      for (const p of g.parts) {
+        const tw = p.af / 200, a = Math.min(1, 0.2 + tw * 0.4 + form * 0.4 + p.near * 0.4);
         ctx.fillStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + a + ')';
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 1.7 + form * 0.6 + near * 1.2, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 1.7 + form * 0.6 + p.near * 1.2, 0, Math.PI * 2);
         ctx.fill();
       }
     }
