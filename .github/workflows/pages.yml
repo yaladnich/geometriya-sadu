@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - claude/blissful-faraday-y2CrU
+      - claude/cool-cray-OVT0T
   workflow_dispatch:
 
 permissions:
