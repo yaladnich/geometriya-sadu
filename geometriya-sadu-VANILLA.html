@@ -2235,16 +2235,6 @@ updateHeaderAndProgress();
         p.sx = ox + (q[0] - 0.5) * size; p.sy = oy + (q[1] - 0.5) * size;
         p.rainX = Math.random() * r.width;
       }
-      // ребра-зв'язки між близькими точками контуру
-      g.edges = [];
-      const D2 = Math.pow(Math.min(r.width, r.height) * 0.045, 2);
-      for (let i = 0; i < g.parts.length; i++) {
-        let cnt = 0;
-        for (let j = i + 1; j < g.parts.length && cnt < 2; j++) {
-          const dx = g.parts[i].sx - g.parts[j].sx, dy = g.parts[i].sy - g.parts[j].sy;
-          if (dx * dx + dy * dy < D2) { g.edges.push(i, j); cnt++; }
-        }
-      }
     };
     g.layout();
     const img = new Image();
@@ -2282,18 +2272,7 @@ updateHeaderAndProgress();
         const k = form > 0.6 ? 0.18 : 0.12;
         p.x += (fx - p.x) * k; p.y += (fy - p.y) * k;
       }
-      // 2) лінії-зв'язки (проявляються разом із фігурою)
-      if (g.edges && form > 0.15) {
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + (form * 0.28).toFixed(3) + ')';
-        ctx.beginPath();
-        for (let e = 0; e < g.edges.length; e += 2) {
-          const a = g.parts[g.edges[e]], b = g.parts[g.edges[e + 1]];
-          ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
-        }
-        ctx.stroke();
-      }
-      // 3) крапки
+      // 2) крапки
       for (const p of g.parts) {
         const tw = p.af / 200, a = Math.min(1, 0.2 + tw * 0.4 + form * 0.4 + p.near * 0.4);
         ctx.fillStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + a + ')';
