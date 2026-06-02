@@ -2211,11 +2211,10 @@ updateHeaderAndProgress();
       const gx = (r.width - padX * 2) / (cols - 1), gy = (r.height - padY * 2) / (rows - 1);
       g.dots.length = 0;
       for (let j = 0; j < rows; j++) {
-        // кожен рядок — власна хвиля: своя швидкість, фаза й напрям
-        const rPh = (j * 0.7) % (Math.PI * 2), rSpeed = 0.35 + (j % 5) * 0.12, rDir = j % 2 ? 1 : -1;
         for (let i = 0; i < cols; i++) {
           const ox = padX + i * gx, oy = padY + j * gy;
-          g.dots.push({ ox, oy, x: ox, y: oy, ph: rPh, sp: rSpeed, dir: rDir, spk: 0 });
+          // h — висота хвилі в цій точці, v — швидкість (реальна хвильова симуляція)
+          g.dots.push({ ox, oy, x: ox, y: oy, i, j, h: 0, v: 0, spk: 0 });
         }
       }
     };
@@ -2226,43 +2225,58 @@ updateHeaderAndProgress();
   window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
   window.addEventListener('resize', () => grids.forEach(g => g.layout()));
 
+  const C = 0.16, DAMP = 0.992, AMP = 14; // швидкість хвилі, згасання, амплітуда зсуву
+  const at = (D, i, j) => D[j * cols + i];
   let T = 0;
   function tick() {
     T += 0.016;
     for (const g of grids) {
       const { ctx } = g;
+      const D = g.dots;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, g.w, g.h);
-      // мʼяке зелене сяйво по центру (як у референсі)
+      // мʼяке зелене сяйво по центру
       const glow = ctx.createRadialGradient(g.w / 2, g.h / 2, 0, g.w / 2, g.h / 2, Math.max(g.w, g.h) * 0.55);
       glow.addColorStop(0, 'rgba(46,157,95,0.16)');
       glow.addColorStop(1, 'rgba(46,157,95,0)');
       ctx.fillStyle = glow; ctx.fillRect(0, 0, g.w, g.h);
       const rect = g.canvas.getBoundingClientRect();
       const lmx = mx - rect.left, lmy = my - rect.top;
+
+      // 1) джерела хвиль: дві пульсуючі точки збурюють поле — звідти хвилі розходяться
+      const s1 = at(D, (cols * 0.28) | 0, (rows * 0.3) | 0);
+      const s2 = at(D, (cols * 0.7) | 0, (rows * 0.68) | 0);
+      s1.h += Math.sin(T * 2.1) * 0.9;
+      s2.h += Math.sin(T * 1.5 + 1.3) * 0.8;
+
+      // 2) реальна хвильова симуляція: прискорення ∝ лапласіан (різниця із сусідами)
+      for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+        const d = at(D, i, j);
+        const l = i > 0 ? at(D, i - 1, j).h : d.h;
+        const rr = i < cols - 1 ? at(D, i + 1, j).h : d.h;
+        const u = j > 0 ? at(D, i, j - 1).h : d.h;
+        const dn = j < rows - 1 ? at(D, i, j + 1).h : d.h;
+        d.v += (l + rr + u + dn - 4 * d.h) * C;
+      }
+      for (const d of D) { d.v *= DAMP; d.h += d.v; }
+
+      // 3) брижі від курсора — штовхають поле вниз навколо миші
       ctx.shadowColor = 'rgba(79,214,136,0.9)';
-      for (const d of g.dots) {
-        // хвиля рядка: біжить уздовж рядка у власному напрямі
-        const phase = T * d.sp * d.dir - d.ox * 0.012 + d.ph;
-        const wave = 0.5 + 0.5 * Math.sin(phase);
-        // випадкові спалахи-іскри
-        if (d.spk <= 0 && Math.random() < 0.0016) d.spk = 1;
+      for (const d of D) {
+        const dx = d.ox - lmx, dy = d.oy - lmy, dist = Math.hypot(dx, dy);
+        let prox = 0;
+        if (dist < R) { prox = 1 - dist / R; d.v -= prox * 0.5; }
+        // спалахи-іскри
+        if (d.spk <= 0 && Math.random() < 0.0012) d.spk = 1;
         d.spk *= 0.94;
-        // хвиля піднімає/опускає крапки вертикально (як струна)
-        const driftY = Math.sin(phase) * 6;
-        const dx = d.ox - lmx, dy = d.oy - lmy;
-        const dist = Math.hypot(dx, dy);
-        let tx = d.ox, ty = d.oy + driftY, prox = 0;
-        if (dist < R) {
-          prox = 1 - dist / R;
-          if (dist > 0.01) { const f = prox * 24; tx += dx / dist * f; ty += dy / dist * f; }
-        }
-        d.x += (tx - d.x) * 0.12; d.y += (ty - d.y) * 0.12;
-        const tw = Math.min(1, wave * 0.7 + d.spk);
-        const a = Math.min(1, 0.22 + tw * 0.65 + prox * 0.6);
-        ctx.fillStyle = 'rgba(' + (90 + tw * 110) + ',' + (200 + tw * 45) + ',' + (150 + tw * 75) + ',' + a + ')';
-        ctx.shadowBlur = 3 + tw * 9 + prox * 8; // світіння
-        const s = 4 + tw * 2.6 + prox * 3; // більші пікселі, пульсують
+        // зсув по висоті хвилі
+        const ty = d.oy + d.h * AMP;
+        d.x += (d.ox - d.x) * 0.2; d.y += (ty - d.y) * 0.3;
+        const lvl = Math.min(1, Math.abs(d.h) * 0.7 + d.spk + prox * 0.5); // яскравість від амплітуди
+        const a = Math.min(1, 0.22 + lvl * 0.7);
+        ctx.fillStyle = 'rgba(' + (90 + lvl * 110) + ',' + (200 + lvl * 45) + ',' + (150 + lvl * 75) + ',' + a + ')';
+        ctx.shadowBlur = 3 + lvl * 10;
+        const s = 4 + lvl * 3;
         ctx.fillRect(d.x - s / 2, d.y - s / 2, s, s);
       }
       ctx.shadowBlur = 0;
