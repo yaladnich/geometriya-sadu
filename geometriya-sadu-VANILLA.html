@@ -240,8 +240,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-stage{position:relative;z-index:2;height:100vh;min-height:40rem;display:flex;align-items:center;justify-content:center;background:#0a0b0a;overflow:hidden;}
 .gs-why-inner{position:relative;z-index:1;width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:center;}
 .gs-why-side{will-change:transform,opacity,filter;}
-.gs-why-texts{position:relative;display:grid;justify-self:center;max-width:34rem;width:100%;}
-.gs-why-text{grid-area:1/1;max-width:34rem;opacity:0;will-change:opacity,transform;}
+.gs-why-texts{position:relative;display:grid;justify-self:center;max-width:34rem;width:100%;overflow:hidden;}
+.gs-why-text{grid-area:1/1;align-self:center;max-width:34rem;opacity:0;will-change:opacity,transform;}
 .gs-why-text[data-i="0"]{opacity:1;}
 .gs-why-num{font-family:var(--font-display);font-weight:800;font-size:clamp(2.5rem,4vw,3.75rem);line-height:0.9;color:var(--accent-bright);letter-spacing:-0.02em;margin-bottom:0.75rem;}
 .gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.1;margin:0 0 1rem;color:#fff;text-transform:none;}
@@ -2198,18 +2198,23 @@ updateHeaderAndProgress();
 (function initWhyPin() {
   const stage = document.querySelector('.gs-why-stage');
   if (!stage) return;
+  const wrap = stage.querySelector('.gs-why-texts');
   const texts = Array.from(stage.querySelectorAll('.gs-why-text'));
   const ticks = Array.from(stage.querySelectorAll('.gs-why-tick'));
-  if (!texts.length) return;
+  if (!wrap || !texts.length) return;
 
-  // f — дробовий індекс слайда; слайди їдуть знизу (d>0) вгору (d<0)
+  // висота вікна слайдера — на неї зсуваємо сусідів повністю за межі (overflow:hidden обрізає)
+  let H = wrap.clientHeight || 200;
+  function measure() { H = wrap.clientHeight || H; }
+
+  // f — дробовий індекс слайда; активний у центрі, інші виїхали вгору/вниз і обрізані
   function setSlide(f) {
     const nearest = Math.round(f);
     texts.forEach((el, i) => {
       const d = i - f;
-      const a = Math.max(0, 1 - Math.abs(d));
+      const a = Math.max(0, 1 - Math.min(1, Math.abs(d) * 1.6));
       el.style.opacity = a.toFixed(3);
-      el.style.transform = 'translateY(' + (d * 2.6).toFixed(2) + 'rem)';
+      el.style.transform = 'translateY(' + (d * H).toFixed(1) + 'px)';
       el.style.pointerEvents = a > 0.5 ? 'auto' : 'none';
     });
     ticks.forEach((el, i) => el.classList.toggle('is-on', i === nearest));
@@ -2217,14 +2222,16 @@ updateHeaderAndProgress();
 
   if (!(window.gsap && window.ScrollTrigger)) {
     // фолбек без GSAP — показати всі тексти стовпчиком
+    wrap.style.overflow = 'visible';
     texts.forEach(el => { el.style.opacity = '1'; el.style.position = 'relative'; el.style.marginBottom = '2rem'; });
     return;
   }
   const slides = texts.length;
-  setSlide(0);
+  measure(); setSlide(0);
   ScrollTrigger.create({
     trigger: stage, start: 'top top', end: '+=' + (slides * 100) + '%',
     pin: true, pinSpacing: true, scrub: true, invalidateOnRefresh: true,
+    onRefresh: self => { measure(); setSlide(self.progress * (slides - 1)); },
     onUpdate: self => setSlide(self.progress * (slides - 1))
   });
 })();
