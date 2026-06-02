@@ -237,21 +237,32 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-intro{padding-block:clamp(4rem,10vh,9rem) clamp(2rem,5vh,4rem);}
 .gs-why-h{color:#fff;}
 .gs-why-panels{position:relative;}
-.gs-why-panel{position:relative;z-index:2;height:100vh;min-height:40rem;display:flex;align-items:center;justify-content:center;background:#0a0b0a;overflow:hidden;will-change:transform;}
-.gs-why-inner{width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:center;}
+.gs-why-stage{position:relative;z-index:2;height:100vh;min-height:40rem;display:flex;align-items:center;justify-content:center;background:#0a0b0a;overflow:hidden;}
+.gs-why-inner{position:relative;z-index:1;width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:center;}
 .gs-why-side{will-change:transform,opacity,filter;}
-.gs-why-text{max-width:34rem;justify-self:center;}
+.gs-why-texts{position:relative;display:grid;justify-self:center;max-width:34rem;}
+.gs-why-text{grid-area:1/1;max-width:34rem;will-change:opacity,transform;}
 .gs-why-num{font-family:var(--font-display);font-weight:800;font-size:clamp(2.5rem,4vw,3.75rem);line-height:0.9;color:var(--accent-bright);letter-spacing:-0.02em;margin-bottom:0.75rem;}
 .gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.1;margin:0 0 1rem;color:#fff;text-transform:none;}
 .gs-why-desc{margin:0;font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:40ch;}
-.gs-why-dots{width:100%;}
-.gs-why-dots canvas{display:block;width:100%;height:82vh;-webkit-mask-image:radial-gradient(115% 100% at 55% 55%,#000 50%,transparent 100%);mask-image:radial-gradient(115% 100% at 55% 55%,#000 50%,transparent 100%);}
+/* потік — єдиний суцільний фон stage */
+.gs-why-dots{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+.gs-why-dots canvas{display:block;width:100%;height:100%;-webkit-mask-image:radial-gradient(120% 85% at 72% 55%,#000 38%,transparent 82%);mask-image:radial-gradient(120% 85% at 72% 55%,#000 38%,transparent 82%);}
+.gs-why-nav{position:absolute;left:50%;bottom:2.25rem;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:3;}
+.gs-why-tick{width:1.75rem;height:0.1875rem;border-radius:62rem;background:rgba(255,255,255,0.22);transition:background 0.3s var(--ease-out);}
+.gs-why-tick.is-on{background:var(--accent-bright);}
+@media(min-width:901px){
+  .gs-why-text{opacity:0;}
+  .gs-why-text[data-i="0"]{opacity:1;}
+}
 @media(max-width:900px){
-  .gs-why-panel{height:auto;min-height:auto;padding-block:clamp(3rem,9vh,6rem);}
+  .gs-why-stage{height:auto;min-height:auto;padding-block:clamp(3rem,9vh,6rem);}
   .gs-why-inner{grid-template-columns:1fr;gap:1.5rem;justify-items:center;text-align:center;}
+  .gs-why-texts{display:flex;flex-direction:column;gap:2.5rem;}
+  .gs-why-text{opacity:1;}
   .gs-why-desc{margin-inline:auto;}
-  .gs-why-dots{order:-1;}
-  .gs-why-dots canvas{width:100%;height:12rem;}
+  .gs-why-dots canvas{-webkit-mask-image:radial-gradient(120% 70% at 50% 50%,#000 40%,transparent 85%);mask-image:radial-gradient(120% 70% at 50% 50%,#000 40%,transparent 85%);}
+  .gs-why-nav{display:none;}
 }
 
 .gs-pf-slider{display:flex;flex-direction:column;gap:0.875rem;}
@@ -892,44 +903,37 @@ html,body{overflow-x:hidden;max-width:100%;}
     </div>
   </div>
   <div class="gs-why-panels">
-    <div class="gs-why-panel">
+    <div class="gs-why-stage">
+      <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
       <div class="gs-container gs-why-inner">
-        <div class="gs-why-side gs-why-text">
-          <div class="num gs-why-num">01</div>
-          <h3 class="gs-why-title">Власне озеленення</h3>
-          <p class="gs-why-desc">Туї, хвойні та кущі з перевірених розсадників — приживаються й тримають форму роками.</p>
+        <div class="gs-why-texts">
+          <div class="gs-why-side gs-why-text" data-i="0">
+            <div class="num gs-why-num">01</div>
+            <h3 class="gs-why-title">Власне озеленення</h3>
+            <p class="gs-why-desc">Туї, хвойні та кущі з перевірених розсадників — приживаються й тримають форму роками.</p>
+          </div>
+          <div class="gs-why-side gs-why-text" data-i="1">
+            <div class="num gs-why-num">02</div>
+            <h3 class="gs-why-title">Рулонний газон під ключ</h3>
+            <p class="gs-why-desc">Готуємо ґрунт і стелемо газон — рівне зелене поле вже за день, без бур'янів і ям.</p>
+          </div>
+          <div class="gs-why-side gs-why-text" data-i="2">
+            <div class="num gs-why-num">03</div>
+            <h3 class="gs-why-title">Автополив, що працює сам</h3>
+            <p class="gs-why-desc">Hunter, Rain Bird, Irritec — полив за розкладом, газон зелений без вашої участі.</p>
+          </div>
+          <div class="gs-why-side gs-why-text" data-i="3">
+            <div class="num gs-why-num">04</div>
+            <h3 class="gs-why-title">Власна спецтехніка</h3>
+            <p class="gs-why-desc">Міні-навантажувачі та обладнання — земляні роботи будь-якої складності точно й у строк.</p>
+          </div>
         </div>
-        <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
       </div>
-    </div>
-    <div class="gs-why-panel">
-      <div class="gs-container gs-why-inner">
-        <div class="gs-why-side gs-why-text">
-          <div class="num gs-why-num">02</div>
-          <h3 class="gs-why-title">Рулонний газон під ключ</h3>
-          <p class="gs-why-desc">Готуємо ґрунт і стелемо газон — рівне зелене поле вже за день, без бур'янів і ям.</p>
-        </div>
-        <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
-      </div>
-    </div>
-    <div class="gs-why-panel">
-      <div class="gs-container gs-why-inner">
-        <div class="gs-why-side gs-why-text">
-          <div class="num gs-why-num">03</div>
-          <h3 class="gs-why-title">Автополив, що працює сам</h3>
-          <p class="gs-why-desc">Hunter, Rain Bird, Irritec — полив за розкладом, газон зелений без вашої участі.</p>
-        </div>
-        <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
-      </div>
-    </div>
-    <div class="gs-why-panel">
-      <div class="gs-container gs-why-inner">
-        <div class="gs-why-side gs-why-text">
-          <div class="num gs-why-num">04</div>
-          <h3 class="gs-why-title">Власна спецтехніка</h3>
-          <p class="gs-why-desc">Міні-навантажувачі та обладнання — земляні роботи будь-якої складності точно й у строк.</p>
-        </div>
-        <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
+      <div class="gs-why-nav" aria-hidden="true">
+        <span class="gs-why-tick is-on"></span>
+        <span class="gs-why-tick"></span>
+        <span class="gs-why-tick"></span>
+        <span class="gs-why-tick"></span>
       </div>
     </div>
   </div>
@@ -2191,8 +2195,43 @@ initPortfolio();
 restartPortfolioTimer();
 updateHeaderAndProgress();
 
-// Секція «Переваги» — два шари: постійний фоновий дощ + SVG-фігура, що просвічується зі скролом, + магніт
-/* #why: ефект — окремий module-скрипт перед </body> (Three.js світний потік, блітинг у .gs-why-dots canvas) */
+// #why: єдиний pinned-stage — потік (один екземпляр) як фон, тексти кросфейдяться
+// по черзі при скролі. Пін лише на десктопі (≥901px).
+(function initWhyPin() {
+  const stage = document.querySelector('.gs-why-stage');
+  if (!stage) return;
+  const texts = Array.from(stage.querySelectorAll('.gs-why-text'));
+  const ticks = Array.from(stage.querySelectorAll('.gs-why-tick'));
+  if (!texts.length) return;
+
+  function setSlide(f) {
+    const nearest = Math.round(f);
+    texts.forEach((el, i) => {
+      const a = Math.max(0, 1 - Math.abs(f - i));
+      el.style.opacity = a.toFixed(3);
+      el.style.transform = 'translateY(' + ((1 - a) * 1.25).toFixed(2) + 'rem)';
+      el.style.pointerEvents = a > 0.5 ? 'auto' : 'none';
+    });
+    ticks.forEach((el, i) => el.classList.toggle('is-on', i === nearest));
+  }
+
+  if (!(window.gsap && window.ScrollTrigger && gsap.matchMedia)) return;
+  const mm = gsap.matchMedia();
+  mm.add('(min-width: 901px)', () => {
+    const slides = texts.length;
+    setSlide(0);
+    const st = ScrollTrigger.create({
+      trigger: stage, start: 'top top', end: '+=' + (slides * 100) + '%',
+      pin: true, pinSpacing: true, scrub: true, invalidateOnRefresh: true,
+      onUpdate: self => setSlide(self.progress * (slides - 1))
+    });
+    return () => {
+      st.kill();
+      texts.forEach(el => { el.style.opacity = ''; el.style.transform = ''; el.style.pointerEvents = ''; });
+    };
+  });
+})();
+/* #why: візуал — окремий module-скрипт перед </body> (Three.js світний потік, блітинг у .gs-why-dots canvas) */
 
 // Бургер-меню
 (function initBurger() {
@@ -2299,7 +2338,7 @@ if (targets.length) {
   const renderer = new THREE.WebGLRenderer({ canvas: off, antialias: true, alpha: true });
   renderer.setClearColor(0x000000, 0);
   const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
-  camera.position.set(0, 2.0, 9.5); camera.lookAt(0, 0.1, -1);
+  camera.position.set(-3.2, 2.0, 9.5); camera.lookAt(-3.2, 0.1, -1); // зміщено: яскрава частина праворуч, ліворуч темніше під текст
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 1.3, 0.8, 0.0));
