@@ -2196,56 +2196,69 @@ updateHeaderAndProgress();
   const canvases = Array.from(document.querySelectorAll('.gs-why-dots canvas'));
   if (!canvases.length) return;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const COL = [46, 157, 95], N = 820, R = 150, PULL = 30;
+  const COL = [46, 157, 95], RAIN = 480;
   // іконки під слайди: 01 озеленення, 02 рулонний газон, 03 автополив, 04 спецтехніка
   const SRC = ['icons/tree.svg', 'icons/grass.svg', 'icons/sprinkler.svg', 'icons/tractor.svg'];
-  let mx = -9999, my = -9999, t = 0, pinned = false;
+  let t = 0, pinned = false;
 
-  function sampleImg(img) {
-    const S = 300, off = document.createElement('canvas'); off.width = S; off.height = S;
-    const o = off.getContext('2d');
-    const iw = img.naturalWidth || S, ih = img.naturalHeight || S;
-    const sc = Math.min(S / iw, S / ih) * 0.96, dw = iw * sc, dh = ih * sc;
-    o.drawImage(img, (S - dw) / 2, (S - dh) / 2, dw, dh);
-    let d;
-    try { d = o.getImageData(0, 0, S, S).data; } catch (e) { return [[0.5, 0.5]]; }
-    const pts = [];
-    for (let y = 0; y < S; y += 2) for (let x = 0; x < S; x += 2) if (d[(y * S + x) * 4 + 3] > 90) pts.push([x / S, y / S]);
-    return pts.length ? pts : [[0.5, 0.5]];
+  // Завантажуємо SVG як шлях(и) Path2D + його viewBox для масштабування
+  function fetchContour(url, cb) {
+    fetch(url).then(r => r.text()).then(txt => {
+      const doc = new DOMParser().parseFromString(txt, 'image/svg+xml');
+      const svgEl = doc.querySelector('svg');
+      if (!svgEl) return cb(null);
+      const vb = (svgEl.getAttribute('viewBox') || '0 0 100 100').split(/[\s,]+/).map(Number);
+      const paths = Array.from(doc.querySelectorAll('path'))
+        .map(el => { try { return new Path2D(el.getAttribute('d') || ''); } catch (e) { return null; } })
+        .filter(Boolean);
+      cb({ paths, vw: vb[2] || 100, vh: vb[3] || 100 });
+    }).catch(() => cb(null));
   }
 
   const grids = canvases.map((canvas, idx) => {
     const ctx = canvas.getContext('2d');
-    const g = { canvas, ctx, parts: [], w: 0, h: 0, form: 0, pts: [[0.5, 0.5]] };
+    const g = { canvas, ctx, parts: [], w: 0, h: 0, form: 0, contour: null };
     g.layout = function () {
       const r = canvas.getBoundingClientRect();
       g.w = r.width; g.h = r.height;
       canvas.width = r.width * dpr; canvas.height = r.height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const size = Math.min(r.width, r.height) * 0.82, ox = r.width / 2, oy = r.height / 2;
-      if (g.parts.length !== N) {
+      // постійний дощ
+      if (g.parts.length !== RAIN) {
         g.parts = [];
-        for (let i = 0; i < N; i++) g.parts.push({ x: Math.random() * r.width, y: Math.random() * r.height, sx: 0, sy: 0, rainX: Math.random() * r.width, seed: Math.random(), sp: 0.5 + Math.random() * 0.9, af: (Math.random() * 200) | 0, ai: Math.random() < 0.5, fig: Math.random() < 0.45 });
+        for (let i = 0; i < RAIN; i++) g.parts.push({ rainX: Math.random() * r.width, seed: Math.random(), sp: 0.5 + Math.random() * 0.9, af: (Math.random() * 200) | 0, ai: Math.random() < 0.5 });
       }
-      for (const p of g.parts) {
-        const q = g.pts[(Math.random() * g.pts.length) | 0];
-        p.sx = ox + (q[0] - 0.5) * size; p.sy = oy + (q[1] - 0.5) * size;
-        p.rainX = Math.random() * r.width;
-      }
+      for (const p of g.parts) p.rainX = Math.random() * r.width;
     };
     g.layout();
-    const img = new Image();
-    img.onload = () => { g.pts = sampleImg(img); g.layout(); };
-    img.src = SRC[idx % SRC.length];
+    fetchContour(SRC[idx % SRC.length], data => { g.contour = data; });
     return g;
   });
 
-  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
   window.addEventListener('resize', () => grids.forEach(g => g.layout()));
 
   function viewForm(rect) {
-    // прогрес входу: 0 коли панель унизу (дощ) → 1 коли дійшла й вище (фігура, без розпаду на виході)
+    // прогрес входу: 0 коли панель унизу (дощ) → 1 коли дійшла й вище
     return Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight * 0.75)));
+  }
+
+  // Контур фігури просвічується лініями прямо в шарі дощу (SVG-stroke ∝ form)
+  function drawContour(g, form) {
+    const c = g.contour;
+    if (!c || !c.paths.length) return;
+    const pad = Math.min(g.w, g.h) * 0.1;
+    const scale = Math.min((g.w - pad * 2) / c.vw, (g.h - pad * 2) / c.vh);
+    const ox = (g.w - c.vw * scale) / 2, oy = (g.h - c.vh * scale) / 2;
+    const { ctx } = g;
+    ctx.save();
+    ctx.translate(ox, oy);
+    ctx.scale(scale, scale);
+    ctx.lineWidth = 2.4 / scale;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + Math.min(0.85, form * 0.95).toFixed(3) + ')';
+    for (const p of c.paths) ctx.stroke(p);
+    ctx.restore();
   }
 
   function tick() {
@@ -2254,35 +2267,22 @@ updateHeaderAndProgress();
       const { ctx } = g;
       const rect = g.canvas.getBoundingClientRect();
       const form = pinned ? g.form : viewForm(rect);
-      const lmx = mx - rect.left, lmy = my - rect.top;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, g.w, g.h);
-      // 1) оновити позиції
+      // 1) фоновий дощ — завжди (не зникає)
       for (const p of g.parts) {
         if ((p.af >= 200 && p.ai) || (p.af <= 0 && !p.ai)) p.ai = !p.ai;
         p.af += p.ai ? 1 : -1;
         const rainY = ((p.seed * g.h + t * p.sp * 110) % (g.h + 40)) - 20;
         const rainX = p.rainX + Math.sin(t * 0.6 + p.seed * 6) * 7;
-        const pf = p.fig ? form : 0; // фоновий дощ іде завжди, фігура реагує на скрол
-        let fx = rainX + (p.sx - rainX) * pf, fy = rainY + (p.sy - rainY) * pf;
-        const rx = fx - lmx, ry = fy - lmy, dist = Math.hypot(rx, ry); p.near = 0;
-        if (dist < R) { p.near = 1 - dist / R; const dd = dist || 1; fx -= (rx / dd) * p.near * PULL; fy -= (ry / dd) * p.near * PULL; }
-        const k = form > 0.6 ? 0.18 : 0.12;
-        p.x += (fx - p.x) * k; p.y += (fy - p.y) * k;
-      }
-      // 2) крапки
-      for (const p of g.parts) {
-        const tw = p.af / 200;
-        // фоновий дощ — постійна приглушена яскравість; фігура — просвічується зі скролом
-        const a = p.fig
-          ? Math.min(1, 0.18 + tw * 0.25 + form * 0.62 + p.near * 0.4)
-          : Math.min(1, 0.16 + tw * 0.32 + p.near * 0.4);
-        const rad = p.fig ? 1.7 + form * 0.7 + p.near * 1.2 : 1.5 + p.near * 1.2;
-        ctx.fillStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + a + ')';
+        const a = 0.12 + (p.af / 200) * 0.16;
+        ctx.fillStyle = 'rgba(' + COL[0] + ',' + COL[1] + ',' + COL[2] + ',' + a.toFixed(3) + ')';
         ctx.beginPath();
-        ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
+        ctx.arc(rainX, rainY, 1.5, 0, Math.PI * 2);
         ctx.fill();
       }
+      // 2) контур фігури — просвічується лініями поверх дощу (яскравість ∝ form)
+      if (form > 0.02) drawContour(g, form);
     }
     requestAnimationFrame(tick);
   }
