@@ -47,7 +47,7 @@ const GENS = [
 ];
 let phase = 0;
 // режими: спокійні хвилі / гори / ліс — циклічно
-const MODES = ['хвилі', 'гори', 'ліс'];
+const MODES = ['хвилі', 'гори', 'дерева'];
 let mode = 0, modeT = 0;
 const target = new Float32Array(BINS); // цільовий профіль для гір/лісу
 
@@ -61,14 +61,19 @@ function buildProfile() {
             + 0.16 * Math.abs(Math.sin(u * 7.0 + phase * 0.15));
       target[b] = h * Math.exp(-Math.pow((u - 0.5) * 2.0, 2)) * 1.6;
     }
-  } else if (MODES[mode] === 'ліс') {
-    // багато вузьких високих піків — «дерева»
-    for (let b = 0; b < BINS; b++) target[b] = 0.08;
-    const trees = 16;
+  } else if (MODES[mode] === 'дерева') {
+    // ряд «ялинок»: трикутні крони (широка основа → гострий верх)
+    for (let b = 0; b < BINS; b++) target[b] = 0.06;
+    const trees = 9, halfW = (BINS / trees) * 0.42;
     for (let i = 0; i < trees; i++) {
-      const u = (i + 0.5) / trees + Math.sin(phase * 0.25 + i) * 0.01;
-      const center = (u * BINS) | 0, height = 0.7 + 0.5 * ((Math.sin(i * 12.9) * 43758.5) % 1 + 1) % 1;
-      for (let k = -2; k <= 2; k++) { const b = center + k; if (b < 0 || b >= BINS) continue; target[b] = Math.max(target[b], height * Math.exp(-(k * k) / 1.4)); }
+      const center = ((i + 0.5) / trees) * BINS + Math.sin(phase * 0.2 + i) * 0.6;
+      const rnd = ((Math.sin(i * 12.9) * 43758.5) % 1 + 1) % 1;
+      const height = 1.0 + rnd * 0.7;
+      for (let k = -halfW; k <= halfW; k++) {
+        const b = Math.round(center + k); if (b < 0 || b >= BINS) continue;
+        const tri = Math.max(0, 1 - Math.abs(k) / halfW); // трикутний профіль крони
+        target[b] = Math.max(target[b], height * tri);
+      }
     }
   }
 }
