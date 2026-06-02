@@ -2274,7 +2274,13 @@ updateHeaderAndProgress();
         d.x += (d.ox - d.x) * 0.2; d.y += (ty - d.y) * 0.3;
         const lvl = Math.min(1, Math.abs(d.h) * 0.7 + d.spk + prox * 0.5); // яскравість від амплітуди
         const a = Math.min(1, 0.22 + lvl * 0.7);
-        ctx.fillStyle = 'rgba(' + (90 + lvl * 110) + ',' + (200 + lvl * 45) + ',' + (150 + lvl * 75) + ',' + a + ')';
+        // база — зелена; на гребенях хвилі підмішуємо фірмовий помаранчевий (242,141,27)
+        const o = Math.min(1, Math.max(0, Math.abs(d.h) - 0.3) * 0.9 + d.spk * 0.6);
+        const rr2 = (90 + lvl * 110) + (242 - (90 + lvl * 110)) * o;
+        const gg2 = (200 + lvl * 45) + (141 - (200 + lvl * 45)) * o;
+        const bb2 = (150 + lvl * 75) + (27 - (150 + lvl * 75)) * o;
+        ctx.fillStyle = 'rgba(' + rr2 + ',' + gg2 + ',' + bb2 + ',' + a + ')';
+        ctx.shadowColor = o > 0.5 ? 'rgba(242,141,27,0.9)' : 'rgba(79,214,136,0.9)';
         ctx.shadowBlur = 3 + lvl * 10;
         const s = 4 + lvl * 3;
         ctx.fillRect(d.x - s / 2, d.y - s / 2, s, s);
