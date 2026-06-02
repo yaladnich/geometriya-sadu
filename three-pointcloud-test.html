@@ -33,67 +33,69 @@ import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js';
-import * as BGU from 'three/addons/utils/BufferGeometryUtils.js';
 
 const N = 40000;
 const R = 2.4;
 const COL_A = new THREE.Color('#2e9d5f');
 const COL_B = new THREE.Color('#F28D1B');
 
-// ── семпл точок із поверхні 3D-моделі (з нормалізацією масштабу/центру) ──
-function sampleMesh(geometry) {
-  const mesh = new THREE.Mesh(geometry);
-  const sampler = new MeshSurfaceSampler(mesh).build();
-  geometry.computeBoundingBox();
-  const bb = geometry.boundingBox, c = new THREE.Vector3(), sz = new THREE.Vector3();
-  bb.getCenter(c); bb.getSize(sz);
-  const s = (2 * R) / Math.max(sz.x, sz.y, sz.z);
-  const a = new Float32Array(N * 3), p = new THREE.Vector3();
-  for (let i = 0; i < N; i++) {
-    sampler.sample(p);
-    a[i * 3] = (p.x - c.x) * s;
-    a[i * 3 + 1] = (p.y - c.y) * s;
-    a[i * 3 + 2] = (p.z - c.z) * s;
+// ── ВЛАСНИЙ СЕМПЛЕР: точки по поверхні набору геометрій (без addon-ів) ───
+function sampleSurface(parts) {
+  // зібрати всі трикутники у плоский масив позицій
+  const arrs = parts.map(p => (p.index ? p.toNonIndexed() : p).attributes.position.array);
+  let len = 0; arrs.forEach(a => len += a.length);
+  const pos = new Float32Array(len); let off = 0; arrs.forEach(a => { pos.set(a, off); off += a.length; });
+
+  const triN = pos.length / 9, cum = new Float32Array(triN); let total = 0;
+  const A = new THREE.Vector3, B = new THREE.Vector3, C = new THREE.Vector3, ab = new THREE.Vector3, ac = new THREE.Vector3, cr = new THREE.Vector3;
+  for (let t = 0; t < triN; t++) {
+    const i = t * 9;
+    A.set(pos[i], pos[i + 1], pos[i + 2]); B.set(pos[i + 3], pos[i + 4], pos[i + 5]); C.set(pos[i + 6], pos[i + 7], pos[i + 8]);
+    ab.subVectors(B, A); ac.subVectors(C, A); cr.crossVectors(ab, ac);
+    total += cr.length() * 0.5; cum[t] = total;
   }
+  const a = new Float32Array(N * 3);
+  let minx = 1e9, miny = 1e9, minz = 1e9, maxx = -1e9, maxy = -1e9, maxz = -1e9;
+  for (let k = 0; k < N; k++) {
+    const r = Math.random() * total;
+    let lo = 0, hi = triN - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (cum[m] < r) lo = m + 1; else hi = m; }
+    const i = lo * 9;
+    let u = Math.random(), v = Math.random(); if (u + v > 1) { u = 1 - u; v = 1 - v; }
+    const x = pos[i] + u * (pos[i + 3] - pos[i]) + v * (pos[i + 6] - pos[i]);
+    const y = pos[i + 1] + u * (pos[i + 4] - pos[i + 1]) + v * (pos[i + 7] - pos[i + 1]);
+    const z = pos[i + 2] + u * (pos[i + 5] - pos[i + 2]) + v * (pos[i + 8] - pos[i + 2]);
+    a[k * 3] = x; a[k * 3 + 1] = y; a[k * 3 + 2] = z;
+    if (x < minx) minx = x; if (x > maxx) maxx = x; if (y < miny) miny = y; if (y > maxy) maxy = y; if (z < minz) minz = z; if (z > maxz) maxz = z;
+  }
+  // нормалізувати: центр у 0, масштаб під R
+  const cx = (minx + maxx) / 2, cy = (miny + maxy) / 2, cz = (minz + maxz) / 2;
+  const s = 2 * R / Math.max(maxx - minx, maxy - miny, maxz - minz, 0.001);
+  for (let k = 0; k < N; k++) { a[k * 3] = (a[k * 3] - cx) * s; a[k * 3 + 1] = (a[k * 3 + 1] - cy) * s; a[k * 3 + 2] = (a[k * 3 + 2] - cz) * s; }
   return a;
 }
-const merge = arr => BGU.mergeGeometries(arr);
 
-// ── 3D-ДЕРЕВО: стовбур + гілки + кілька крон ────────────────────────────
-function treeGeo() {
-  const parts = [];
-  const trunk = new THREE.CylinderGeometry(0.12, 0.22, 1.8, 10); trunk.translate(0, -0.6, 0); parts.push(trunk);
-  // гілки
-  const mkBranch = (x, y, z, rot, len) => {
-    const b = new THREE.CylinderGeometry(0.05, 0.09, len, 8);
-    b.rotateZ(rot); b.translate(x, y, z); return b;
-  };
-  parts.push(mkBranch(0.28, 0.1, 0, -0.7, 0.9));
-  parts.push(mkBranch(-0.3, 0.25, 0.1, 0.7, 0.9));
-  // крони (кілька icosphere)
-  const foliage = [[0, 0.9, 0, 0.95], [0.55, 0.65, 0.1, 0.55], [-0.55, 0.8, -0.1, 0.6], [0.1, 1.35, 0.2, 0.55]];
-  foliage.forEach(([x, y, z, r]) => { const f = new THREE.IcosahedronGeometry(r, 2); f.translate(x, y, z); parts.push(f); });
-  return merge(parts);
+// ── 3D-моделі: повертають масив частин-геометрій ────────────────────────
+function treeParts() {
+  const p = [];
+  const trunk = new THREE.CylinderGeometry(0.12, 0.22, 1.8, 10); trunk.translate(0, -0.6, 0); p.push(trunk);
+  const branch = (x, y, rot) => { const b = new THREE.CylinderGeometry(0.05, 0.09, 0.9, 8); b.rotateZ(rot); b.translate(x, y, 0); return b; };
+  p.push(branch(0.28, 0.1, -0.7)); p.push(branch(-0.3, 0.25, 0.7));
+  [[0, 0.9, 0, 0.95], [0.55, 0.65, 0.1, 0.55], [-0.55, 0.8, -0.1, 0.6], [0.1, 1.35, 0.2, 0.55]]
+    .forEach(([x, y, z, r]) => { const f = new THREE.IcosahedronGeometry(r, 2); f.translate(x, y, z); p.push(f); });
+  return p;
 }
-
-// ── КУЩ-САМШИТ: щільна крона-конус на короткому стовбурі ─────────────────
-function bushGeo() {
-  const parts = [];
-  const trunk = new THREE.CylinderGeometry(0.1, 0.14, 0.5, 8); trunk.translate(0, -0.8, 0); parts.push(trunk);
-  const top = new THREE.SphereGeometry(0.95, 24, 18); top.scale(1, 1.25, 1); top.translate(0, 0.25, 0); parts.push(top);
-  return merge(parts);
+function bushParts() {
+  const p = [];
+  const trunk = new THREE.CylinderGeometry(0.1, 0.14, 0.5, 8); trunk.translate(0, -0.8, 0); p.push(trunk);
+  const top = new THREE.SphereGeometry(0.95, 24, 18); top.scale(1, 1.25, 1); top.translate(0, 0.25, 0); p.push(top);
+  return p;
 }
-
-// ── БУДИНОК: коробка + 4-схила дах ──────────────────────────────────────
-function houseGeo() {
-  const parts = [];
-  const walls = new THREE.BoxGeometry(1.6, 1.1, 1.4); walls.translate(0, -0.35, 0); parts.push(walls);
-  const roof = new THREE.ConeGeometry(1.25, 0.9, 4); roof.rotateY(Math.PI / 4); roof.translate(0, 0.65, 0); parts.push(roof);
-  return merge(parts);
+function houseParts() {
+  const p = [];
+  const walls = new THREE.BoxGeometry(1.6, 1.1, 1.4); walls.translate(0, -0.35, 0); p.push(walls);
+  const roof = new THREE.ConeGeometry(1.25, 0.9, 4); roof.rotateY(Math.PI / 4); roof.translate(0, 0.65, 0); p.push(roof);
+  return p;
 }
-
-// ── ПЛОЩИНА (стан спокою) ───────────────────────────────────────────────
 function makePlane() {
   const a = new Float32Array(N * 3), W = Math.round(Math.sqrt(N * 1.4)), H = Math.ceil(N / W);
   for (let i = 0; i < N; i++) {
@@ -131,8 +133,7 @@ const mat = new THREE.ShaderMaterial({
   transparent: true, depthWrite: false, blending: THREE.NormalBlending,
   vertexShader: /* glsl */`
     attribute vec3 aTarget; attribute float aScale;
-    uniform float uMorph, uSize, uRadius;
-    varying float vMix;
+    uniform float uMorph, uSize, uRadius; varying float vMix;
     float ease(float t){ return t*t*(3.0-2.0*t); }
     void main(){
       vec3 pos = mix(position, aTarget, ease(uMorph));
@@ -195,14 +196,15 @@ function animate() {
 }
 animate();
 
-// побудова станів (синхронно — усе процедурне, без зовнішніх ассетів)
+// побудова: площину показуємо одразу, моделі — у try/catch (fallback сфера)
+function safe(fn, label) { try { add(sampleSurface(fn()), label); } catch (e) { console.error('shape fail', label, e); add(makeSphere(), label); } }
 add(makePlane(), 'Площина');
-add(sampleMesh(treeGeo()), 'Дерево');
-add(sampleMesh(bushGeo()), 'Самшит');
-add(sampleMesh(houseGeo()), 'Будинок');
+base.set(STATES[0]); geo.attributes.position.needsUpdate = true; // плоска сітка видима одразу
+safe(treeParts, 'Дерево');
+safe(bushParts, 'Самшит');
+safe(houseParts, 'Будинок');
 add(makeSphere(), 'Сфера');
-base.set(STATES[0]); target.set(STATES[1]);
-geo.attributes.position.needsUpdate = true; geo.attributes.aTarget.needsUpdate = true;
+target.set(STATES[1]); geo.attributes.aTarget.needsUpdate = true;
 started = true;
 </script>
 </body>
