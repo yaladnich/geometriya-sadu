@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Point Cloud Morph — тест (Геометрія саду)</title>
+<title>Point Cloud Morph 3D — тест (Геометрія саду)</title>
 <style>
   html,body{margin:0;height:100%;background:#070a08;overflow:hidden;font-family:system-ui,sans-serif;}
   #c{display:block;width:100vw;height:100vh;}
@@ -17,7 +17,7 @@
 <body>
 <canvas id="c"></canvas>
 <div id="label"></div>
-<div class="hint">Площина → фігура (морф сам) · рухай мишею, щоб обертати · <b>Three.js + bloom</b></div>
+<div class="hint">Площина → обʼємні 3D-моделі (морф сам) · рухай мишею, щоб обертати · <b>Three.js + bloom</b></div>
 
 <script type="importmap">
 {
@@ -33,13 +33,67 @@ import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js';
+import * as BGU from 'three/addons/utils/BufferGeometryUtils.js';
 
-const N = 38000;          // кількість точок
-const R = 2.2;            // базовий масштаб фігур
-const COL_A = new THREE.Color('#2e9d5f'); // зелений
-const COL_B = new THREE.Color('#F28D1B'); // фірмовий помаранчевий
+const N = 40000;
+const R = 2.4;
+const COL_A = new THREE.Color('#2e9d5f');
+const COL_B = new THREE.Color('#F28D1B');
 
-// ── ПЛОЩИНА: рівна сітка точок (стан спокою) ───────────────────────────
+// ── семпл точок із поверхні 3D-моделі (з нормалізацією масштабу/центру) ──
+function sampleMesh(geometry) {
+  const mesh = new THREE.Mesh(geometry);
+  const sampler = new MeshSurfaceSampler(mesh).build();
+  geometry.computeBoundingBox();
+  const bb = geometry.boundingBox, c = new THREE.Vector3(), sz = new THREE.Vector3();
+  bb.getCenter(c); bb.getSize(sz);
+  const s = (2 * R) / Math.max(sz.x, sz.y, sz.z);
+  const a = new Float32Array(N * 3), p = new THREE.Vector3();
+  for (let i = 0; i < N; i++) {
+    sampler.sample(p);
+    a[i * 3] = (p.x - c.x) * s;
+    a[i * 3 + 1] = (p.y - c.y) * s;
+    a[i * 3 + 2] = (p.z - c.z) * s;
+  }
+  return a;
+}
+const merge = arr => BGU.mergeGeometries(arr);
+
+// ── 3D-ДЕРЕВО: стовбур + гілки + кілька крон ────────────────────────────
+function treeGeo() {
+  const parts = [];
+  const trunk = new THREE.CylinderGeometry(0.12, 0.22, 1.8, 10); trunk.translate(0, -0.6, 0); parts.push(trunk);
+  // гілки
+  const mkBranch = (x, y, z, rot, len) => {
+    const b = new THREE.CylinderGeometry(0.05, 0.09, len, 8);
+    b.rotateZ(rot); b.translate(x, y, z); return b;
+  };
+  parts.push(mkBranch(0.28, 0.1, 0, -0.7, 0.9));
+  parts.push(mkBranch(-0.3, 0.25, 0.1, 0.7, 0.9));
+  // крони (кілька icosphere)
+  const foliage = [[0, 0.9, 0, 0.95], [0.55, 0.65, 0.1, 0.55], [-0.55, 0.8, -0.1, 0.6], [0.1, 1.35, 0.2, 0.55]];
+  foliage.forEach(([x, y, z, r]) => { const f = new THREE.IcosahedronGeometry(r, 2); f.translate(x, y, z); parts.push(f); });
+  return merge(parts);
+}
+
+// ── КУЩ-САМШИТ: щільна крона-конус на короткому стовбурі ─────────────────
+function bushGeo() {
+  const parts = [];
+  const trunk = new THREE.CylinderGeometry(0.1, 0.14, 0.5, 8); trunk.translate(0, -0.8, 0); parts.push(trunk);
+  const top = new THREE.SphereGeometry(0.95, 24, 18); top.scale(1, 1.25, 1); top.translate(0, 0.25, 0); parts.push(top);
+  return merge(parts);
+}
+
+// ── БУДИНОК: коробка + 4-схила дах ──────────────────────────────────────
+function houseGeo() {
+  const parts = [];
+  const walls = new THREE.BoxGeometry(1.6, 1.1, 1.4); walls.translate(0, -0.35, 0); parts.push(walls);
+  const roof = new THREE.ConeGeometry(1.25, 0.9, 4); roof.rotateY(Math.PI / 4); roof.translate(0, 0.65, 0); parts.push(roof);
+  return merge(parts);
+}
+
+// ── ПЛОЩИНА (стан спокою) ───────────────────────────────────────────────
 function makePlane() {
   const a = new Float32Array(N * 3), W = Math.round(Math.sqrt(N * 1.4)), H = Math.ceil(N / W);
   for (let i = 0; i < N; i++) {
@@ -50,27 +104,6 @@ function makePlane() {
   }
   return a;
 }
-
-// ── САМШИТ: куля-крона на стовбурі (процедурно) ────────────────────────
-function makeBoxwood() {
-  const a = new Float32Array(N * 3), GA = Math.PI * (3 - Math.sqrt(5));
-  for (let i = 0; i < N; i++) {
-    if (i % 5 === 0) { // стовбур (20%)
-      a[i * 3] = (Math.random() - 0.5) * R * 0.18;
-      a[i * 3 + 1] = -R * 0.6 + Math.random() * R * 0.5;
-      a[i * 3 + 2] = (Math.random() - 0.5) * R * 0.18;
-    } else {           // крона — заповнена куля з легким шумом
-      const y = 1 - 2 * (i + 0.5) / N, rr = Math.sqrt(Math.max(0, 1 - y * y)), th = i * GA;
-      const rad = R * 0.72 * (0.82 + Math.random() * 0.18);
-      a[i * 3] = Math.cos(th) * rr * rad;
-      a[i * 3 + 1] = y * rad + R * 0.35;
-      a[i * 3 + 2] = Math.sin(th) * rr * rad;
-    }
-  }
-  return a;
-}
-
-// ── СФЕРА (для порівняння) ─────────────────────────────────────────────
 function makeSphere() {
   const a = new Float32Array(N * 3), GA = Math.PI * (3 - Math.sqrt(5));
   for (let i = 0; i < N; i++) {
@@ -80,38 +113,9 @@ function makeSphere() {
   return a;
 }
 
-// ── СЕМПЛ ІЗ SVG-ІКОНКИ: пікселі силуету → точки (з легким обʼємом по Z) ─
-function sampleSVG(src) {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.onload = () => {
-      const S = 360, cv = document.createElement('canvas'); cv.width = cv.height = S;
-      const o = cv.getContext('2d');
-      const sc = Math.min(S / img.width, S / img.height) * 0.9;
-      const dw = img.width * sc, dh = img.height * sc;
-      o.drawImage(img, (S - dw) / 2, (S - dh) / 2, dw, dh);
-      let data; try { data = o.getImageData(0, 0, S, S).data; } catch (e) { resolve(makeSphere()); return; }
-      const cand = [];
-      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++)
-        if (data[(y * S + x) * 4 + 3] > 80) cand.push([(x / S - 0.5) * R * 2.6, -(y / S - 0.5) * R * 2.6]);
-      if (!cand.length) { resolve(makeSphere()); return; }
-      const a = new Float32Array(N * 3);
-      for (let i = 0; i < N; i++) {
-        const c = cand[(Math.random() * cand.length) | 0];
-        a[i * 3] = c[0] + (Math.random() - 0.5) * 0.04;
-        a[i * 3 + 1] = c[1] + (Math.random() - 0.5) * 0.04;
-        a[i * 3 + 2] = (Math.random() - 0.5) * R * 0.25; // тонкий обʼєм
-      }
-      resolve(a);
-    };
-    img.onerror = () => resolve(makeSphere());
-    img.src = src;
-  });
-}
-
-// ── зібрати всі стани ──────────────────────────────────────────────────
+// ── стани ───────────────────────────────────────────────────────────────
 const STATES = [], LABELS = [];
-function addState(arr, label) { STATES.push(arr); LABELS.push(label); }
+const add = (arr, l) => { STATES.push(arr); LABELS.push(l); };
 
 let cur = 0, next = 1, morph = 0, started = false;
 const base = new Float32Array(N * 3), target = new Float32Array(N * 3), scale = new Float32Array(N);
@@ -123,10 +127,7 @@ geo.setAttribute('aTarget', new THREE.BufferAttribute(target, 3));
 geo.setAttribute('aScale', new THREE.BufferAttribute(scale, 1));
 
 const mat = new THREE.ShaderMaterial({
-  uniforms: {
-    uMorph: { value: 0 }, uSize: { value: 5 }, uRadius: { value: R },
-    uColorA: { value: COL_A }, uColorB: { value: COL_B }
-  },
+  uniforms: { uMorph: { value: 0 }, uSize: { value: 5 }, uRadius: { value: R }, uColorA: { value: COL_A }, uColorB: { value: COL_B } },
   transparent: true, depthWrite: false, blending: THREE.NormalBlending,
   vertexShader: /* glsl */`
     attribute vec3 aTarget; attribute float aScale;
@@ -141,11 +142,9 @@ const mat = new THREE.ShaderMaterial({
       gl_PointSize = uSize * aScale * (4.0 / -mv.z);
     }`,
   fragmentShader: /* glsl */`
-    uniform vec3 uColorA, uColorB;
-    varying float vMix;
+    uniform vec3 uColorA, uColorB; varying float vMix;
     void main(){
-      vec2 c = gl_PointCoord - 0.5;
-      float d = dot(c, c);
+      vec2 c = gl_PointCoord - 0.5; float d = dot(c, c);
       if (d > 0.25) discard;
       float alpha = smoothstep(0.25, 0.0, d);
       vec3 col = mix(uColorA, uColorB, pow(vMix, 1.5));
@@ -154,17 +153,16 @@ const mat = new THREE.ShaderMaterial({
 });
 const points = new THREE.Points(geo, mat);
 
-// ── сцена ───────────────────────────────────────────────────────────────
 const canvas = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setClearColor(0x070a08, 1);
 const scene = new THREE.Scene(); scene.add(points);
 const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 100);
-camera.position.z = 6.5;
+camera.position.z = 7;
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.35, 0.5, 0.55);
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.4, 0.5, 0.5);
 composer.addPass(bloom);
 function resize() {
   renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight);
@@ -181,7 +179,7 @@ function animate() {
   requestAnimationFrame(animate);
   const dt = clock.getDelta();
   if (started) {
-    morph += dt * 0.22;
+    morph += dt * 0.2;
     if (morph >= 1) {
       morph = 0; cur = next; next = (next + 1) % STATES.length;
       base.set(STATES[cur]); target.set(STATES[next]);
@@ -191,25 +189,21 @@ function animate() {
     labelEl.textContent = morph < 0.5 ? LABELS[cur] : LABELS[next];
   }
   rmx += (tmx - rmx) * 0.05; rmy += (tmy - rmy) * 0.05;
-  points.rotation.y = rmx * 0.8 + Math.sin(clock.elapsedTime * 0.25) * 0.25;
+  points.rotation.y += dt * 0.18 + rmx * 0.01;
   points.rotation.x = rmy * 0.5;
   composer.render();
 }
 animate();
 
-// ── завантаження станів (площина + іконки + самшит + сфера) ─────────────
-(async () => {
-  addState(makePlane(), 'Площина');
-  addState(await sampleSVG('icons/tree.svg'), 'Дерево');
-  addState(makeBoxwood(), 'Самшит');
-  addState(await sampleSVG('icons/grass.svg'), 'Газон');
-  addState(await sampleSVG('icons/sprinkler.svg'), 'Автополив');
-  addState(await sampleSVG('icons/tractor.svg'), 'Спецтехніка');
-  addState(makeSphere(), 'Сфера');
-  base.set(STATES[0]); target.set(STATES[1]);
-  geo.attributes.position.needsUpdate = true; geo.attributes.aTarget.needsUpdate = true;
-  started = true;
-})();
+// побудова станів (синхронно — усе процедурне, без зовнішніх ассетів)
+add(makePlane(), 'Площина');
+add(sampleMesh(treeGeo()), 'Дерево');
+add(sampleMesh(bushGeo()), 'Самшит');
+add(sampleMesh(houseGeo()), 'Будинок');
+add(makeSphere(), 'Сфера');
+base.set(STATES[0]); target.set(STATES[1]);
+geo.attributes.position.needsUpdate = true; geo.attributes.aTarget.needsUpdate = true;
+started = true;
 </script>
 </body>
 </html>
