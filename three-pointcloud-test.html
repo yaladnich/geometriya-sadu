@@ -10,11 +10,14 @@
   .hint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);color:rgba(255,255,255,0.5);
     font-size:13px;letter-spacing:0.04em;pointer-events:none;text-align:center;}
   .hint b{color:#2e9d5f;}
+  #label{position:fixed;left:50%;top:28px;transform:translateX(-50%);color:#F28D1B;
+    font-size:14px;letter-spacing:0.18em;text-transform:uppercase;pointer-events:none;}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-<div class="hint">Хмара точок морфиться сама · рухай мишею, щоб обертати · <b>Three.js + bloom</b></div>
+<div id="label"></div>
+<div class="hint">Площина → фігура (морф сам) · рухай мишею, щоб обертати · <b>Three.js + bloom</b></div>
 
 <script type="importmap">
 {
@@ -31,48 +34,87 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
-const N = 40000;          // кількість точок
-const R = 2.2;            // базовий радіус фігур
-const COL_A = new THREE.Color('#2e9d5f'); // зелений (далекі/основа)
-const COL_B = new THREE.Color('#F28D1B'); // фірмовий помаранчевий (ближній бік)
+const N = 38000;          // кількість точок
+const R = 2.2;            // базовий масштаб фігур
+const COL_A = new THREE.Color('#2e9d5f'); // зелений
+const COL_B = new THREE.Color('#F28D1B'); // фірмовий помаранчевий
 
-// ── генератори фігур: повертають [x,y,z] для індексу i з N ──────────────
-const GA = Math.PI * (3 - Math.sqrt(5));
-function sphere(i) {
-  const y = 1 - 2 * (i + 0.5) / N, r = Math.sqrt(Math.max(0, 1 - y * y)), th = i * GA;
-  return [Math.cos(th) * r * R, y * R, Math.sin(th) * r * R];
+// ── ПЛОЩИНА: рівна сітка точок (стан спокою) ───────────────────────────
+function makePlane() {
+  const a = new Float32Array(N * 3), W = Math.round(Math.sqrt(N * 1.4)), H = Math.ceil(N / W);
+  for (let i = 0; i < N; i++) {
+    const col = i % W, row = (i / W) | 0;
+    a[i * 3] = (col / (W - 1) - 0.5) * R * 3.4;
+    a[i * 3 + 1] = (row / (H - 1) - 0.5) * R * 2.2;
+    a[i * 3 + 2] = (Math.random() - 0.5) * 0.05;
+  }
+  return a;
 }
-function torus(i) {
-  const u = (i * GA) % (Math.PI * 2), v = (i * 0.0007) % (Math.PI * 2);
-  const tr = R * 0.78, tu = R * 0.34;
-  return [(tr + tu * Math.cos(v)) * Math.cos(u), tu * Math.sin(v), (tr + tu * Math.cos(v)) * Math.sin(u)];
-}
-function box(i) {
-  // рівномірно по 6 гранях куба
-  const s = R * 1.25, f = i % 6, a = (Math.random() - 0.5) * s, b = (Math.random() - 0.5) * s, h = s / 2;
-  return [[h, a, b], [-h, a, b], [a, h, b], [a, -h, b], [a, b, h], [a, b, -h]][f];
-}
-function tetra(i) {
-  const V = [[0, 1, 0], [0.943, -0.333, 0], [-0.471, -0.333, 0.816], [-0.471, -0.333, -0.816]].map(p => p.map(c => c * R * 1.15));
-  const F = [[0, 1, 2], [0, 1, 3], [0, 2, 3], [1, 2, 3]][i % 4];
-  let u = Math.random(), v = Math.random(); if (u + v > 1) { u = 1 - u; v = 1 - v; }
-  const a = V[F[0]], b = V[F[1]], cc = V[F[2]];
-  return [a[0] + u * (b[0] - a[0]) + v * (cc[0] - a[0]),
-          a[1] + u * (b[1] - a[1]) + v * (cc[1] - a[1]),
-          a[2] + u * (b[2] - a[2]) + v * (cc[2] - a[2])];
-}
-function helix(i) {
-  const t = i / N, ang = t * Math.PI * 18, rr = R * 0.7;
-  return [Math.cos(ang) * rr, (t - 0.5) * R * 2.6, Math.sin(ang) * rr];
-}
-const SHAPES = [sphere, torus, tetra, box, helix];
 
-function fill(arr, fn) { for (let i = 0; i < N; i++) { const p = fn(i); arr[i * 3] = p[0]; arr[i * 3 + 1] = p[1]; arr[i * 3 + 2] = p[2]; } }
+// ── САМШИТ: куля-крона на стовбурі (процедурно) ────────────────────────
+function makeBoxwood() {
+  const a = new Float32Array(N * 3), GA = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < N; i++) {
+    if (i % 5 === 0) { // стовбур (20%)
+      a[i * 3] = (Math.random() - 0.5) * R * 0.18;
+      a[i * 3 + 1] = -R * 0.6 + Math.random() * R * 0.5;
+      a[i * 3 + 2] = (Math.random() - 0.5) * R * 0.18;
+    } else {           // крона — заповнена куля з легким шумом
+      const y = 1 - 2 * (i + 0.5) / N, rr = Math.sqrt(Math.max(0, 1 - y * y)), th = i * GA;
+      const rad = R * 0.72 * (0.82 + Math.random() * 0.18);
+      a[i * 3] = Math.cos(th) * rr * rad;
+      a[i * 3 + 1] = y * rad + R * 0.35;
+      a[i * 3 + 2] = Math.sin(th) * rr * rad;
+    }
+  }
+  return a;
+}
 
-// ── геометрія: base (from) + target (to) + випадковий масштаб точки ─────
-let cur = 0, next = 1;
+// ── СФЕРА (для порівняння) ─────────────────────────────────────────────
+function makeSphere() {
+  const a = new Float32Array(N * 3), GA = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < N; i++) {
+    const y = 1 - 2 * (i + 0.5) / N, rr = Math.sqrt(Math.max(0, 1 - y * y)), th = i * GA;
+    a[i * 3] = Math.cos(th) * rr * R; a[i * 3 + 1] = y * R; a[i * 3 + 2] = Math.sin(th) * rr * R;
+  }
+  return a;
+}
+
+// ── СЕМПЛ ІЗ SVG-ІКОНКИ: пікселі силуету → точки (з легким обʼємом по Z) ─
+function sampleSVG(src) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const S = 360, cv = document.createElement('canvas'); cv.width = cv.height = S;
+      const o = cv.getContext('2d');
+      const sc = Math.min(S / img.width, S / img.height) * 0.9;
+      const dw = img.width * sc, dh = img.height * sc;
+      o.drawImage(img, (S - dw) / 2, (S - dh) / 2, dw, dh);
+      let data; try { data = o.getImageData(0, 0, S, S).data; } catch (e) { resolve(makeSphere()); return; }
+      const cand = [];
+      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++)
+        if (data[(y * S + x) * 4 + 3] > 80) cand.push([(x / S - 0.5) * R * 2.6, -(y / S - 0.5) * R * 2.6]);
+      if (!cand.length) { resolve(makeSphere()); return; }
+      const a = new Float32Array(N * 3);
+      for (let i = 0; i < N; i++) {
+        const c = cand[(Math.random() * cand.length) | 0];
+        a[i * 3] = c[0] + (Math.random() - 0.5) * 0.04;
+        a[i * 3 + 1] = c[1] + (Math.random() - 0.5) * 0.04;
+        a[i * 3 + 2] = (Math.random() - 0.5) * R * 0.25; // тонкий обʼєм
+      }
+      resolve(a);
+    };
+    img.onerror = () => resolve(makeSphere());
+    img.src = src;
+  });
+}
+
+// ── зібрати всі стани ──────────────────────────────────────────────────
+const STATES = [], LABELS = [];
+function addState(arr, label) { STATES.push(arr); LABELS.push(label); }
+
+let cur = 0, next = 1, morph = 0, started = false;
 const base = new Float32Array(N * 3), target = new Float32Array(N * 3), scale = new Float32Array(N);
-fill(base, SHAPES[cur]); fill(target, SHAPES[next]);
 for (let i = 0; i < N; i++) scale[i] = 0.6 + Math.random() * 0.9;
 
 const geo = new THREE.BufferGeometry();
@@ -83,19 +125,18 @@ geo.setAttribute('aScale', new THREE.BufferAttribute(scale, 1));
 const mat = new THREE.ShaderMaterial({
   uniforms: {
     uMorph: { value: 0 }, uSize: { value: 5 }, uRadius: { value: R },
-    uColorA: { value: COL_A }, uColorB: { value: COL_B }, uPixelRatio: { value: Math.min(devicePixelRatio, 2) }
+    uColorA: { value: COL_A }, uColorB: { value: COL_B }
   },
   transparent: true, depthWrite: false, blending: THREE.NormalBlending,
   vertexShader: /* glsl */`
     attribute vec3 aTarget; attribute float aScale;
-    uniform float uMorph, uSize, uRadius, uPixelRatio;
+    uniform float uMorph, uSize, uRadius;
     varying float vMix;
-    // плавний easing морфу
     float ease(float t){ return t*t*(3.0-2.0*t); }
     void main(){
       vec3 pos = mix(position, aTarget, ease(uMorph));
       vec4 mv = modelViewMatrix * vec4(pos, 1.0);
-      vMix = clamp((mv.z + uRadius) / (2.0 * uRadius), 0.0, 1.0); // ближній бік → 1
+      vMix = clamp((mv.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
       gl_Position = projectionMatrix * mv;
       gl_PointSize = uSize * aScale * (4.0 / -mv.z);
     }`,
@@ -107,64 +148,68 @@ const mat = new THREE.ShaderMaterial({
       float d = dot(c, c);
       if (d > 0.25) discard;
       float alpha = smoothstep(0.25, 0.0, d);
-      vec3 col = mix(uColorA, uColorB, pow(vMix, 1.5)); // далекі зелені, ближні помаранчеві
+      vec3 col = mix(uColorA, uColorB, pow(vMix, 1.5));
       gl_FragColor = vec4(col, alpha * (0.45 + vMix * 0.55));
     }`
 });
-
 const points = new THREE.Points(geo, mat);
 
-// ── сцена / камера / рендер ─────────────────────────────────────────────
+// ── сцена ───────────────────────────────────────────────────────────────
 const canvas = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setClearColor(0x070a08, 1);
-const scene = new THREE.Scene();
-scene.add(points);
+const scene = new THREE.Scene(); scene.add(points);
 const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 100);
 camera.position.z = 6.5;
-
-// постобробка: bloom-світіння
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.35, 0.5, 0.55);
 composer.addPass(bloom);
-
 function resize() {
-  const w = innerWidth, h = innerHeight;
-  renderer.setSize(w, h); composer.setSize(w, h);
-  camera.aspect = w / h; camera.updateProjectionMatrix();
-  mat.uniforms.uPixelRatio.value = Math.min(devicePixelRatio, 2);
+  renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
 }
 addEventListener('resize', resize); resize();
 
-// миша — обертання (parallax)
 let tmx = 0, tmy = 0, rmx = 0, rmy = 0;
-addEventListener('pointermove', e => { tmx = (e.clientX / innerWidth - 0.5); tmy = (e.clientY / innerHeight - 0.5); });
+addEventListener('pointermove', e => { tmx = e.clientX / innerWidth - 0.5; tmy = e.clientY / innerHeight - 0.5; });
 
-// ── цикл: авто-морф по колу фігур + обертання ───────────────────────────
-let morph = 0;
+const labelEl = document.getElementById('label');
 const clock = new THREE.Clock();
 function animate() {
   requestAnimationFrame(animate);
   const dt = clock.getDelta();
-  morph += dt * 0.32;            // швидкість морфу
-  if (morph >= 1) {              // дійшли до target → робимо його базою, беремо наступну фігуру
-    morph = 0;
-    cur = next; next = (next + 1) % SHAPES.length;
-    fill(base, SHAPES[cur]); fill(target, SHAPES[next]);
-    geo.attributes.position.needsUpdate = true;
-    geo.attributes.aTarget.needsUpdate = true;
+  if (started) {
+    morph += dt * 0.22;
+    if (morph >= 1) {
+      morph = 0; cur = next; next = (next + 1) % STATES.length;
+      base.set(STATES[cur]); target.set(STATES[next]);
+      geo.attributes.position.needsUpdate = true; geo.attributes.aTarget.needsUpdate = true;
+    }
+    mat.uniforms.uMorph.value = morph;
+    labelEl.textContent = morph < 0.5 ? LABELS[cur] : LABELS[next];
   }
-  mat.uniforms.uMorph.value = morph;
-
   rmx += (tmx - rmx) * 0.05; rmy += (tmy - rmy) * 0.05;
-  points.rotation.y += dt * 0.25 + rmx * 0.02;
-  points.rotation.x = rmy * 0.6;
-
+  points.rotation.y = rmx * 0.8 + Math.sin(clock.elapsedTime * 0.25) * 0.25;
+  points.rotation.x = rmy * 0.5;
   composer.render();
 }
 animate();
+
+// ── завантаження станів (площина + іконки + самшит + сфера) ─────────────
+(async () => {
+  addState(makePlane(), 'Площина');
+  addState(await sampleSVG('icons/tree.svg'), 'Дерево');
+  addState(makeBoxwood(), 'Самшит');
+  addState(await sampleSVG('icons/grass.svg'), 'Газон');
+  addState(await sampleSVG('icons/sprinkler.svg'), 'Автополив');
+  addState(await sampleSVG('icons/tractor.svg'), 'Спецтехніка');
+  addState(makeSphere(), 'Сфера');
+  base.set(STATES[0]); target.set(STATES[1]);
+  geo.attributes.position.needsUpdate = true; geo.attributes.aTarget.needsUpdate = true;
+  started = true;
+})();
 </script>
 </body>
 </html>
