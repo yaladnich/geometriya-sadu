@@ -82,10 +82,10 @@ geo.setAttribute('aScale', new THREE.BufferAttribute(scale, 1));
 
 const mat = new THREE.ShaderMaterial({
   uniforms: {
-    uMorph: { value: 0 }, uSize: { value: 14 }, uRadius: { value: R },
+    uMorph: { value: 0 }, uSize: { value: 5 }, uRadius: { value: R },
     uColorA: { value: COL_A }, uColorB: { value: COL_B }, uPixelRatio: { value: Math.min(devicePixelRatio, 2) }
   },
-  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  transparent: true, depthWrite: false, blending: THREE.NormalBlending,
   vertexShader: /* glsl */`
     attribute vec3 aTarget; attribute float aScale;
     uniform float uMorph, uSize, uRadius, uPixelRatio;
@@ -97,7 +97,7 @@ const mat = new THREE.ShaderMaterial({
       vec4 mv = modelViewMatrix * vec4(pos, 1.0);
       vMix = clamp((mv.z + uRadius) / (2.0 * uRadius), 0.0, 1.0); // ближній бік → 1
       gl_Position = projectionMatrix * mv;
-      gl_PointSize = uSize * aScale * uPixelRatio * (8.0 / -mv.z);
+      gl_PointSize = uSize * aScale * (4.0 / -mv.z);
     }`,
   fragmentShader: /* glsl */`
     uniform vec3 uColorA, uColorB;
@@ -108,7 +108,7 @@ const mat = new THREE.ShaderMaterial({
       if (d > 0.25) discard;
       float alpha = smoothstep(0.25, 0.0, d);
       vec3 col = mix(uColorA, uColorB, pow(vMix, 1.5)); // далекі зелені, ближні помаранчеві
-      gl_FragColor = vec4(col, alpha * (0.35 + vMix * 0.65));
+      gl_FragColor = vec4(col, alpha * (0.45 + vMix * 0.55));
     }`
 });
 
@@ -127,7 +127,7 @@ camera.position.z = 6.5;
 // постобробка: bloom-світіння
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.9, 0.6, 0.0);
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.35, 0.5, 0.55);
 composer.addPass(bloom);
 
 function resize() {
