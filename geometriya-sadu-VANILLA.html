@@ -246,9 +246,9 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-num{font-family:var(--font-display);font-weight:800;font-size:clamp(2.5rem,4vw,3.75rem);line-height:0.9;color:var(--accent-bright);letter-spacing:-0.02em;margin-bottom:0.75rem;}
 .gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.1;margin:0 0 1rem;color:#fff;text-transform:none;}
 .gs-why-desc{margin:0;font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:40ch;}
-/* потік — єдиний екземпляр; на ПК справа як фон stage */
-.gs-why-dots{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;}
-.gs-why-dots canvas{display:block;width:100%;height:100%;-webkit-mask-image:radial-gradient(120% 85% at 72% 55%,#000 38%,transparent 82%);mask-image:radial-gradient(120% 85% at 72% 55%,#000 38%,transparent 82%);}
+/* потік — у правому контейнері (права колонка грід) */
+.gs-why-dots{position:relative;width:100%;height:78vh;z-index:0;pointer-events:none;align-self:center;}
+.gs-why-dots canvas{display:block;width:100%;height:100%;-webkit-mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);}
 .gs-why-nav{position:absolute;left:50%;bottom:2.25rem;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:3;}
 .gs-why-tick{width:1.75rem;height:0.1875rem;border-radius:62rem;background:rgba(255,255,255,0.22);transition:background 0.3s var(--ease-out);}
 .gs-why-tick.is-on{background:var(--accent-bright);}
@@ -902,7 +902,6 @@ html,body{overflow-x:hidden;max-width:100%;}
   </div>
   <div class="gs-why-panels">
     <div class="gs-why-stage">
-      <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
       <div class="gs-container gs-why-inner">
         <div class="gs-why-texts">
           <div class="gs-why-side gs-why-text" data-i="0">
@@ -926,6 +925,7 @@ html,body{overflow-x:hidden;max-width:100%;}
             <p class="gs-why-desc">Міні-навантажувачі та обладнання — земляні роботи будь-якої складності точно й у строк.</p>
           </div>
         </div>
+        <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
       </div>
       <div class="gs-why-nav" aria-hidden="true">
         <span class="gs-why-tick is-on"></span>
@@ -2348,7 +2348,7 @@ if (targets.length) {
   const renderer = new THREE.WebGLRenderer({ canvas: off, antialias: true, alpha: true });
   renderer.setClearColor(0x000000, 0);
   const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
-  camera.position.set(-3.2, 0, 9.5); camera.lookAt(-3.2, 0, 0); // фронтально: стіна ліній обличчям до глядача, зміщена праворуч
+  camera.position.set(0, 0, 9.5); camera.lookAt(0, 0, 0); // фронтально по центру правого контейнера
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 1.3, 0.8, 0.0));
