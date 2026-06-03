@@ -253,7 +253,6 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-dots{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;}
 .gs-why-dots canvas{display:block;width:100%;height:100%;background:transparent;-webkit-mask-image:radial-gradient(95% 120% at 74% 58%,#000 26%,transparent 78%);mask-image:radial-gradient(95% 120% at 74% 58%,#000 26%,transparent 78%);}
 /* зерно (dither/grain) — з тією ж віньєткою */
-.gs-why-dots::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");background-size:160px 160px;-webkit-mask-image:radial-gradient(95% 120% at 74% 58%,#000 26%,transparent 78%);mask-image:radial-gradient(95% 120% at 74% 58%,#000 26%,transparent 78%);}
 .gs-why-nav{position:absolute;left:50%;bottom:2.25rem;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:3;}
 .gs-why-tick{width:1.75rem;height:0.1875rem;border-radius:62rem;background:rgba(255,255,255,0.22);transition:background 0.3s var(--ease-out);}
 .gs-why-tick.is-on{background:var(--accent-bright);}
