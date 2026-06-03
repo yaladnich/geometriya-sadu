@@ -520,6 +520,24 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-modal .eyebrow{display:block;margin-bottom:0.125rem;color:var(--accent);}
 .gs-modal>.body{margin:0 0 1.125rem;}
 .gs-field-err{font-size:0.75rem;color:var(--error);margin-top:0.25rem;display:block;}
+/* Біла форма-заявка (модалка): світла панель + квадратні поля */
+.gs-modal{background:#fff;border:0.0625rem solid #e3e7e3;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:0 1.75rem 3.75rem -1rem rgba(0,0,0,0.40);}
+.gs-modal .gs-modal-title{color:#0c140e;}
+.gs-modal .eyebrow{color:var(--accent);}
+.gs-modal>.body,.gs-modal p.body{color:#5a625a;}
+.gs-modal .gs-cta-form label{color:#5a625a;}
+.gs-modal .gs-cta-form input,.gs-modal .gs-cta-form select,.gs-modal .gs-cta-form textarea{background:#f3f5f3;border:0.0625rem solid #dfe3df;color:#0c140e;border-radius:0;}
+.gs-modal .gs-cta-form input::placeholder,.gs-modal .gs-cta-form textarea::placeholder{color:#9aa39a;}
+.gs-modal .gs-cta-form input:focus,.gs-modal .gs-cta-form select:focus,.gs-modal .gs-cta-form textarea:focus{border-color:var(--accent);background:#fff;}
+.gs-modal .gs-num-btn{background:#eef0ee;border:0.0625rem solid #dfe3df;color:#3a423a;border-radius:0;}
+.gs-modal .gs-num-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
+.gs-modal .gs-select-trigger{background:#f3f5f3;border:0.0625rem solid #dfe3df;color:#0c140e;border-radius:0;}
+.gs-modal .gs-select-trigger:hover,.gs-modal .gs-custom-select.is-open .gs-select-trigger{background:#fff;border-color:var(--accent);box-shadow:0 0 0 0.1875rem rgba(37,124,77,.10);}
+.gs-modal .gs-select-menu{background:#fff;border:0.0625rem solid #dfe3df;}
+.gs-modal .gs-select-option{color:#3a423a;}
+.gs-modal .gs-select-option:hover{background:rgba(37,124,77,.10);color:#0c140e;}
+.gs-modal .gs-select-option.is-selected{background:rgba(37,124,77,.14);color:var(--accent);}
+.gs-modal .gs-field-err{color:#c0392b;}
 .gs-cta-form button:disabled{opacity:0.6;cursor:not-allowed;}
 
 .h-display-1,.h-display-2,.h1,.h2,.h3,.h4{margin:0;}
@@ -578,6 +596,9 @@ body{cursor:none;}
 .gs-mobile-nav{display:flex;flex-direction:column;gap:0.25rem;}
 .gs-mobile-nav-link{font-family:var(--font-display);font-weight:700;font-size:clamp(1.75rem,8vw,2.5rem);color:var(--fg-2);padding:0.625rem 0;border-bottom:0.0625rem solid var(--border);display:block;transition:color 0.2s,padding-left 0.2s;}
 .gs-mobile-nav-link:hover{color:var(--fg-1);padding-left:0.75rem;}
+.gs-mobile-foot{margin-top:auto;display:flex;flex-direction:column;gap:1.125rem;padding-top:2rem;}
+.gs-mobile-cta{width:100%;justify-content:center;}
+.gs-mobile-phone{font-family:var(--font-display);font-weight:700;font-size:1.5rem;color:var(--accent-bright);text-align:center;letter-spacing:0.02em;}
 
 @media(max-width:1200px){
   .gs-burger{display:flex;}
@@ -720,13 +741,13 @@ html,body{overflow-x:hidden;max-width:100%;}
       <img src="./images/logo-geom.webp?v=9" height="44" alt="Геометрія саду">
     </a>
     <nav class="gs-nav">
-      <a href="#services"><span>Послуги</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
-      <a href="#why"><span>Переваги</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
-      <a href="#portfolio"><span>Портфоліо</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
-      <a href="#steps"><span>Етапи</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
-      <a href="#pricing"><span>Ціни</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
-      <a href="#faq"><span>Поширені питання</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
-      <a href="#cta"><span>Контакти</span><i class="gs-nav-plus"><svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></i></a>
+      <a href="#services"><span>Послуги</span></a>
+      <a href="#why"><span>Переваги</span></a>
+      <a href="#portfolio"><span>Портфоліо</span></a>
+      <a href="#steps"><span>Етапи</span></a>
+      <a href="#pricing"><span>Ціни</span></a>
+      <a href="#faq"><span>Поширені питання</span></a>
+      <a href="#cta"><span>Контакти</span></a>
     </nav>
     <a class="gs-cta-pill gs-cta-pill-desktop" href="tel:+380683782003">
       <span>Зателефонувати</span>
@@ -746,8 +767,13 @@ html,body{overflow-x:hidden;max-width:100%;}
     <a href="#portfolio" class="gs-mobile-nav-link">Портфоліо</a>
     <a href="#steps" class="gs-mobile-nav-link">Етапи</a>
     <a href="#pricing" class="gs-mobile-nav-link">Ціни</a>
-    <a href="#faq" class="gs-mobile-nav-link">FAQ</a>
+    <a href="#faq" class="gs-mobile-nav-link">Поширені питання</a>
+    <a href="#cta" class="gs-mobile-nav-link">Контакти</a>
   </nav>
+  <div class="gs-mobile-foot">
+    <button class="gs-btn gs-btn-primary gs-mobile-cta" onclick="openModal()"><span>Замовити консультацію</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><g class="gs-tri-grp"><rect class="gs-tri-bar" x="2" y="4" width="2.4" height="16" fill="#F28D1B"/><path d="M7 4 L21 12 L7 20 Z" fill="#F28D1B"/></g></svg></button>
+    <a class="gs-mobile-phone" href="tel:+380683782003">+38 (068) 378-20-03</a>
+  </div>
 </div>
 
 <!-- HERO -->
