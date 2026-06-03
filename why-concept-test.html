@@ -80,8 +80,9 @@
       // суміжність + стан проростання
       adj=pts.map(()=>[]); est=edges.map(()=>null);
       edges.forEach((e,ei)=>{adj[e[0]].push(ei);adj[e[1]].push(ei);});
-      // вузли-іконки: переважно дерева + трохи сонць
-      for(let k=0;k<13;k++){pts[(Math.random()*N)|0].icon=(Math.random()<0.82?2:3);}
+      // вузли-іконки: дерева + рівно одне сонце
+      for(let k=0;k<12;k++){pts[(Math.random()*N)|0].icon=2;}
+      pts[(Math.random()*N)|0].icon=3;
     }else if(mode==='wave'){
       for(let i=0;i<N;i++) pts.push({col:Math.random(),row:Math.random(),x:0,y:0,org:Math.random()<ORG,seed:Math.random(),r:rnd(1.1,2.2)});
     }else{
