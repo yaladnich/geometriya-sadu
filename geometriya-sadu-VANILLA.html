@@ -2349,23 +2349,19 @@ if (targets.length) {
   const dotTex = new THREE.CanvasTexture(dotCv);
 
   const group = new THREE.Group(); scene.add(group); // обертаємо групу від миші
-  const lines = [];
-  for (let t = 0; t < HIST; t++) {
-    const pos = new Float32Array(BINS * 3), col = new Float32Array(BINS * 3);
-    // горизонтальне поле: X — ширина, Z — час/глибина (нові спереду → старі вглиб), Y — амплітуда (вгору)
-    for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 1] = 0; pos[b * 3 + 2] = (t / (HIST - 1) - 0.5) * HEIGHT; }
-    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    // контурні лінії рельєфу; прозорість за глибиною (передні щільніші, дальні тануть)
-    const depth = 1 - t / (HIST - 1);
-    const m = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.22 + depth * 0.6 });
-    lines.push(new THREE.Line(g, m)); group.add(lines[t]);
-  }
+  // подвійна спіраль (ДНК): дві нитки + поперечні «сходинки»
+  const SEG = 260, RAD = 1.7, TURNS = 5, RSTEP = 7, RC = Math.floor(SEG / RSTEP);
+  function mk(n) { const p = new Float32Array(n * 3), c = new Float32Array(n * 3); const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p, 3)); g.setAttribute('color', new THREE.BufferAttribute(c, 3)); return { g, p, c }; }
+  const A = mk(SEG), B = mk(SEG), Rg = mk(RC * 2);
+  const matStrand = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.95 });
+  const matRung = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.4 });
+  group.add(new THREE.Line(A.g, matStrand), new THREE.Line(B.g, matStrand), new THREE.LineSegments(Rg.g, matRung));
   // рендер ПРЯМО у видимий canvas (без офскрін-блітингу) — це справжній 3D-обʼєкт, не картинка-вікно
   const canvas = targets[0];
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setClearColor(0x000000, 0);
   const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
-  camera.position.set(0, 1.5, 9); camera.lookAt(0, 0.7, -4); // профіль: пагорби біля горизонту
+  camera.position.set(0, 0, 10.5); camera.lookAt(0, 0, 0); // фронтально на спіраль
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.16, 0.6, 0.25));
@@ -2390,29 +2386,31 @@ if (targets.length) {
     // плавне обертання групи до миші — відчуття 3D-обʼєкта
     group.rotation.y += (rotY - group.rotation.y) * 0.06;
     group.rotation.x += (rotX - group.rotation.x) * 0.06;
-    const sc = time * 0.25; // швидкість «руху» рельєфу
-    for (let t = 0; t < HIST; t++) {
-      const arr = lines[t].geometry.attributes.position.array, col = lines[t].geometry.attributes.color.array;
-      const tt = t / (HIST - 1);
-      for (let b = 0; b < BINS; b++) {
-        const u = b / (BINS - 1);
-        // двошаровий перлін-шум, що пливе вгору з часом
-        let n = noise3(u * 3.2, tt * 4.5 - sc, time * 0.12) + 0.5 * noise3(u * 7.0, tt * 9.0 - sc * 1.7, time * 0.2);
-        n = (n / 1.5 - 0.5) * 2; // ~ -1..1
-        // локальний сплеск під курсором (gauss по X)
-        const dxp = u - pointerX;
-        const local = Math.exp(-(dxp * dxp) / 0.015) * pointerOn;
-        const amp = n * (0.20 + energy) + local * 0.9;
-        arr[b * 3 + 1] = amp * AMP;
-        // градієнт зелений (ліворуч) → оранжевий (праворуч), легке підсвічення гребенів
-        const gx = sstep(Math.min(1, Math.max(0, u)));
-        const br = 1 + Math.min(0.5, Math.abs(amp) * 0.5); // гребені трохи яскравіші
-        col[b * 3] = (EM[0] + (ORG[0] - EM[0]) * gx) * br;
-        col[b * 3 + 1] = (EM[1] + (ORG[1] - EM[1]) * gx) * br;
-        col[b * 3 + 2] = (EM[2] + (ORG[2] - EM[2]) * gx) * br;
-      }
-      lines[t].geometry.attributes.position.needsUpdate = true; lines[t].geometry.attributes.color.needsUpdate = true;
+    const spin = time * 0.7; // обертання спіралі
+    for (let i = 0; i < SEG; i++) {
+      const fx = i / (SEG - 1), x = (fx - 0.5) * WIDTH;
+      // лагідне дихання радіуса від курсора/енергії
+      const wob = 1 + Math.exp(-((fx - pointerX) ** 2) / 0.02) * pointerOn * 0.5;
+      const ph = fx * TURNS * Math.PI * 2 - spin;
+      const ya = Math.sin(ph) * RAD * wob, za = Math.cos(ph) * RAD * wob;
+      A.p[i * 3] = x; A.p[i * 3 + 1] = ya; A.p[i * 3 + 2] = za;
+      B.p[i * 3] = x; B.p[i * 3 + 1] = -ya; B.p[i * 3 + 2] = -za;
+      // градієнт ізумруд→оранж уздовж довжини; яскравіше те, що ближче до глядача (більше za)
+      const er = EM[0] + (ORG[0] - EM[0]) * fx, eg = EM[1] + (ORG[1] - EM[1]) * fx, eb = EM[2] + (ORG[2] - EM[2]) * fx;
+      const ba = 0.55 + 0.45 * (za / RAD * 0.5 + 0.5), bb = 0.55 + 0.45 * (-za / RAD * 0.5 + 0.5);
+      A.c[i * 3] = er * ba; A.c[i * 3 + 1] = eg * ba; A.c[i * 3 + 2] = eb * ba;
+      B.c[i * 3] = er * bb; B.c[i * 3 + 1] = eg * bb; B.c[i * 3 + 2] = eb * bb;
     }
+    for (let j = 0; j < RC; j++) {
+      const i = j * RSTEP, a = j * 6, b2 = a + 3, gx = i / (SEG - 1);
+      Rg.p[a] = A.p[i * 3]; Rg.p[a + 1] = A.p[i * 3 + 1]; Rg.p[a + 2] = A.p[i * 3 + 2];
+      Rg.p[b2] = B.p[i * 3]; Rg.p[b2 + 1] = B.p[i * 3 + 1]; Rg.p[b2 + 2] = B.p[i * 3 + 2];
+      const er = (EM[0] + (ORG[0] - EM[0]) * gx) * 0.8, eg = (EM[1] + (ORG[1] - EM[1]) * gx) * 0.8, eb = (EM[2] + (ORG[2] - EM[2]) * gx) * 0.8;
+      Rg.c[a] = er; Rg.c[a + 1] = eg; Rg.c[a + 2] = eb; Rg.c[b2] = er; Rg.c[b2 + 1] = eg; Rg.c[b2 + 2] = eb;
+    }
+    A.g.attributes.position.needsUpdate = true; A.g.attributes.color.needsUpdate = true;
+    B.g.attributes.position.needsUpdate = true; B.g.attributes.color.needsUpdate = true;
+    Rg.g.attributes.position.needsUpdate = true; Rg.g.attributes.color.needsUpdate = true;
     composer.render();
   }
   // реакція на курсор: обертання 3D-обʼєкта (parallax) + локальний сплеск хвилі
