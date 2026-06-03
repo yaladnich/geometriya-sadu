@@ -101,12 +101,18 @@
       for(const e of edges){const a=pts[e[0]],b=pts[e[1]];
         const dep=(a.depth+b.depth)/2;
         const isC=e[2];
-        // сузір'я: яскравіше + мерехтіння
-        const pulse=isC?(0.55+0.45*Math.sin(t*1.6+e[3])):0;
-        let al=0.07+dep*0.4 + pulse*dep*0.7;
-        const c=(a.org||b.org)?O:G;
-        ctx.lineWidth=isC?1.4:1;
-        ctx.strokeStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+al.toFixed(3)+')';
+        if(isC){
+          // сузір'я: яскраво світиться + мерехтіння (видно навіть ззаду)
+          const pulse=0.45+0.55*Math.sin(t*1.8+e[3]);
+          const al=(0.4+0.6*pulse);
+          const c=(a.org||b.org)?[255,200,120]:[170,255,200];
+          ctx.lineWidth=1.6;
+          ctx.strokeStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+al.toFixed(3)+')';
+        }else{
+          const al=0.06+dep*0.32;
+          ctx.lineWidth=1;
+          ctx.strokeStyle='rgba('+G[0]+','+G[1]+','+G[2]+','+al.toFixed(3)+')';
+        }
         ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();}
       ctx.lineWidth=1;
       // крапки (сортуємо по глибині — задні перші)
