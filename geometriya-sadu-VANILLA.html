@@ -2339,16 +2339,24 @@ if (targets.length) {
   let energy = 0.12, time = 0, pointerX = 0.5, pointerOn = 0;
   const EM = [0.22, 0.55, 0.40], CR = [0.55, 1.0, 0.72]; // база → яскравий гребінь (підсвітка ЛИШЕ піків)
 
+  // мʼяка кругла крапка (текстура для THREE.Points)
+  const dotCv = document.createElement('canvas'); dotCv.width = dotCv.height = 64;
+  const dctx = dotCv.getContext('2d');
+  const dgrad = dctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  dgrad.addColorStop(0, 'rgba(255,255,255,1)'); dgrad.addColorStop(0.5, 'rgba(255,255,255,0.5)'); dgrad.addColorStop(1, 'rgba(255,255,255,0)');
+  dctx.fillStyle = dgrad; dctx.fillRect(0, 0, 64, 64);
+  const dotTex = new THREE.CanvasTexture(dotCv);
+
   const lines = [];
   for (let t = 0; t < HIST; t++) {
     const pos = new Float32Array(BINS * 3), col = new Float32Array(BINS * 3);
     // вертикальна стіна: X — частоти, Y — час (нові знизу → старі вгорі), Z — амплітуда (до глядача)
     for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 1] = (t / (HIST - 1) - 0.5) * HEIGHT; pos[b * 3 + 2] = 0; }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    // прозорість за глибиною: нові лінії (низ) щільніші, старі (верх) розчиняються
+    // прозорість за глибиною: нові крапки (низ) щільніші, старі (верх) розчиняються
     const depth = 1 - t / (HIST - 1);
-    const m = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.08 + depth * 0.5 });
-    lines.push(new THREE.Line(g, m)); scene.add(lines[t]);
+    const m = new THREE.PointsMaterial({ size: 0.11, map: dotTex, vertexColors: true, transparent: true, opacity: 0.10 + depth * 0.55, sizeAttenuation: true, depthWrite: false, blending: THREE.AdditiveBlending });
+    lines.push(new THREE.Points(g, m)); scene.add(lines[t]);
   }
   const off = document.createElement('canvas');
   const renderer = new THREE.WebGLRenderer({ canvas: off, antialias: true, alpha: true });
