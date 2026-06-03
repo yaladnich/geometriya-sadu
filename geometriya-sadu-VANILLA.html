@@ -2279,12 +2279,13 @@ updateHeaderAndProgress();
     return;
   }
   const slides = texts.length;
+  const mob = window.matchMedia('(max-width:900px)').matches;
   measure(); setSlide(0);
   ScrollTrigger.create({
-    trigger: stage, start: 'top top', end: '+=' + (slides * 60) + '%',
-    pin: true, pinSpacing: true, scrub: 0.4, invalidateOnRefresh: true,
-    // защіпка: будь-який скрол-флік доводить до наступного/попереднього слайда
-    snap: { snapTo: 1 / (slides - 1), duration: { min: 0.2, max: 0.5 }, ease: 'power1.inOut' },
+    trigger: stage, start: 'top top', end: '+=' + (slides * (mob ? 42 : 60)) + '%',
+    pin: true, pinSpacing: true, scrub: mob ? 0.25 : 0.4, invalidateOnRefresh: true,
+    // защіпка: будь-який скрол-флік доводить рівно до наступного/попереднього слайда
+    snap: { snapTo: 1 / (slides - 1), duration: { min: 0.15, max: mob ? 0.3 : 0.5 }, ease: 'power1.inOut' },
     onRefresh: self => { measure(); setSlide(self.progress * (slides - 1)); },
     onUpdate: self => setSlide(self.progress * (slides - 1))
   });
@@ -2381,8 +2382,8 @@ updateHeaderAndProgress();
   window.__whyKick=function(){kick=1;};
   function frame(){
     t+=0.016; kick*=0.94;
-    const mob=W<H;
-    const cx=mob?W*0.5:W*0.70, cy=H*0.55, R=Math.min(W, mob?H*0.5:H)*0.30;
+    const mob=window.matchMedia('(max-width:900px)').matches;
+    const cx=mob?W*0.5:W*0.70, cy=mob?H*0.5:H*0.55, R=mob?Math.min(W*0.42,H*0.42):Math.min(W,H)*0.30;
     ang += SPD/1000*0.5 + kick*0.05;
     const tilt=0.5, cosA=Math.cos(ang),sinA=Math.sin(ang),cosT=Math.cos(tilt),sinT=Math.sin(tilt);
     ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
