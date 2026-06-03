@@ -48,10 +48,10 @@
   function rgba(c,a){return 'rgba('+(c[0]|0)+','+(c[1]|0)+','+(c[2]|0)+','+a+')';}
   // мінімалістичні лінійні іконки саду
   function icon(type,x,y,s,col,al){ctx.save();ctx.translate(x,y);ctx.strokeStyle=rgba(col,al);ctx.fillStyle=rgba(col,al);ctx.lineWidth=1.2;ctx.beginPath();
-    if(type===0){ctx.ellipse(0,0,s*0.5,s,0.6,0,6.2832);ctx.stroke();ctx.beginPath();ctx.moveTo(-s*0.35,s*0.6);ctx.lineTo(s*0.35,-s*0.6);ctx.stroke();} // листок
-    else if(type===1){ctx.moveTo(0,-s);ctx.quadraticCurveTo(s*0.8,s*0.3,0,s*0.7);ctx.quadraticCurveTo(-s*0.8,s*0.3,0,-s);ctx.stroke();} // крапля
-    else if(type===2){ctx.moveTo(0,-s);ctx.lineTo(s*0.7,s*0.4);ctx.lineTo(-s*0.7,s*0.4);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(0,s*0.4);ctx.lineTo(0,s);ctx.stroke();} // деревце
-    else{ctx.arc(0,0,s*0.5,0,6.2832);ctx.stroke();for(let k=0;k<8;k++){const a=k/8*6.2832;ctx.beginPath();ctx.moveTo(Math.cos(a)*s*0.7,Math.sin(a)*s*0.7);ctx.lineTo(Math.cos(a)*s,Math.sin(a)*s);ctx.stroke();}} // сонце
+    if(type===2){ctx.moveTo(0,-s);ctx.lineTo(s*0.7,s*0.4);ctx.lineTo(-s*0.7,s*0.4);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(0,s*0.4);ctx.lineTo(0,s);ctx.stroke();} // деревце
+    else if(type===3){ctx.arc(0,0,s*0.5,0,6.2832);ctx.stroke();for(let k=0;k<8;k++){const a=k/8*6.2832;ctx.beginPath();ctx.moveTo(Math.cos(a)*s*0.7,Math.sin(a)*s*0.7);ctx.lineTo(Math.cos(a)*s,Math.sin(a)*s);ctx.stroke();}} // сонце
+    else if(type===4){ctx.moveTo(0,s);ctx.lineTo(0,-s*0.2);ctx.stroke();for(let q=-1;q<=1;q++){ctx.beginPath();ctx.arc(0,-s*0.2,s*(0.45+0.32*(q+1)),-2.4+q*0.05,-0.74-q*0.05);ctx.stroke();}} // розприскувач (полив)
+    else{ctx.moveTo(0,s);ctx.lineTo(0,s*0.3);ctx.stroke();ctx.beginPath();ctx.arc(-s*0.35,0,s*0.45,0,6.2832);ctx.arc(s*0.35,0,s*0.45,0,6.2832);ctx.arc(0,-s*0.4,s*0.5,0,6.2832);ctx.stroke();} // кущ/туя
     ctx.restore();}
   let W=0,H=0,mode='sphere',N=116,LINK=0.33,SPD=4,ORG=0.23;
   let pts=[],edges=[],accents=[],adj=[],est=[],dust=[],mx=-1e4,my=-1e4,t=0,ang=0,tiltX=0.5,tTiltX=0.5,tAngV=0;
@@ -80,9 +80,11 @@
       // суміжність + стан проростання
       adj=pts.map(()=>[]); est=edges.map(()=>null);
       edges.forEach((e,ei)=>{adj[e[0]].push(ei);adj[e[1]].push(ei);});
-      // вузли-іконки: дерева + рівно одне сонце
-      for(let k=0;k<12;k++){pts[(Math.random()*N)|0].icon=2;}
-      pts[(Math.random()*N)|0].icon=3;
+      // вузли-іконки: дерева + кущі + розприскувачі + одне сонце
+      for(let k=0;k<10;k++){pts[(Math.random()*N)|0].icon=2;}   // дерева
+      for(let k=0;k<4;k++){pts[(Math.random()*N)|0].icon=5;}    // кущі
+      for(let k=0;k<3;k++){pts[(Math.random()*N)|0].icon=4;}    // розприскувачі
+      pts[(Math.random()*N)|0].icon=3;                          // сонце
     }else if(mode==='wave'){
       for(let i=0;i<N;i++) pts.push({col:Math.random(),row:Math.random(),x:0,y:0,org:Math.random()<ORG,seed:Math.random(),r:rnd(1.1,2.2)});
     }else{
