@@ -33,17 +33,17 @@
 <div class="wrap"><canvas id="c"></canvas></div>
 <div class="hint">Сфера обертається сама</div>
 <div class="panel">
-  <label>Вузли <b id="dens-v">200</b><input id="dens" type="range" min="60" max="400" value="200"></label>
-  <label>Звʼязки <b id="dist-v">34</b><input id="dist" type="range" min="8" max="50" value="34"></label>
-  <label>Швидкість <b id="spd-v">10</b><input id="spd" type="range" min="0" max="40" value="10"></label>
-  <label>Оранж % <b id="org-v">12</b><input id="org" type="range" min="0" max="35" value="12"></label>
+  <label>Вузли <b id="dens-v">116</b><input id="dens" type="range" min="60" max="400" value="116"></label>
+  <label>Звʼязки <b id="dist-v">33</b><input id="dist" type="range" min="8" max="50" value="33"></label>
+  <label>Швидкість <b id="spd-v">4</b><input id="spd" type="range" min="0" max="40" value="4"></label>
+  <label>Оранж % <b id="org-v">23</b><input id="org" type="range" min="0" max="35" value="23"></label>
 </div>
 <script>
 (function(){
   const cv=document.getElementById('c'),ctx=cv.getContext('2d');
   const dpr=Math.min(devicePixelRatio||1,2);
   const G=[46,157,95], O=[242,141,27];
-  let W=0,H=0,mode='sphere',N=200,LINK=0.34,SPD=10,ORG=0.12;
+  let W=0,H=0,mode='sphere',N=116,LINK=0.33,SPD=4,ORG=0.23;
   let pts=[],edges=[],accents=[],mx=-1e4,my=-1e4,t=0,ang=0,tiltX=0.5,tTiltX=0.5,tAngV=0;
 
   const names={
