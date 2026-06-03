@@ -18,6 +18,7 @@
   .panel{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:center;
     background:rgba(20,22,20,0.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:10px 16px;font-size:12px;}
   .panel label{display:flex;flex-direction:column;gap:4px;color:rgba(255,255,255,0.7);}
+  .panel label b{color:rgb(var(--green));font-weight:700;}
   .panel input[type=range]{accent-color:rgb(var(--green));width:120px;}
   .hint{position:fixed;bottom:74px;left:50%;transform:translateX(-50%);z-index:10;color:rgba(255,255,255,0.4);font-size:12px;}
 </style>
@@ -32,10 +33,10 @@
 <div class="wrap"><canvas id="c"></canvas></div>
 <div class="hint">Веди мишею — сфера повертається за курсором</div>
 <div class="panel">
-  <label>Вузли <input id="dens" type="range" min="60" max="400" value="200"></label>
-  <label>Звʼязки <input id="dist" type="range" min="8" max="50" value="34"></label>
-  <label>Швидкість <input id="spd" type="range" min="0" max="40" value="10"></label>
-  <label>Оранж % <input id="org" type="range" min="0" max="35" value="12"></label>
+  <label>Вузли <b id="dens-v">200</b><input id="dens" type="range" min="60" max="400" value="200"></label>
+  <label>Звʼязки <b id="dist-v">34</b><input id="dist" type="range" min="8" max="50" value="34"></label>
+  <label>Швидкість <b id="spd-v">10</b><input id="spd" type="range" min="0" max="40" value="10"></label>
+  <label>Оранж % <b id="org-v">12</b><input id="org" type="range" min="0" max="35" value="12"></label>
 </div>
 <script>
 (function(){
@@ -159,7 +160,7 @@
   document.querySelectorAll('.bar button').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('.bar button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
     mode=b.dataset.m;document.getElementById('name').textContent=names[mode];build();}));
-  const bind=(id,fn)=>{document.getElementById(id).oninput=e=>{fn(+e.target.value);build();};};
+  const bind=(id,fn)=>{const el=document.getElementById(id),v=document.getElementById(id+'-v');el.oninput=e=>{fn(+e.target.value);if(v)v.textContent=e.target.value;build();};};
   bind('dens',v=>N=v); bind('dist',v=>LINK=v/100); bind('spd',v=>SPD=v); bind('org',v=>ORG=v/100);
 })();
 </script>
