@@ -248,7 +248,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-desc{margin:0;font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:40ch;}
 /* потік — у правому контейнері (права колонка грід) */
 .gs-why-dots{position:relative;width:100%;height:78vh;z-index:0;pointer-events:none;align-self:center;}
-.gs-why-dots canvas{display:block;width:100%;height:100%;background:var(--bg-1);-webkit-mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);}
+.gs-why-dots canvas{display:block;width:100%;height:100%;background:transparent;-webkit-mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);}
 /* зерно (dither/grain) поверх потоку — з тією ж маскою, щоб бокс не виділявся прямокутником */
 .gs-why-dots::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");background-size:160px 160px;-webkit-mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);}
 .gs-why-nav{position:absolute;left:50%;bottom:2.25rem;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:3;}
@@ -2386,8 +2386,8 @@ if (targets.length) {
     energy += (0.12 - energy) * 0.03;
     pointerOn *= 0.95;
     sizeTo([...vis][0]);
-    // рандомні помаранчеві крапки спалахують
-    for (let k = 0; k < 3; k++) if (Math.random() < 0.5) spark[(Math.random() * HIST * BINS) | 0] = 1;
+    // рандомні помаранчеві крапки спалахують (ближче до переду, де крапки щільніші)
+    for (let k = 0; k < 4; k++) if (Math.random() < 0.7) { const ti = ((Math.random() ** 1.6) * HIST) | 0, bi = (Math.random() * BINS) | 0; spark[ti * BINS + bi] = 1; }
     const sc = time * 0.25; // швидкість «підняття» патерну вгору
     for (let t = 0; t < HIST; t++) {
       const arr = lines[t].geometry.attributes.position.array, col = lines[t].geometry.attributes.color.array;
@@ -2400,17 +2400,17 @@ if (targets.length) {
         // локальний сплеск під курсором (gauss по X)
         const dxp = u - pointerX;
         const local = Math.exp(-(dxp * dxp) / 0.015) * pointerOn;
-        const amp = n * (0.18 + energy) + local * 0.9;
+        const idx = t * BINS + b, og = spark[idx]; spark[idx] = og * 0.965; // помаранчевий спалах згасає
+        const amp = n * (0.18 + energy) + local * 0.9 + og * 0.5; // спарк трохи піднімаємо, щоб було видно
         arr[b * 3 + 1] = amp * AMP;
         // підсвітка ЛИШЕ гребенів: різкий поріг по |amp|
         const a = Math.min(1, Math.abs(amp) * 1.1);
         const crest = sstep(Math.max(0, (a - 0.6) / 0.4));
-        let cr = EM[0] + (CR[0] - EM[0]) * crest, cg = EM[1] + (CR[1] - EM[1]) * crest, cb = EM[2] + (CR[2] - EM[2]) * crest;
-        // помаранчевий спалах: змішуємо до помаранчевого, потім згасає
-        const idx = t * BINS + b, og = spark[idx]; spark[idx] = og * 0.95;
-        col[b * 3] = cr + (ORG[0] - cr) * og;
-        col[b * 3 + 1] = cg + (ORG[1] - cg) * og;
-        col[b * 3 + 2] = cb + (ORG[2] - cb) * og;
+        const cr = EM[0] + (CR[0] - EM[0]) * crest, cg = EM[1] + (CR[1] - EM[1]) * crest, cb = EM[2] + (CR[2] - EM[2]) * crest;
+        // помаранчевий спалах яскраво додається поверх (additive) — добре видно
+        col[b * 3] = cr + ORG[0] * og * 2.0;
+        col[b * 3 + 1] = cg + ORG[1] * og * 2.0;
+        col[b * 3 + 2] = cb + ORG[2] * og * 2.0;
       }
       lines[t].geometry.attributes.position.needsUpdate = true; lines[t].geometry.attributes.color.needsUpdate = true;
     }
