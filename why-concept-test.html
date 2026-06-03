@@ -125,7 +125,7 @@
         ctx.fillStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+al.toFixed(3)+')';
         ctx.beginPath();ctx.arc(p.sx,p.sy,sz,0,6.2832);ctx.fill();}
       // біла рухома дуга по екватору
-      {const head=(t*0.6)%(Math.PI*2), arc=0.6, M=48; ctx.lineCap='round'; let pj=null;
+      {const head=(t*0.6)%(Math.PI*2), arc=1.8, M=110; ctx.lineCap='round'; let pj=null;
        for(let k=0;k<=M;k++){const th=head-(k/M)*arc, X=Math.cos(th), Z=Math.sin(th);
          const x1=X*cosA+Z*sinA, z1=-X*sinA+Z*cosA, y2=-z1*sinT, z2=z1*cosT;
          const persp=2.6/(2.6-z2), sx=cx+x1*R*persp, sy=cy+y2*R*persp;
