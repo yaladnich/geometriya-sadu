@@ -239,14 +239,16 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why.gs-section-orange .eyebrow,.gs-why.gs-section-orange .eyebrow .eb-dash{color:#F28D1B;}
 .gs-why-intro{position:relative;z-index:2;padding-block:clamp(4rem,10vh,9rem) clamp(2rem,5vh,4rem);}
 .gs-why-intro .gs-section-head{margin-bottom:0;}
-.gs-why-panels{position:relative;min-height:500vh;}
-/* scroll-slider: sphere stays in place, text blocks switch by scroll progress */
-.gs-why-inner{position:sticky;top:0;z-index:1;width:var(--container-w);height:100vh;margin-inline:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(20rem,1fr);gap:clamp(1.5rem,3vw,3rem);align-items:center;}
+.gs-why-panels{position:relative;}
+/* спільна сфера — sticky-фон на всю секцію (margin-bottom:-100svh, щоб не додавати зайвий екран) */
+.gs-why-dots{position:sticky;top:0;height:100svh;margin-bottom:-100svh;z-index:0;pointer-events:none;}
+.gs-why-dots canvas{display:block;width:100%;height:100%;background:transparent;}
+/* кожен слайд — окрема повноекранна секція (baseone-патерн: pin + pinSpacing:false) */
+.gs-why-panel{position:relative;z-index:1;height:100svh;display:flex;align-items:center;}
+.gs-why-inner{width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:center;}
 .gs-why-side{will-change:transform,opacity,filter;}
-.gs-why-slides{grid-column:1;grid-row:1;position:relative;height:100%;min-width:0;}
-.gs-why-text{position:absolute;inset:0;margin-inline:auto;min-height:0;display:flex;flex-direction:column;justify-content:center;max-width:34rem;opacity:0;visibility:hidden;transform:translateY(2rem);pointer-events:none;transition:opacity 0.55s var(--ease-out),transform 0.55s var(--ease-out),visibility 0s linear 0.55s;}
-.gs-why-text.is-active{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;transition-delay:0s;}
-/* slide text reveal: lift + skew + blur, staggered */
+.gs-why-text{grid-column:1;max-width:34rem;justify-self:center;will-change:opacity,transform,filter;}
+/* текст-каскад: підйом + skew + blur */
 .gs-why-num,.gs-why-title,.gs-why-desc{opacity:0;transform:translateY(120%) skewY(6deg);transform-origin:0 bottom;}
 .gs-why-text.in .gs-why-num{animation:gsTextUp 0.8s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:0.05s;}
 .gs-why-text.in .gs-why-title{animation:gsTextUp 0.9s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:0.17s;}
@@ -255,30 +257,17 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-num{font-family:var(--font-display);font-weight:800;font-size:clamp(2.5rem,4vw,3.75rem);line-height:0.9;color:var(--accent-bright);letter-spacing:-0.02em;margin-bottom:0.75rem;}
 .gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.1;margin:0 0 1rem;color:#fff;text-transform:none;}
 .gs-why-desc{margin:0;font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:40ch;}
-/* sphere: fixed visual column inside the sticky why slide */
-.gs-why-dots{grid-column:2;grid-row:1;position:relative;height:100%;align-self:stretch;pointer-events:none;}
-.gs-why-dots canvas{display:block;width:100%;height:100%;background:transparent;}
 .gs-why-nav{position:absolute;left:50%;bottom:2.25rem;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:3;}
 .gs-why-tick{width:1.75rem;height:0.1875rem;border-radius:62rem;background:rgba(255,255,255,0.22);transition:background 0.3s var(--ease-out);}
 .gs-why-tick.is-on{background:var(--accent-bright);}
-/* якорі-снапи (один слайд за жест) — активні лише на мобільному через media нижче */
-.gs-why-snaps{position:absolute;inset:0;width:0;pointer-events:none;}
-.gs-why-snaps i{position:absolute;left:0;width:1px;height:1px;}
-.gs-why-snaps i:nth-child(1){top:0;}
-.gs-why-snaps i:nth-child(2){top:100svh;}
-.gs-why-snaps i:nth-child(3){top:200svh;}
-.gs-why-snaps i:nth-child(4){top:300svh;}
 @media(max-width:900px){
-  /* скрол-снап: фізично не дає перескочити слайд навіть на сильному фліку */
+  /* один слайд за жест: фізично не дає перескочити секцію */
   html{scroll-snap-type:y proximity;}
-  .gs-why-snaps i{scroll-snap-align:start;scroll-snap-stop:always;}
+  .gs-why-panel{scroll-snap-align:start;scroll-snap-stop:always;}
   .gs-why-intro{padding-block:clamp(2rem,6vh,3.5rem) 0.5rem;}
-  .gs-why-panels{min-height:500svh;}
-  /* мобільний: сфера зверху, текст ПІД нею; уся пара центрована по висоті */
-  .gs-why-inner{grid-template-columns:1fr;grid-template-rows:auto auto;height:100svh;align-content:center;justify-items:center;gap:1.25rem;}
-  .gs-why-dots{grid-column:1;grid-row:1;z-index:0;width:100%;height:40svh;opacity:0.9;}
-  .gs-why-slides{grid-column:1;grid-row:2;z-index:1;width:100%;height:30svh;}
-  .gs-why-text{align-items:center;text-align:center;max-width:90%;margin-inline:auto;}
+  .gs-why-dots{opacity:0.5;}
+  .gs-why-inner{grid-template-columns:1fr;justify-items:center;text-align:center;}
+  .gs-why-text{grid-column:1;justify-self:center;max-width:90%;}
   .gs-why-desc{margin-inline:auto;}
   .gs-why-nav{display:none;}
 }
@@ -952,40 +941,45 @@ html,body{overflow-x:clip;max-width:100%;}
     </div>
   </div>
   <div class="gs-why-panels">
-    <div class="gs-why-snaps" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-    <div class="gs-container gs-why-inner">
-      <div class="gs-why-slides">
-        <div class="gs-why-side gs-why-text" data-i="0">
-          <div class="num gs-why-num">01</div>
-          <h3 class="gs-why-title">Власне озеленення</h3>
-          <p class="gs-why-desc">Туї, хвойні та кущі з перевірених розсадників — приживаються й тримають форму роками.</p>
-        </div>
-        <div class="gs-why-side gs-why-text" data-i="1">
-          <div class="num gs-why-num">02</div>
-          <h3 class="gs-why-title">Рулонний газон під ключ</h3>
-          <p class="gs-why-desc">Готуємо ґрунт і стелемо газон — рівне зелене поле вже за день, без бур'янів і ям.</p>
-        </div>
-        <div class="gs-why-side gs-why-text" data-i="2">
-          <div class="num gs-why-num">03</div>
-          <h3 class="gs-why-title">Автополив, що працює сам</h3>
-          <p class="gs-why-desc">Hunter, Rain Bird, Irritec — полив за розкладом, газон зелений без вашої участі.</p>
-        </div>
-        <div class="gs-why-side gs-why-text" data-i="3">
-          <div class="num gs-why-num">04</div>
-          <h3 class="gs-why-title">Власна спецтехніка</h3>
-          <p class="gs-why-desc">Міні-навантажувачі та обладнання — земляні роботи будь-якої складності точно й у строк.</p>
-        </div>
-      </div>
-      <div class="gs-why-side gs-why-dots">
-        <canvas></canvas>
-        <div class="gs-why-nav" aria-hidden="true">
-          <span class="gs-why-tick is-on"></span>
-          <span class="gs-why-tick"></span>
-          <span class="gs-why-tick"></span>
-          <span class="gs-why-tick"></span>
-        </div>
+    <!-- спільна сфера-фон: тримається весь час (sticky), не рухається -->
+    <div class="gs-why-side gs-why-dots">
+      <canvas></canvas>
+      <div class="gs-why-nav" aria-hidden="true">
+        <span class="gs-why-tick is-on"></span>
+        <span class="gs-why-tick"></span>
+        <span class="gs-why-tick"></span>
+        <span class="gs-why-tick"></span>
       </div>
     </div>
+    <!-- 4 окремі секції-слайди (baseone-патерн: pin + pinSpacing:false) -->
+    <section class="gs-why-panel" data-i="0">
+      <div class="gs-container gs-why-inner"><div class="gs-why-side gs-why-text">
+        <div class="num gs-why-num">01</div>
+        <h3 class="gs-why-title">Власне озеленення</h3>
+        <p class="gs-why-desc">Туї, хвойні та кущі з перевірених розсадників — приживаються й тримають форму роками.</p>
+      </div></div>
+    </section>
+    <section class="gs-why-panel" data-i="1">
+      <div class="gs-container gs-why-inner"><div class="gs-why-side gs-why-text">
+        <div class="num gs-why-num">02</div>
+        <h3 class="gs-why-title">Рулонний газон під ключ</h3>
+        <p class="gs-why-desc">Готуємо ґрунт і стелемо газон — рівне зелене поле вже за день, без бур'янів і ям.</p>
+      </div></div>
+    </section>
+    <section class="gs-why-panel" data-i="2">
+      <div class="gs-container gs-why-inner"><div class="gs-why-side gs-why-text">
+        <div class="num gs-why-num">03</div>
+        <h3 class="gs-why-title">Автополив, що працює сам</h3>
+        <p class="gs-why-desc">Hunter, Rain Bird, Irritec — полив за розкладом, газон зелений без вашої участі.</p>
+      </div></div>
+    </section>
+    <section class="gs-why-panel" data-i="3">
+      <div class="gs-container gs-why-inner"><div class="gs-why-side gs-why-text">
+        <div class="num gs-why-num">04</div>
+        <h3 class="gs-why-title">Власна спецтехніка</h3>
+        <p class="gs-why-desc">Міні-навантажувачі та обладнання — земляні роботи будь-якої складності точно й у строк.</p>
+      </div></div>
+    </section>
   </div>
 </section>
 
@@ -2256,53 +2250,43 @@ updateHeaderAndProgress();
 // рівно один слайд за екран, без пропусків/стрибків від сили скролу.
 // #why: scroll-slider - sphere stays in a sticky frame, text changes by scroll progress.
 // Section height gives each text block about one viewport before the next change.
+// #why: baseone-патерн — кожна секція піниться (pinSpacing:false), текст згасає при прокручуванні.
+// Активний слайд/каскад/тіки визначає IntersectionObserver (центр секції в центрі екрана) →
+// рівно один слайд за екран, без перескоків від сили скролу.
 (function initWhyPin() {
-  const panels = document.querySelector('.gs-why-panels');
-  const slides = Array.from(document.querySelectorAll('.gs-why-text'));
+  const panels = Array.from(document.querySelectorAll('.gs-why-panel'));
   const ticks = Array.from(document.querySelectorAll('.gs-why-tick'));
-  if (!panels || !slides.length) return;
+  if (!panels.length) return;
 
   let cur = -1;
-
   function activate(i) {
-    const next = Math.max(0, Math.min(slides.length - 1, i));
-    if (next === cur) return;
-    cur = next;
+    if (i < 0 || i === cur) return;
+    cur = i;
+    ticks.forEach((el, idx) => el.classList.toggle('is-on', idx === i));
+    const txt = panels[i].querySelector('.gs-why-text');
+    if (txt) { txt.classList.remove('in'); void txt.offsetWidth; txt.classList.add('in'); } // перезапуск каскаду
+    if (window.__whyKick) window.__whyKick(); // сфера реагує на зміну слайда
+  }
 
-    slides.forEach((slide, index) => {
-      const active = index === next;
-      slide.classList.toggle('is-active', active);
-      if (active) slide.classList.add('in');
+  // активний слайд за тим, чий центр перетнув центр екрана
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) activate(panels.indexOf(e.target)); });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  panels.forEach(p => io.observe(p));
+
+  // десктоп: пін кожної секції + згасання її тексту (baseone)
+  if (window.gsap && window.ScrollTrigger && window.matchMedia('(min-width:901px)').matches) {
+    gsap.utils.toArray('.gs-why-panel').forEach(panel => {
+      const text = panel.querySelector('.gs-why-text');
+      ScrollTrigger.create({
+        trigger: panel, start: 'top top', end: 'bottom top',
+        scrub: true, pin: true, pinSpacing: false, invalidateOnRefresh: true,
+        animation: gsap.timeline().to(text, { opacity: 0, filter: 'blur(10px)', scale: 0.85, y: () => -0.06 * panel.offsetHeight, ease: 'none' })
+      });
     });
-
-    ticks.forEach((el, index) => el.classList.toggle('is-on', index === next));
-    if (window.__whyKick) window.__whyKick();
   }
 
   activate(0);
-
-  if (window.gsap && window.ScrollTrigger) {
-    ScrollTrigger.create({
-      trigger: panels,
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: true,
-      invalidateOnRefresh: true,
-      onUpdate: self => activate(Math.floor(self.progress * slides.length))
-    });
-    return;
-  }
-
-  function syncWhySlide() {
-    const rect = panels.getBoundingClientRect();
-    const travel = Math.max(1, rect.height - window.innerHeight);
-    const progress = Math.max(0, Math.min(1, -rect.top / travel));
-    activate(Math.floor(progress * slides.length));
-  }
-
-  window.addEventListener('scroll', syncWhySlide, { passive: true });
-  window.addEventListener('resize', syncWhySlide);
-  syncWhySlide();
 })();
 /* #why: візуал — окремий module-скрипт перед </body> (Three.js світний потік, блітинг у .gs-why-dots canvas) */
 
