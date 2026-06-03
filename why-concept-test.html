@@ -54,7 +54,7 @@
     else{ctx.arc(0,0,s*0.5,0,6.2832);ctx.stroke();for(let k=0;k<8;k++){const a=k/8*6.2832;ctx.beginPath();ctx.moveTo(Math.cos(a)*s*0.7,Math.sin(a)*s*0.7);ctx.lineTo(Math.cos(a)*s,Math.sin(a)*s);ctx.stroke();}} // сонце
     ctx.restore();}
   let W=0,H=0,mode='sphere',N=116,LINK=0.33,SPD=4,ORG=0.23;
-  let pts=[],edges=[],accents=[],adj=[],est=[],mx=-1e4,my=-1e4,t=0,ang=0,tiltX=0.5,tTiltX=0.5,tAngV=0;
+  let pts=[],edges=[],accents=[],adj=[],est=[],dust=[],mx=-1e4,my=-1e4,t=0,ang=0,tiltX=0.5,tTiltX=0.5,tAngV=0;
   function activateNode(node,now){for(const ei of adj[node]){if(!est[ei])est[ei]={t0:now,from:node};}}
 
   const names={
@@ -80,8 +80,8 @@
       // суміжність + стан проростання
       adj=pts.map(()=>[]); est=edges.map(()=>null);
       edges.forEach((e,ei)=>{adj[e[0]].push(ei);adj[e[1]].push(ei);});
-      // кілька вузлів-іконок (листок/крапля/деревце/сонце)
-      for(let k=0;k<7;k++){pts[(Math.random()*N)|0].icon=(Math.random()*4)|0;}
+      // вузли-іконки: переважно дерева + трохи сонць
+      for(let k=0;k<13;k++){pts[(Math.random()*N)|0].icon=(Math.random()<0.82?2:3);}
     }else if(mode==='wave'){
       for(let i=0;i<N;i++) pts.push({col:Math.random(),row:Math.random(),x:0,y:0,org:Math.random()<ORG,seed:Math.random(),r:rnd(1.1,2.2)});
     }else{
@@ -136,17 +136,25 @@
       for(const p of order){const lc=latCol(p), al=0.25+p.depth*0.7;
         if(p.icon!=null){icon(p.icon,p.sx,p.sy,5+p.depth*5,lc,Math.min(1,al+0.2).toFixed(3));}
         else{const sz=0.6+p.depth*1.9;ctx.fillStyle=rgba(lc,al.toFixed(3));ctx.beginPath();ctx.arc(p.sx,p.sy,sz,0,6.2832);ctx.fill();}}
-      // біла рухома дуга по екватору
-      {const head=(t*0.6)%(Math.PI*2), arc=1.8, M=110; ctx.lineCap='round'; let pj=null;
+      // рухома дуга-комета по екватору: градієнт білий(голівка)→зелень(хвіст) + розсип
+      {const head=(t*0.6)%(Math.PI*2), arc=1.8, M=110, WH=[255,255,255]; ctx.lineCap='round'; let pj=null,hx=0,hy=0;
        for(let k=0;k<=M;k++){const th=head-(k/M)*arc, X=Math.cos(th), Z=Math.sin(th);
          const x1=X*cosA+Z*sinA, z1=-X*sinA+Z*cosA, y2=-z1*sinT, z2=z1*cosT;
-         const persp=2.6/(2.6-z2), sx=cx+x1*R*persp, sy=cy+y2*R*persp;
-         if(pj){const al=(1-k/M)*(0.2+0.8*((z2+1)/2));
-           ctx.strokeStyle='rgba(255,255,255,'+al.toFixed(3)+')'; ctx.lineWidth=1.6*(1-k/M)+0.5;
+         const persp=2.6/(2.6-z2), sx=cx+x1*R*persp, sy=cy+y2*R*persp, kf=k/M;
+         if(pj){const al=(1-kf)*(0.2+0.8*((z2+1)/2));
+           const col=[WH[0]+(G[0]-WH[0])*kf, WH[1]+(G[1]-WH[1])*kf, WH[2]+(G[2]-WH[2])*kf];
+           ctx.strokeStyle=rgba(col,al.toFixed(3)); ctx.lineWidth=1.8*(1-kf)+0.4;
            ctx.beginPath();ctx.moveTo(pj[0],pj[1]);ctx.lineTo(sx,sy);ctx.stroke();}
          pj=[sx,sy];
-         if(k===0){ctx.fillStyle='rgba(255,255,255,0.95)';ctx.beginPath();ctx.arc(sx,sy,2.4,0,6.2832);ctx.fill();}}
-       ctx.lineCap='butt';}
+         if(k===0){hx=sx;hy=sy;ctx.fillStyle='rgba(255,255,255,0.95)';ctx.beginPath();ctx.arc(sx,sy,2.6,0,6.2832);ctx.fill();}}
+       ctx.lineCap='butt';
+       // розсип хвоста: частинки відлітають і тануть
+       for(let s=0;s<2;s++) dust.push({x:hx,y:hy,vx:rnd(-0.6,0.6),vy:rnd(-0.6,0.6),life:1});
+       if(dust.length>160) dust.splice(0,dust.length-160);
+       for(let d=dust.length-1;d>=0;d--){const p=dust[d];p.x+=p.vx;p.y+=p.vy;p.vy+=0.01;p.life-=0.02;
+         if(p.life<=0){dust.splice(d,1);continue;}
+         const col=[255-(255-G[0])*(1-p.life),255-(255-G[1])*(1-p.life),255-(255-G[2])*(1-p.life)];
+         ctx.fillStyle=rgba(col,(p.life*0.7).toFixed(3));ctx.beginPath();ctx.arc(p.x,p.y,1.1*p.life+0.4,0,6.2832);ctx.fill();}}
     }else if(mode==='wave'){
       const trav=t*0.25;
       for(const p of pts){const u=p.col;let n=Math.sin(u*12.566 - trav*4 + p.row*3)+0.5*Math.sin(u*25.13 - trav*6);
