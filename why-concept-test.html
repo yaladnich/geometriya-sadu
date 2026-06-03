@@ -42,7 +42,17 @@
 (function(){
   const cv=document.getElementById('c'),ctx=cv.getContext('2d');
   const dpr=Math.min(devicePixelRatio||1,2);
-  const G=[46,157,95], O=[242,141,27];
+  const G=[46,157,95], O=[242,141,27], OCH=[201,156,74];
+  // сезонний градієнт по широті: північ — свіжа зелень, південь — тепла охра
+  function latCol(p){const f=(p.Y+1)/2;return [G[0]+(OCH[0]-G[0])*(1-f),G[1]+(OCH[1]-G[1])*(1-f),G[2]+(OCH[2]-G[2])*(1-f)];}
+  function rgba(c,a){return 'rgba('+(c[0]|0)+','+(c[1]|0)+','+(c[2]|0)+','+a+')';}
+  // мінімалістичні лінійні іконки саду
+  function icon(type,x,y,s,col,al){ctx.save();ctx.translate(x,y);ctx.strokeStyle=rgba(col,al);ctx.fillStyle=rgba(col,al);ctx.lineWidth=1.2;ctx.beginPath();
+    if(type===0){ctx.ellipse(0,0,s*0.5,s,0.6,0,6.2832);ctx.stroke();ctx.beginPath();ctx.moveTo(-s*0.35,s*0.6);ctx.lineTo(s*0.35,-s*0.6);ctx.stroke();} // листок
+    else if(type===1){ctx.moveTo(0,-s);ctx.quadraticCurveTo(s*0.8,s*0.3,0,s*0.7);ctx.quadraticCurveTo(-s*0.8,s*0.3,0,-s);ctx.stroke();} // крапля
+    else if(type===2){ctx.moveTo(0,-s);ctx.lineTo(s*0.7,s*0.4);ctx.lineTo(-s*0.7,s*0.4);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(0,s*0.4);ctx.lineTo(0,s);ctx.stroke();} // деревце
+    else{ctx.arc(0,0,s*0.5,0,6.2832);ctx.stroke();for(let k=0;k<8;k++){const a=k/8*6.2832;ctx.beginPath();ctx.moveTo(Math.cos(a)*s*0.7,Math.sin(a)*s*0.7);ctx.lineTo(Math.cos(a)*s,Math.sin(a)*s);ctx.stroke();}} // сонце
+    ctx.restore();}
   let W=0,H=0,mode='sphere',N=116,LINK=0.33,SPD=4,ORG=0.23;
   let pts=[],edges=[],accents=[],adj=[],est=[],mx=-1e4,my=-1e4,t=0,ang=0,tiltX=0.5,tTiltX=0.5,tAngV=0;
   function activateNode(node,now){for(const ei of adj[node]){if(!est[ei])est[ei]={t0:now,from:node};}}
@@ -70,6 +80,8 @@
       // суміжність + стан проростання
       adj=pts.map(()=>[]); est=edges.map(()=>null);
       edges.forEach((e,ei)=>{adj[e[0]].push(ei);adj[e[1]].push(ei);});
+      // кілька вузлів-іконок (листок/крапля/деревце/сонце)
+      for(let k=0;k<7;k++){pts[(Math.random()*N)|0].icon=(Math.random()*4)|0;}
     }else if(mode==='wave'){
       for(let i=0;i<N;i++) pts.push({col:Math.random(),row:Math.random(),x:0,y:0,org:Math.random()<ORG,seed:Math.random(),r:rnd(1.1,2.2)});
     }else{
@@ -109,10 +121,11 @@
         const a=pts[src], b=pts[dstI], dep=(a.depth+b.depth)/2;
         const age=t-st.t0, prog=Math.min(1,age/DUR), fade=age<DUR?1:Math.max(0,1-(age-DUR)/FADE);
         const ex=a.sx+(b.sx-a.sx)*prog, ey=a.sy+(b.sy-a.sy)*prog, isC=e[2];
-        if(isC){const c=(a.org||b.org)?[255,200,120]:[170,255,200];ctx.lineWidth=1.6;ctx.strokeStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+(0.9*fade).toFixed(3)+')';}
-        else{ctx.lineWidth=1;ctx.strokeStyle='rgba('+G[0]+','+G[1]+','+G[2]+','+((0.25+dep*0.5)*fade).toFixed(3)+')';}
+        const lc=latCol(a);
+        if(isC){ctx.lineWidth=1.6;ctx.strokeStyle=rgba([220,255,220],(0.9*fade).toFixed(3));}
+        else{ctx.lineWidth=1;ctx.strokeStyle=rgba(lc,((0.25+dep*0.5)*fade).toFixed(3));}
         ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(ex,ey);ctx.stroke();
-        ctx.fillStyle=isC?'rgba(200,255,210,'+(0.9*fade).toFixed(3)+')':'rgba('+G[0]+','+G[1]+','+G[2]+','+(0.7*fade).toFixed(3)+')';
+        ctx.fillStyle=rgba(isC?[220,255,220]:lc,(0.7*fade).toFixed(3));
         ctx.beginPath();ctx.arc(ex,ey,1.4,0,6.2832);ctx.fill();
         if(prog>=1 && !st.grown){ st.grown=true; if(Math.random()<0.8) activateNode(dstI,t); }
         if(age>DUR+FADE) est[ei]=null;
@@ -120,9 +133,9 @@
       ctx.lineWidth=1;
       // крапки (сортуємо по глибині — задні перші)
       const order=pts.slice().sort((a,b)=>a.depth-b.depth);
-      for(const p of order){const c=p.org?O:G;const sz=(0.6+p.depth*1.9), al=0.25+p.depth*0.7;
-        ctx.fillStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+al.toFixed(3)+')';
-        ctx.beginPath();ctx.arc(p.sx,p.sy,sz,0,6.2832);ctx.fill();}
+      for(const p of order){const lc=latCol(p), al=0.25+p.depth*0.7;
+        if(p.icon!=null){icon(p.icon,p.sx,p.sy,5+p.depth*5,lc,Math.min(1,al+0.2).toFixed(3));}
+        else{const sz=0.6+p.depth*1.9;ctx.fillStyle=rgba(lc,al.toFixed(3));ctx.beginPath();ctx.arc(p.sx,p.sy,sz,0,6.2832);ctx.fill();}}
       // біла рухома дуга по екватору
       {const head=(t*0.6)%(Math.PI*2), arc=1.8, M=110; ctx.lineCap='round'; let pj=null;
        for(let k=0;k<=M;k++){const th=head-(k/M)*arc, X=Math.cos(th), Z=Math.sin(th);
