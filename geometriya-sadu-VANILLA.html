@@ -234,6 +234,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 @media(prefers-reduced-motion:reduce){.gs-pcard::before{display:none;}.gs-pcard-img,.gs-pcard-ph,.gs-pcard-label,.gs-pcard-title,.gs-pcard-sub{transform:none;opacity:1;animation:none;}}
 
 .gs-why{position:relative;background:#0a0b0a;}
+.gs-why.gs-section-orange{background:var(--bg-1);}
+.gs-why.gs-section-orange::before{display:none;}
 .gs-why-intro{position:relative;z-index:2;padding-block:clamp(4rem,10vh,9rem) clamp(2rem,5vh,4rem);}
 .gs-why-intro .gs-section-head{margin-bottom:0;}
 .gs-why-panels{position:relative;}
@@ -1916,9 +1918,15 @@ function initCustomAnimations() {
 
   function splitWords(el) {
     if (!el || el.dataset.words === 'true') return;
-    const accent = el.querySelector('.gs-accent-italic') ? ' gs-accent-italic' : '';
-    const words = el.textContent.trim().split(/\s+/);
-    el.innerHTML = words.map(word => `<span class="w-wrap"><span class="w${accent}">${word}</span></span>`).join(' ');
+    const out = [];
+    el.childNodes.forEach(node => {
+      const isAccent = node.nodeType === 1 && node.classList && node.classList.contains('gs-accent-italic');
+      (node.textContent || '').trim().split(/\s+/).forEach(word => {
+        if (!word) return;
+        out.push(`<span class="w-wrap"><span class="w${isAccent ? ' gs-accent-italic' : ''}">${word}</span></span>`);
+      });
+    });
+    el.innerHTML = out.join(' ');
     el.dataset.words = 'true';
   }
 
