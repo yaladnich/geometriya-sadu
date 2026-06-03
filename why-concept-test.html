@@ -100,21 +100,22 @@
       ctx.lineWidth=1;
       for(const e of edges){const a=pts[e[0]],b=pts[e[1]];
         const dep=(a.depth+b.depth)/2;
-        // поява/зникнення звʼязку: плавно прокидається і гасне
-        const appear=Math.max(0,Math.sin(t*0.7+e[3]));
-        if(appear<0.02) continue;
+        // лінія «прокреслюється» від A до B (рух уздовж ребра), потім повторюється
+        const cyc=(t*0.35 + e[3]/6.28) % 1.6;        // 0..1.6, фаза на ребро
+        const prog=Math.min(1, cyc);                  // 0..1 малюється, 1..1.6 пауза (повна лінія)
+        if(cyc>1.45) continue;                        // коротка пауза-зникнення перед новим циклом
+        const ex=a.sx+(b.sx-a.sx)*prog, ey=a.sy+(b.sy-a.sy)*prog;
         const isC=e[2];
         if(isC){
-          const al=appear*(0.55+0.45*Math.sin(t*2+e[3]*2));
           const c=(a.org||b.org)?[255,200,120]:[170,255,200];
-          ctx.lineWidth=1.6;
-          ctx.strokeStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+Math.max(0,al).toFixed(3)+')';
+          ctx.lineWidth=1.6; ctx.strokeStyle='rgba('+c[0]+','+c[1]+','+c[2]+',0.85)';
         }else{
-          const al=appear*(0.18+dep*0.5);
-          ctx.lineWidth=1;
-          ctx.strokeStyle='rgba('+G[0]+','+G[1]+','+G[2]+','+al.toFixed(3)+')';
+          ctx.lineWidth=1; ctx.strokeStyle='rgba('+G[0]+','+G[1]+','+G[2]+','+(0.2+dep*0.55).toFixed(3)+')';
         }
-        ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();}
+        ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(ex,ey);ctx.stroke();
+        // голівка, що біжить
+        ctx.fillStyle=isC?'rgba(200,255,210,0.9)':'rgba('+G[0]+','+G[1]+','+G[2]+',0.7)';
+        ctx.beginPath();ctx.arc(ex,ey,1.3,0,6.2832);ctx.fill();}
       ctx.lineWidth=1;
       // крапки (сортуємо по глибині — задні перші)
       const order=pts.slice().sort((a,b)=>a.depth-b.depth);
