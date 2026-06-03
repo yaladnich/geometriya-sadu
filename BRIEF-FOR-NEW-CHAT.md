@@ -37,12 +37,19 @@ https://yaladnich.github.io/geometriya-sadu/
 
 ## Git workflow (ВАЖЛИВО)
 Репозиторій: **`github.com/yaladnich/geometriya-sadu`** (owner=`yaladnich`, repo=`geometriya-sadu`).
-Прямий пуш у `main` заблоковано — працюємо через PR:
-1. Робоча гілка: `claude/zen-brahmagupta-bEWVk`
-2. **Перед кожною правкою**: `git fetch origin main && git reset --soft origin/main` (складати зміни в один чистий коміт поверх свіжого main)
-3. Внести правку → `git commit` → `git push -f origin claude/zen-brahmagupta-bEWVk`
-4. PR через MCP (`mcp__github__create_pull_request`, base=main) → squash merge (`mcp__github__merge_pull_request`)
-- Claude GitHub App встановлено на репо (write-доступ). MCP **не може** створювати гілки (403) — гілку створювати через `git push`.
+
+### Гілки (стан на червень 2026, після прибирання)
+- **`main`** — прод (деплой на Pages).
+- **`claude/cool-cray-OVT0T`** — активна робоча гілка цієї лінії роботи (#why слайдер). Синхронізована з `main`.
+- **`claude/zen-brahmagupta-bEWVk`** — гілка паралельної сесії (не чіпати без узгодження).
+- Решта старих гілок (`clever-allen`, `dazzling-dirac`, `beautiful-cannon`, `blissful-faraday`, `codex/*`) — **застарілі**, до видалення вручну в UI GitHub (git-проксі в контейнері НЕ вміє `--delete`, MCP теж не має такого інструмента).
+
+### Як працювати
+1. Робоча гілка: **`claude/cool-cray-OVT0T`** (узгоджено в цій сесії; раніше в брифі стояла zen — застаріло).
+2. **Перед кожною правкою**: `git fetch origin main && git reset --hard origin/main`.
+3. Внести правку → `git commit` → `git push -u origin claude/cool-cray-OVT0T`.
+4. Заливати в `main` лише на команду «залий»: `git checkout main && git reset --hard origin/main && git merge <branch> && git push origin main`. PR не обовʼязковий (прямий merge у main працює).
+- Claude GitHub App встановлено (write). MCP **не може** створювати/видаляти гілки — лише через `git push`.
 
 ### Стиль роботи (домовленість для економії токенів)
 - **Не мерджити автоматично.** Робити правки, пушити в гілку, а мерджити (`merge_pull_request`) **лише коли користувач каже «залий»/«заливай»**.
@@ -86,19 +93,17 @@ https://yaladnich.github.io/geometriya-sadu/
 ### 🌊 НОВЕ (PR #311, червень 2026): світний Three.js «потік» замість крапок
 Сітку крапок **замінили** на світну анімовану хвилю на **Three.js** (стиль аудіо-візуалайзера Dirac / noomoagency).
 
-**Як зроблено зараз (у `geometriya-sadu-VANILLA.html`):**
-- Старий `initWhyDots` прибрано → заглушка-коментар (~рядок 2195).
-- Перед `</body>` доданий `<script type="importmap">` (three@0.160 з jsDelivr) + `<script type="module">`.
-- Ефект = **спектрограма-водоспад**: `BINS=80` частотних смуг × `HIST=70` ліній історії; щокадру дані зсуваються вглиб (`history.unshift`). Рух — **симульований звук** (3 генератори `GENS` із `probability`, без реального аудіо). Колір — вершинний градієнт ізумруд `[0.18,0.61,0.37]` → помаранчевий `[0.95,0.55,0.11]` на гребенях. Постобробка `UnrealBloomPass`.
-- Рендериться в **офскрін-канвас** (`WebGLRenderer` + `EffectComposer`), потім `ctx.drawImage` **блітиться** у наявні `.gs-why-dots canvas` (їх 4, по одному на панель). Видимий канвас визначається `IntersectionObserver`.
-- CSS: на `.gs-why-dots canvas` додано `mask-image:radial-gradient(...)` для розмиття країв.
-- **Прототипи** (окремі файли в корені, не в проді): `three-dirac.html` (чистий waveform + режими гори/дерева), `three-scene.html`, `three-section.html` (макет секції), `three-pointcloud-test.html`, `three-lines-test.html`, `three-figures.html`.
+**Як зроблено зараз (у `geometriya-sadu-VANILLA.html`, актуально):**
+- HTML: **один** `.gs-why-stage` (НЕ 4 панелі) — всередині `.gs-why-texts` (4 блоки `.gs-why-text[data-i]`, накладені grid-area 1/1), один `.gs-why-dots canvas` (фон) і `.gs-why-nav` (4 рисочки-індикатори).
+- Ефект потоку = **спектрограма-водоспад** на Three.js: `BINS=80`×`HIST=70`, симульований звук (генератори `GENS`), колір ізумруд→помаранч на гребенях, `UnrealBloomPass`. Офскрін `WebGLRenderer`+`EffectComposer` → `ctx.drawImage` блітиться в **єдиний** `.gs-why-dots canvas`. Камера зміщена `x=-3.2` (яскраво праворуч, ліворуч темніше під текст).
+- Module-скрипт перед `</body>` (`importmap` three@0.160). Пауза рендеру: `IntersectionObserver` (поза екраном) **+ `document.hidden`** (згорнута вкладка/застосунок).
+- **Прототипи** (в корені, не в проді): `three-dirac.html`, `three-scene.html`, `three-section.html`, `three-pointcloud-test.html`, `three-lines-test.html`, `three-figures.html`.
 
 **✅ ВЖЕ ВИПРАВЛЕНО (на main):**
-- **Слайди працюють** (PR #313): відновлено IIFE `initWhyPin` — `ScrollTrigger` пін кожної з 4 `.gs-why-panel` (`pin:true`, `scrub`), текст зʼявляється (`from opacity/y/blur`) і зникає (`to blur/scale`). Раніше цей пін випадково випав разом зі старим `initWhyDots`.
-- **Без «боксу»** (PR #313): `.gs-why-dots` тепер `position:absolute; inset:0; z-index:0` — суцільний фон усієї панелі; `.gs-why-text` `z-index:1` над ним; маска `radial-gradient(... at 72% 55%)`. Камеру зміщено `x=-3.2` → яскрава частина праворуч, ліворуч темніше під текст.
-- **Оптимізація** (PR #315): rAF **повністю зупиняється** поза екраном (IntersectionObserver) і на прихованій вкладці (`visibilitychange`) через `start()/stop()/sync()`; `prefers-reduced-motion` → один статичний кадр; DPR офскріна 1.5.
-- **Напрям водоспаду** (PR #316): нові лінії знизу, старі вгору (інвертовано Z: `pos.z = (t/(HIST-1) - 0.5) * DEPTH`).
+- **Єдиний екземпляр потоку** — замість 4 canvas один; потік не дублюється/не перестрибує.
+- **Слайдер тексту `initWhyPin`** (~рядок 2196): один `ScrollTrigger` пінить stage на `end:'+=240%'` (`slides*60`), `scrub:0.4`, **`snap` 1/(slides-1)** (флік доводить до наступного/попереднього слайда). `setSlide` — **дискретний**: активний = `Math.round(progress*(slides-1))`, у вікні **рівно один** слайд (`.gs-why-texts overflow:hidden`, сусіди зсунуті на повну висоту `±H px` і обрізані). CSS-перехід (`opacity .4s, transform .55s`) анімує зміну → однаково чисто вперед і назад.
+- **Мобільний**: пін теж активний; layout `flex-direction:column` — анімація зверху (`38vh`), під нею слайдер тексту.
+- **Пауза анімації** на `document.hidden` + IntersectionObserver.
 
 **🎯 НАСТУПНЕ ПОБАЖАННЯ (ще НЕ зроблено):**
 - Зараз площина ліній **лежить горизонтально** (як підлога) — лінії в площині XZ, амплітуда по Y, камера дивиться згори-збоку.
