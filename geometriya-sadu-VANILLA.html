@@ -2350,8 +2350,8 @@ if (targets.length) {
   const lines = [];
   for (let t = 0; t < HIST; t++) {
     const pos = new Float32Array(BINS * 3), col = new Float32Array(BINS * 3);
-    // вертикальна стіна: X — частоти, Y — час (нові знизу → старі вгорі), Z — амплітуда (до глядача)
-    for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 1] = (t / (HIST - 1) - 0.5) * HEIGHT; pos[b * 3 + 2] = 0; }
+    // горизонтальне поле: X — ширина, Z — час/глибина (нові спереду → старі вглиб), Y — амплітуда (вгору)
+    for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 1] = 0; pos[b * 3 + 2] = (t / (HIST - 1) - 0.5) * HEIGHT; }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
     // прозорість за глибиною: нові крапки (низ) щільніші, старі (верх) розчиняються
     const depth = 1 - t / (HIST - 1);
@@ -2362,7 +2362,7 @@ if (targets.length) {
   const renderer = new THREE.WebGLRenderer({ canvas: off, antialias: true, alpha: true });
   renderer.setClearColor(0x000000, 0);
   const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
-  camera.position.set(0, 0, 9.5); camera.lookAt(0, 0, 0); // фронтально по центру правого контейнера
+  camera.position.set(0, 3.2, 8.5); camera.lookAt(0, 0, -0.5); // згори-збоку: поле стелиться вглиб
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.16, 0.6, 0.25));
@@ -2397,7 +2397,7 @@ if (targets.length) {
         const dxp = u - pointerX;
         const local = Math.exp(-(dxp * dxp) / 0.015) * pointerOn;
         const amp = n * (0.18 + energy) + local * 0.9;
-        arr[b * 3 + 2] = amp * AMP;
+        arr[b * 3 + 1] = amp * AMP;
         // підсвітка ЛИШЕ гребенів: різкий поріг по |amp|
         const a = Math.min(1, Math.abs(amp) * 1.1);
         const crest = sstep(Math.max(0, (a - 0.6) / 0.4));
