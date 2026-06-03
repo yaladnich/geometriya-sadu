@@ -240,36 +240,33 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-intro{position:relative;z-index:2;padding-block:clamp(4rem,10vh,9rem) clamp(2rem,5vh,4rem);}
 .gs-why-intro .gs-section-head{margin-bottom:0;}
 .gs-why-panels{position:relative;}
-.gs-why-stage{position:relative;z-index:2;height:100vh;min-height:40rem;display:flex;align-items:center;justify-content:center;background:transparent;overflow:hidden;}
-.gs-why-inner{position:relative;z-index:1;width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:center;}
+/* sticky-scroll: сфера тримається, текст-блоки прокручуються (нативний скрол — рівно один слайд за екран) */
+.gs-why-inner{position:relative;z-index:1;width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start;}
 .gs-why-side{will-change:transform,opacity,filter;}
-.gs-why-texts{position:relative;display:grid;justify-self:center;max-width:34rem;width:100%;overflow:hidden;}
-.gs-why-text{grid-area:1/1;align-self:center;max-width:34rem;opacity:0;transition:opacity 0.35s var(--ease-out);}
-.gs-why-text[data-i="0"]{opacity:1;}
+.gs-why-slides{grid-column:1;grid-row:1;min-width:0;}
+.gs-why-text{min-height:100vh;display:flex;flex-direction:column;justify-content:center;max-width:34rem;}
 /* анімація тексту слайда — як на картках послуг (gsTextUp: підйом + skew + blur, каскадом) */
 .gs-why-num,.gs-why-title,.gs-why-desc{opacity:0;transform:translateY(120%) skewY(6deg);transform-origin:0 bottom;}
-.gs-why-text.is-active .gs-why-num{animation:gsTextUp 0.8s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:0.05s;}
-.gs-why-text.is-active .gs-why-title{animation:gsTextUp 0.9s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:0.17s;}
-.gs-why-text.is-active .gs-why-desc{animation:gsTextUp 0.85s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:0.3s;}
+.gs-why-text.in .gs-why-num{animation:gsTextUp 0.8s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:0.05s;}
+.gs-why-text.in .gs-why-title{animation:gsTextUp 0.9s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:0.17s;}
+.gs-why-text.in .gs-why-desc{animation:gsTextUp 0.85s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:0.3s;}
 @media(prefers-reduced-motion:reduce){.gs-why-num,.gs-why-title,.gs-why-desc{opacity:1;transform:none;animation:none;}}
 .gs-why-num{font-family:var(--font-display);font-weight:800;font-size:clamp(2.5rem,4vw,3.75rem);line-height:0.9;color:var(--accent-bright);letter-spacing:-0.02em;margin-bottom:0.75rem;}
 .gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.1;margin:0 0 1rem;color:#fff;text-transform:none;}
 .gs-why-desc{margin:0;font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:40ch;}
-/* потік — повноекранний шар stage (без рамки/вікна), яскравіше праворуч, розчиняється ліворуч під текст */
-.gs-why-dots{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;}
-.gs-why-dots canvas{display:block;width:100%;height:100%;background:transparent;-webkit-mask-image:radial-gradient(95% 120% at 74% 58%,#000 26%,transparent 78%);mask-image:radial-gradient(95% 120% at 74% 58%,#000 26%,transparent 78%);}
-/* зерно (dither/grain) — з тією ж віньєткою */
+/* сфера — sticky у правій колонці, тримається поки текст прокручується */
+.gs-why-dots{grid-column:2;grid-row:1;position:sticky;top:0;height:100vh;align-self:start;pointer-events:none;}
+.gs-why-dots canvas{display:block;width:100%;height:100%;background:transparent;}
 .gs-why-nav{position:absolute;left:50%;bottom:2.25rem;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:3;}
 .gs-why-tick{width:1.75rem;height:0.1875rem;border-radius:62rem;background:rgba(255,255,255,0.22);transition:background 0.3s var(--ease-out);}
 .gs-why-tick.is-on{background:var(--accent-bright);}
 @media(max-width:900px){
-  /* мобільний: анімація зверху, під нею — слайдер тексту */
   .gs-why-intro{padding-block:clamp(2rem,6vh,3.5rem) 0.5rem;}
-  .gs-why-stage{flex-direction:column;justify-content:center;gap:1.25rem;min-height:100svh;height:100svh;padding-top:0;}
-  .gs-why-dots{position:relative;inset:auto;width:100%;height:42vh;order:-1;}
-  .gs-why-dots canvas{-webkit-mask-image:radial-gradient(120% 75% at 50% 50%,#000 42%,transparent 88%);mask-image:radial-gradient(120% 75% at 50% 50%,#000 42%,transparent 88%);}
-  .gs-why-inner{grid-template-columns:1fr;justify-items:center;text-align:center;}
-  .gs-why-texts{max-width:90%;}
+  .gs-why-inner{grid-template-columns:1fr;}
+  /* сфера й текст в одній клітинці — сфера sticky позаду, текст прокручується поверх */
+  .gs-why-slides{grid-column:1;grid-row:1;}
+  .gs-why-dots{grid-column:1;grid-row:1;position:sticky;top:0;height:100svh;z-index:0;}
+  .gs-why-text{min-height:100svh;align-items:center;text-align:center;max-width:90%;margin-inline:auto;position:relative;z-index:1;}
   .gs-why-desc{margin-inline:auto;}
   .gs-why-nav{display:none;}
 }
@@ -942,37 +939,37 @@ html,body{overflow-x:hidden;max-width:100%;}
     </div>
   </div>
   <div class="gs-why-panels">
-    <div class="gs-why-stage">
-      <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
-      <div class="gs-container gs-why-inner">
-        <div class="gs-why-texts">
-          <div class="gs-why-side gs-why-text" data-i="0">
-            <div class="num gs-why-num">01</div>
-            <h3 class="gs-why-title">Власне озеленення</h3>
-            <p class="gs-why-desc">Туї, хвойні та кущі з перевірених розсадників — приживаються й тримають форму роками.</p>
-          </div>
-          <div class="gs-why-side gs-why-text" data-i="1">
-            <div class="num gs-why-num">02</div>
-            <h3 class="gs-why-title">Рулонний газон під ключ</h3>
-            <p class="gs-why-desc">Готуємо ґрунт і стелемо газон — рівне зелене поле вже за день, без бур'янів і ям.</p>
-          </div>
-          <div class="gs-why-side gs-why-text" data-i="2">
-            <div class="num gs-why-num">03</div>
-            <h3 class="gs-why-title">Автополив, що працює сам</h3>
-            <p class="gs-why-desc">Hunter, Rain Bird, Irritec — полив за розкладом, газон зелений без вашої участі.</p>
-          </div>
-          <div class="gs-why-side gs-why-text" data-i="3">
-            <div class="num gs-why-num">04</div>
-            <h3 class="gs-why-title">Власна спецтехніка</h3>
-            <p class="gs-why-desc">Міні-навантажувачі та обладнання — земляні роботи будь-якої складності точно й у строк.</p>
-          </div>
+    <div class="gs-container gs-why-inner">
+      <div class="gs-why-slides">
+        <div class="gs-why-side gs-why-text" data-i="0">
+          <div class="num gs-why-num">01</div>
+          <h3 class="gs-why-title">Власне озеленення</h3>
+          <p class="gs-why-desc">Туї, хвойні та кущі з перевірених розсадників — приживаються й тримають форму роками.</p>
+        </div>
+        <div class="gs-why-side gs-why-text" data-i="1">
+          <div class="num gs-why-num">02</div>
+          <h3 class="gs-why-title">Рулонний газон під ключ</h3>
+          <p class="gs-why-desc">Готуємо ґрунт і стелемо газон — рівне зелене поле вже за день, без бур'янів і ям.</p>
+        </div>
+        <div class="gs-why-side gs-why-text" data-i="2">
+          <div class="num gs-why-num">03</div>
+          <h3 class="gs-why-title">Автополив, що працює сам</h3>
+          <p class="gs-why-desc">Hunter, Rain Bird, Irritec — полив за розкладом, газон зелений без вашої участі.</p>
+        </div>
+        <div class="gs-why-side gs-why-text" data-i="3">
+          <div class="num gs-why-num">04</div>
+          <h3 class="gs-why-title">Власна спецтехніка</h3>
+          <p class="gs-why-desc">Міні-навантажувачі та обладнання — земляні роботи будь-якої складності точно й у строк.</p>
         </div>
       </div>
-      <div class="gs-why-nav" aria-hidden="true">
-        <span class="gs-why-tick is-on"></span>
-        <span class="gs-why-tick"></span>
-        <span class="gs-why-tick"></span>
-        <span class="gs-why-tick"></span>
+      <div class="gs-why-side gs-why-dots">
+        <canvas></canvas>
+        <div class="gs-why-nav" aria-hidden="true">
+          <span class="gs-why-tick is-on"></span>
+          <span class="gs-why-tick"></span>
+          <span class="gs-why-tick"></span>
+          <span class="gs-why-tick"></span>
+        </div>
       </div>
     </div>
   </div>
@@ -2240,64 +2237,27 @@ initPortfolio();
 restartPortfolioTimer();
 updateHeaderAndProgress();
 
-// #why: єдиний pinned-stage — потік (один екземпляр), а тексти-слайди виїжджають
-// знизу вгору по черзі. Пін на всіх розмірах (на мобільному анімація зверху, текст під нею).
+// #why: sticky-scroll — сфера тримається, текст-блоки прокручуються нативним скролом.
+// Активний слайд визначає IntersectionObserver (центр блока перетинає центр екрана) —
+// рівно один слайд за екран, без пропусків/стрибків від сили скролу.
 (function initWhyPin() {
-  const stage = document.querySelector('.gs-why-stage');
-  if (!stage) return;
-  const wrap = stage.querySelector('.gs-why-texts');
-  const texts = Array.from(stage.querySelectorAll('.gs-why-text'));
-  const ticks = Array.from(stage.querySelectorAll('.gs-why-tick'));
-  if (!wrap || !texts.length) return;
-
-  // висота вікна слайдера — на неї зсуваємо сусідів повністю за межі (overflow:hidden обрізає)
-  let H = wrap.clientHeight || 200, cur = -1;
-  function measure() { H = wrap.clientHeight || H; cur = -1; }
-
-  // Дискретно: у вікні рівно ОДИН слайд. Активний = найближчий ціл. індекс.
-  // Інші виїхали повністю вгору (раніше) / вниз (далі) і обрізані overflow:hidden.
-  // CSS-перехід анімує зміну — однаково плавно вперед і назад.
-  function setSlide(f) {
-    const active = Math.max(0, Math.min(texts.length - 1, Math.round(f)));
-    if (active === cur) return;
-    cur = active;
+  const slides = Array.from(document.querySelectorAll('.gs-why-text'));
+  const ticks = Array.from(document.querySelectorAll('.gs-why-tick'));
+  if (!slides.length) return;
+  let cur = -1;
+  function activate(i) {
+    if (i < 0) return;
+    slides[i].classList.add('in'); // reveal (лишається після появи)
+    if (i === cur) return;
+    cur = i;
     if (window.__whyKick) window.__whyKick(); // сфера реагує на зміну слайда
-    texts.forEach((el, i) => {
-      const on = i === active;
-      el.style.opacity = on ? '1' : '0';
-      el.style.pointerEvents = on ? 'auto' : 'none';
-      el.classList.toggle('is-active', on);
-      if (on) el.querySelectorAll('.gs-why-num,.gs-why-title,.gs-why-desc').forEach(c => { c.style.animation = 'none'; void c.offsetWidth; c.style.animation = ''; });
-    });
-    ticks.forEach((el, i) => el.classList.toggle('is-on', i === active));
+    ticks.forEach((el, k) => el.classList.toggle('is-on', k === i));
   }
-
-  if (!(window.gsap && window.ScrollTrigger)) {
-    // фолбек без GSAP — показати всі тексти стовпчиком
-    wrap.style.overflow = 'visible';
-    texts.forEach(el => { el.style.opacity = '1'; el.style.position = 'relative'; el.style.marginBottom = '2rem'; });
-    return;
-  }
-  const slides = texts.length;
-  const mob = window.matchMedia('(max-width:900px)').matches;
-  measure(); setSlide(0);
-  const step = 1 / (slides - 1);
-  let committed = 0; // зафіксований слайд; рух дозволено лише на ±1 від нього
-  const idx = p => Math.max(0, Math.min(slides - 1, Math.round(p * (slides - 1))));
-  const clampStep = i => Math.max(0, Math.min(slides - 1, Math.max(committed - 1, Math.min(committed + 1, i))));
-  let st = ScrollTrigger.create({
-    trigger: stage, start: 'top top', end: '+=' + (slides * (mob ? 60 : 85)) + '%',
-    pin: true, pinSpacing: true, scrub: mob ? 0.4 : 0.5, invalidateOnRefresh: true,
-    // защіпка: за один рух — рівно ОДИН слайд (навіть при сильному скролі)
-    snap: {
-      snapTo: value => clampStep(Math.round(value / step)) * step,
-      duration: { min: 0.25, max: mob ? 0.4 : 0.55 }, ease: 'power2.inOut',
-      onComplete: () => { committed = idx(st.progress); }
-    },
-    onRefresh: self => { measure(); committed = idx(self.progress); setSlide(committed); },
-    // відображення теж обмежене ±1 від зафіксованого — без «мигань» крізь слайди
-    onUpdate: self => setSlide(clampStep(idx(self.progress)))
-  });
+  if (!('IntersectionObserver' in window)) { slides.forEach(s => s.classList.add('in')); return; }
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) activate(slides.indexOf(e.target)); });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  slides.forEach(s => io.observe(s));
 })();
 /* #why: візуал — окремий module-скрипт перед </body> (Three.js світний потік, блітинг у .gs-why-dots canvas) */
 
@@ -2392,7 +2352,7 @@ updateHeaderAndProgress();
   function frame(){
     t+=0.016; kick*=0.94;
     const mob=window.innerWidth<=900;
-    const cx=mob?W*0.5:W*0.70, cy=mob?H*0.5:H*0.55, R=mob?Math.min(W*0.42,H*0.44):Math.min(W,H)*0.30;
+    const cx=W*0.5, cy=mob?H*0.5:H*0.5, R=mob?Math.min(W*0.42,H*0.44):Math.min(W*0.5,H*0.42);
     ang += SPD/1000*0.5 + kick*0.05;
     const tilt=0.5, cosA=Math.cos(ang),sinA=Math.sin(ang),cosT=Math.cos(tilt),sinT=Math.sin(tilt);
     ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
