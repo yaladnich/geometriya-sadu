@@ -2352,12 +2352,12 @@ updateHeaderAndProgress();
   function frame(){
     t+=0.016; kick*=0.94;
     const mob=window.innerWidth<=900;
-    const cx=W*0.5, cy=mob?H*0.5:H*0.5, R=mob?Math.min(W*0.42,H*0.44):Math.min(W*0.5,H*0.42);
+    const cx=W*0.5, cy=H*0.5, R=Math.min(W,H)*(mob?0.4:0.34);
     ang += SPD/1000*0.5 + kick*0.05;
     const tilt=0.5, cosA=Math.cos(ang),sinA=Math.sin(ang),cosT=Math.cos(tilt),sinT=Math.sin(tilt);
     ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
     for(const p of pts){const x1=p.X*cosA+p.Z*sinA,z1=-p.X*sinA+p.Z*cosA,y1=p.Y;
-      const y2=y1*cosT-z1*sinT,z2=y1*sinT+z1*cosT,persp=2.6/(2.6-z2);
+      const y2=y1*cosT-z1*sinT,z2=y1*sinT+z1*cosT,persp=4/(4-z2);
       p.sx=cx+x1*R*persp;p.sy=cy+y2*R*persp;p.depth=(z2+1)/2;}
     if(Math.random()<0.05) activateNode((Math.random()*N)|0,t);
     const DUR=0.55,FADE=1.6;
