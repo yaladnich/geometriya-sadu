@@ -63,7 +63,7 @@
       // ребра: пари сусідів на сфері
       for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){
         const a=pts[i],b=pts[j],dx=a.X-b.X,dy=a.Y-b.Y,dz=a.Z-b.Z;
-        if(dx*dx+dy*dy+dz*dz < LINK*LINK) edges.push([i,j, Math.random()<0.16, Math.random()*6.28]);
+        if(dx*dx+dy*dy+dz*dz < LINK*LINK) edges.push([i,j, Math.random()<0.16, Math.random()*10, rnd(0.15,0.85), 1.2+Math.random()*1.4]);
       }
     }else if(mode==='wave'){
       for(let i=0;i<N;i++) pts.push({col:Math.random(),row:Math.random(),x:0,y:0,org:Math.random()<ORG,seed:Math.random(),r:rnd(1.1,2.2)});
@@ -100,10 +100,12 @@
       ctx.lineWidth=1;
       for(const e of edges){const a=pts[e[0]],b=pts[e[1]];
         const dep=(a.depth+b.depth)/2;
-        // лінія «прокреслюється» від A до B (рух уздовж ребра), потім повторюється
-        const cyc=(t*0.35 + e[3]/6.28) % 1.6;        // 0..1.6, фаза на ребро
-        const prog=Math.min(1, cyc);                  // 0..1 малюється, 1..1.6 пауза (повна лінія)
-        if(cyc>1.45) continue;                        // коротка пауза-зникнення перед новим циклом
+        // хаотично: своя швидкість і період на кожне ребро
+        const period=e[5];                            // різний цикл
+        const cyc=(t*e[4] + e[3]) % period;           // фаза+швидкість на ребро
+        const prog=Math.min(1, cyc);                  // 0..1 малюється, далі пауза
+        if(cyc>1.0 && period-cyc<0.25) continue;      // коротке зникнення перед новим циклом
+        if(cyc>1.0){ } // повна лінія до кінця паузи
         const ex=a.sx+(b.sx-a.sx)*prog, ey=a.sy+(b.sy-a.sy)*prog;
         const isC=e[2];
         if(isC){
