@@ -2422,12 +2422,12 @@ if (targets.length) {
     const cxp = e.touches ? (e.touches[0] && e.touches[0].clientX) : e.clientX;
     if (cxp == null) return;
     const nx = cxp / Math.max(1, window.innerWidth), ny = cy / Math.max(1, window.innerHeight);
-    rotY = (nx - 0.5) * 0.5;   // ±0.25 рад по горизонталі
-    rotX = (ny - 0.5) * 0.25;  // ±0.12 рад по вертикалі
+    rotY = (nx - 0.5) * 0.2;   // ±0.1 рад по горизонталі (слабкий нахил)
+    rotX = (ny - 0.5) * 0.1;   // ±0.05 рад по вертикалі
     const c = canvas.getBoundingClientRect();
     pointerX = Math.max(0, Math.min(1, (cxp - c.left) / Math.max(1, c.width)));
-    pointerOn = Math.min(1.4, pointerOn + 0.4);
-    energy = Math.min(1.1, energy + 0.05);
+    pointerOn = Math.min(0.6, pointerOn + 0.15);
+    energy = Math.min(0.6, energy + 0.02);
   }
   window.addEventListener('pointermove', pointerMove, { passive: true });
   window.addEventListener('touchmove', pointerMove, { passive: true });
