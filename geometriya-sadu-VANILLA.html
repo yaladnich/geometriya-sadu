@@ -244,8 +244,14 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-inner{position:relative;z-index:1;width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:center;}
 .gs-why-side{will-change:transform,opacity,filter;}
 .gs-why-texts{position:relative;display:grid;justify-self:center;max-width:34rem;width:100%;overflow:hidden;}
-.gs-why-text{grid-area:1/1;align-self:center;max-width:34rem;opacity:0;transition:opacity 0.4s var(--ease-out),transform 0.55s var(--ease-in-out);will-change:opacity,transform;}
+.gs-why-text{grid-area:1/1;align-self:center;max-width:34rem;opacity:0;transition:opacity 0.35s var(--ease-out);}
 .gs-why-text[data-i="0"]{opacity:1;}
+/* анімація тексту слайда — як на картках послуг (gsTextUp: підйом + skew + blur, каскадом) */
+.gs-why-num,.gs-why-title,.gs-why-desc{opacity:0;transform:translateY(120%) skewY(6deg);transform-origin:0 bottom;}
+.gs-why-text.is-active .gs-why-num{animation:gsTextUp 0.8s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:0.05s;}
+.gs-why-text.is-active .gs-why-title{animation:gsTextUp 0.9s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:0.17s;}
+.gs-why-text.is-active .gs-why-desc{animation:gsTextUp 0.85s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:0.3s;}
+@media(prefers-reduced-motion:reduce){.gs-why-num,.gs-why-title,.gs-why-desc{opacity:1;transform:none;animation:none;}}
 .gs-why-num{font-family:var(--font-display);font-weight:800;font-size:clamp(2.5rem,4vw,3.75rem);line-height:0.9;color:var(--accent-bright);letter-spacing:-0.02em;margin-bottom:0.75rem;}
 .gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.1;margin:0 0 1rem;color:#fff;text-transform:none;}
 .gs-why-desc{margin:0;font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:40ch;}
@@ -2231,8 +2237,9 @@ updateHeaderAndProgress();
     texts.forEach((el, i) => {
       const on = i === active;
       el.style.opacity = on ? '1' : '0';
-      el.style.transform = 'translateY(' + ((i - active) * H).toFixed(1) + 'px)';
       el.style.pointerEvents = on ? 'auto' : 'none';
+      el.classList.toggle('is-active', on);
+      if (on) el.querySelectorAll('.gs-why-num,.gs-why-title,.gs-why-desc').forEach(c => { c.style.animation = 'none'; void c.offsetWidth; c.style.animation = ''; });
     });
     ticks.forEach((el, i) => el.classList.toggle('is-on', i === active));
   }
