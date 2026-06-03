@@ -261,7 +261,17 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-nav{position:absolute;left:50%;bottom:2.25rem;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:3;}
 .gs-why-tick{width:1.75rem;height:0.1875rem;border-radius:62rem;background:rgba(255,255,255,0.22);transition:background 0.3s var(--ease-out);}
 .gs-why-tick.is-on{background:var(--accent-bright);}
+/* якорі-снапи (один слайд за жест) — активні лише на мобільному через media нижче */
+.gs-why-snaps{position:absolute;inset:0;width:0;pointer-events:none;}
+.gs-why-snaps i{position:absolute;left:0;width:1px;height:1px;}
+.gs-why-snaps i:nth-child(1){top:0;}
+.gs-why-snaps i:nth-child(2){top:100svh;}
+.gs-why-snaps i:nth-child(3){top:200svh;}
+.gs-why-snaps i:nth-child(4){top:300svh;}
 @media(max-width:900px){
+  /* скрол-снап: фізично не дає перескочити слайд навіть на сильному фліку */
+  html{scroll-snap-type:y proximity;}
+  .gs-why-snaps i{scroll-snap-align:start;scroll-snap-stop:always;}
   .gs-why-intro{padding-block:clamp(2rem,6vh,3.5rem) 0.5rem;}
   .gs-why-panels{min-height:500svh;}
   .gs-why-inner{grid-template-columns:1fr;height:100svh;align-items:center;}
@@ -941,6 +951,7 @@ html,body{overflow-x:hidden;max-width:100%;}
     </div>
   </div>
   <div class="gs-why-panels">
+    <div class="gs-why-snaps" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     <div class="gs-container gs-why-inner">
       <div class="gs-why-slides">
         <div class="gs-why-side gs-why-text" data-i="0">
