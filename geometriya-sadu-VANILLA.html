@@ -258,8 +258,9 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-tick.is-on{background:var(--accent-bright);}
 @media(max-width:900px){
   /* мобільний: анімація зверху, під нею — слайдер тексту */
-  .gs-why-stage{flex-direction:column;justify-content:center;gap:1.75rem;height:100vh;min-height:34rem;}
-  .gs-why-dots{position:relative;inset:auto;width:100%;height:38vh;order:-1;}
+  .gs-why-intro{padding-block:clamp(2rem,6vh,3.5rem) 0.5rem;}
+  .gs-why-stage{flex-direction:column;justify-content:flex-start;gap:1rem;height:auto;min-height:auto;padding-top:0.5rem;}
+  .gs-why-dots{position:relative;inset:auto;width:100%;height:34vh;order:-1;}
   .gs-why-dots canvas{-webkit-mask-image:radial-gradient(120% 75% at 50% 50%,#000 42%,transparent 88%);mask-image:radial-gradient(120% 75% at 50% 50%,#000 42%,transparent 88%);}
   .gs-why-inner{grid-template-columns:1fr;justify-items:center;text-align:center;}
   .gs-why-texts{max-width:90%;}
