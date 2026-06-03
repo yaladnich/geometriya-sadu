@@ -1,0 +1,96 @@
+name: Fix why slider native scroll
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/fix-why-slider-native.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Patch why slider logic
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('geometriya-sadu-VANILLA.html')
+          text = path.read_text(encoding='utf-8')
+
+          marker = "// #why: scroll-slider - sphere stays in a sticky frame, text changes by scroll progress."
+          start = text.index(marker)
+          func_start = text.index('(function initWhyPin() {', start)
+          end = text.index('/* #why:', func_start)
+
+          replacement = """// #why: native scroll-slider - sphere stays sticky; text switches by scroll progress.
+(function initWhyPin() {
+  const panels = document.querySelector('.gs-why-panels');
+  const slides = Array.from(document.querySelectorAll('.gs-why-text'));
+  const ticks = Array.from(document.querySelectorAll('.gs-why-tick'));
+  if (!panels || !slides.length) return;
+
+  let cur = -1;
+  let ticking = false;
+
+  function activate(i) {
+    const next = Math.max(0, Math.min(slides.length - 1, i));
+    if (next === cur) return;
+    cur = next;
+
+    slides.forEach((slide, index) => {
+      const active = index === next;
+      slide.classList.toggle('is-active', active);
+      if (active) slide.classList.add('in');
+    });
+
+    ticks.forEach((el, index) => el.classList.toggle('is-on', index === next));
+    if (window.__whyKick) window.__whyKick();
+  }
+
+  function syncWhySlide() {
+    ticking = false;
+    const rect = panels.getBoundingClientRect();
+    const viewport = window.innerHeight || document.documentElement.clientHeight || 1;
+    const travel = Math.max(1, rect.height - viewport);
+    const passed = Math.max(0, Math.min(travel, -rect.top));
+    const step = travel / slides.length;
+    activate(Math.floor(passed / step));
+  }
+
+  function requestSync() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(syncWhySlide);
+  }
+
+  activate(0);
+  requestSync();
+  window.addEventListener('scroll', requestSync, { passive: true });
+  window.addEventListener('resize', requestSync);
+  window.addEventListener('load', requestSync);
+})();
+"""
+
+          path.write_text(text[:start] + replacement + text[end:], encoding='utf-8')
+          PY
+      - name: Remove temporary workflow
+        run: rm .github/workflows/fix-why-slider-native.yml
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add geometriya-sadu-VANILLA.html .github/workflows/fix-why-slider-native.yml
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Fix why slider native scroll switching"
+            git push
+          fi
