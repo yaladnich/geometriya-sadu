@@ -2317,7 +2317,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 const targets = Array.from(document.querySelectorAll('.gs-why-dots canvas'));
 if (targets.length) {
   const ctxs = targets.map(c => c.getContext('2d'));
-  const BINS = 80, HIST = 70, WIDTH = 16, DEPTH = 7, AMP = 2.2;
+  const BINS = 80, HIST = 70, WIDTH = 16, HEIGHT = 9, AMP = 2.2;
   const scene = new THREE.Scene();
   const history = []; for (let t = 0; t < HIST; t++) history.push(new Float32Array(BINS));
   const freq = new Float32Array(BINS);
@@ -2339,15 +2339,16 @@ if (targets.length) {
   const mat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.6 });
   for (let t = 0; t < HIST; t++) {
     const pos = new Float32Array(BINS * 3), col = new Float32Array(BINS * 3);
-    for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 2] = (t / (HIST - 1) - 0.5) * DEPTH; }
+    // вертикальна стіна: X — частоти, Y — час (нові знизу → старі вгорі), Z — амплітуда (у глибину/до глядача)
+    for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 1] = (t / (HIST - 1) - 0.5) * HEIGHT; pos[b * 3 + 2] = 0; }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    const ln = new THREE.Line(g, mat); ln.position.y = -1.6; lines.push(ln); scene.add(ln);
+    const ln = new THREE.Line(g, mat); lines.push(ln); scene.add(ln);
   }
   const off = document.createElement('canvas');
   const renderer = new THREE.WebGLRenderer({ canvas: off, antialias: true, alpha: true });
   renderer.setClearColor(0x000000, 0);
   const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
-  camera.position.set(-3.2, 2.0, 9.5); camera.lookAt(-3.2, 0.1, -1); // зміщено: яскрава частина праворуч, ліворуч темніше під текст
+  camera.position.set(-3.2, 0, 9.5); camera.lookAt(-3.2, 0, 0); // фронтально: стіна ліній обличчям до глядача, зміщена праворуч
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 1.3, 0.8, 0.0));
@@ -2367,7 +2368,7 @@ if (targets.length) {
     sizeTo([...vis][0]);
     for (let t = 0; t < HIST; t++) {
       const h = history[t], arr = lines[t].geometry.attributes.position.array, col = lines[t].geometry.attributes.color.array;
-      for (let b = 0; b < BINS; b++) { arr[b * 3 + 1] = h[b] * AMP; const m = Math.min(1, h[b] * 1.2); col[b * 3] = EM[0] + (OR[0] - EM[0]) * m; col[b * 3 + 1] = EM[1] + (OR[1] - EM[1]) * m; col[b * 3 + 2] = EM[2] + (OR[2] - EM[2]) * m; }
+      for (let b = 0; b < BINS; b++) { arr[b * 3 + 2] = h[b] * AMP; const m = Math.min(1, h[b] * 1.2); col[b * 3] = EM[0] + (OR[0] - EM[0]) * m; col[b * 3 + 1] = EM[1] + (OR[1] - EM[1]) * m; col[b * 3 + 2] = EM[2] + (OR[2] - EM[2]) * m; }
       lines[t].geometry.attributes.position.needsUpdate = true; lines[t].geometry.attributes.color.needsUpdate = true;
     }
     composer.render();
