@@ -2227,6 +2227,7 @@ updateHeaderAndProgress();
     const active = Math.max(0, Math.min(texts.length - 1, Math.round(f)));
     if (active === cur) return;
     cur = active;
+    if (window.__whyKick) window.__whyKick(); // сфера реагує на зміну слайда
     texts.forEach((el, i) => {
       const on = i === active;
       el.style.opacity = on ? '1' : '0';
@@ -2315,144 +2316,68 @@ updateHeaderAndProgress();
 })();
 </script>
 
-<!-- #why: світний потік (Three.js), офскрін-рендер + блітинг у канваси .gs-why-dots -->
-<script type="importmap">
-{ "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-}}
-</script>
-<script type="module">
-import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-const targets = Array.from(document.querySelectorAll('.gs-why-dots canvas'));
-if (targets.length) {
-  const BINS = 80, HIST = 70, WIDTH = 16, HEIGHT = 9, AMP = 2.2;
-  const scene = new THREE.Scene();
-  // Перлін-подібний value-noise (без залежностей)
-  function hash(x, y, z) { const n = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return n - Math.floor(n); }
-  function sstep(t) { return t * t * (3 - 2 * t); }
-  function noise3(x, y, z) {
-    const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
-    const u = sstep(x - xi), v = sstep(y - yi), w = sstep(z - zi);
-    const L = (a, b, t) => a + (b - a) * t;
-    const x00 = L(hash(xi, yi, zi), hash(xi + 1, yi, zi), u);
-    const x10 = L(hash(xi, yi + 1, zi), hash(xi + 1, yi + 1, zi), u);
-    const x01 = L(hash(xi, yi, zi + 1), hash(xi + 1, yi, zi + 1), u);
-    const x11 = L(hash(xi, yi + 1, zi + 1), hash(xi + 1, yi + 1, zi + 1), u);
-    return L(L(x00, x10, v), L(x01, x11, v), w); // 0..1
+<!-- #why: сфера з крапок+ліній (2D canvas, реагує на зміну слайда) -->
+<script>
+(function(){
+  const canvas=document.querySelector('.gs-why-dots canvas'); if(!canvas) return;
+  const ctx=canvas.getContext('2d'); const dpr=Math.min(devicePixelRatio||1,2);
+  const G=[46,157,95], O=[242,141,27];
+  const N=116, LINK=0.33, SPD=4, ORG=0.23;
+  let W=0,H=0,t=0,ang=0,kick=0,active=false,raf=0,running=false;
+  let pts=[],edges=[];
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  function build(){
+    pts=[];edges=[];
+    for(let i=0;i<N;i++){const y=1-(i/(N-1))*2,r=Math.sqrt(Math.max(0,1-y*y)),th=i*2.399963229;
+      pts.push({X:Math.cos(th)*r,Y:y,Z:Math.sin(th)*r,org:Math.random()<ORG,seed:Math.random()});}
+    for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){const a=pts[i],b=pts[j],dx=a.X-b.X,dy=a.Y-b.Y,dz=a.Z-b.Z;
+      if(dx*dx+dy*dy+dz*dz<LINK*LINK) edges.push([i,j,Math.random()<0.16,Math.random()*10,rnd(0.15,0.85),1.2+Math.random()*1.4,Math.random()<0.5]);}
   }
-
-  // стан: затихання (energy → базовий рівень) + реакція на курсор/скрол
-  let energy = 0.12, time = 0, pointerX = 0.5, pointerOn = 0;
-  const EM = [0.16, 0.62, 0.36], ORG = [0.97, 0.52, 0.13]; // градієнт ізумруд (ліворуч) → оранж (праворуч)
-
-  // мʼяка кругла крапка (текстура для THREE.Points)
-  const dotCv = document.createElement('canvas'); dotCv.width = dotCv.height = 64;
-  const dctx = dotCv.getContext('2d');
-  const dgrad = dctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-  dgrad.addColorStop(0, 'rgba(255,255,255,1)'); dgrad.addColorStop(0.5, 'rgba(255,255,255,0.5)'); dgrad.addColorStop(1, 'rgba(255,255,255,0)');
-  dctx.fillStyle = dgrad; dctx.fillRect(0, 0, 64, 64);
-  const dotTex = new THREE.CanvasTexture(dotCv);
-
-  const group = new THREE.Group(); scene.add(group); // обертаємо групу від миші
-  const lines = [];
-  for (let t = 0; t < HIST; t++) {
-    const pos = new Float32Array(BINS * 3), col = new Float32Array(BINS * 3);
-    // горизонтальне поле: X — ширина, Z — глибина, Y — амплітуда (хвилі-рельєф)
-    for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 1] = 0; pos[b * 3 + 2] = (t / (HIST - 1) - 0.5) * HEIGHT; }
-    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    const depth = 1 - t / (HIST - 1);
-    const m = new THREE.PointsMaterial({ size: 0.09, map: dotTex, vertexColors: true, transparent: true, opacity: 0.12 + depth * 0.55, sizeAttenuation: true, depthWrite: false, blending: THREE.AdditiveBlending });
-    lines.push(new THREE.Points(g, m)); group.add(lines[t]);
+  function layout(){const r=canvas.getBoundingClientRect();W=r.width;H=r.height;canvas.width=Math.max(1,W*dpr);canvas.height=Math.max(1,H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
+  build();layout();addEventListener('resize',layout);
+  // реакція на зміну слайда
+  window.__whyKick=function(){kick=1;};
+  function frame(){
+    t+=0.016; kick*=0.94;
+    const mob=W<H;
+    const cx=mob?W*0.5:W*0.70, cy=H*0.5, R=Math.min(W, mob?H*0.5:H)*0.40;
+    ang += SPD/1000*0.5 + kick*0.05;
+    const tilt=0.5, cosA=Math.cos(ang),sinA=Math.sin(ang),cosT=Math.cos(tilt),sinT=Math.sin(tilt);
+    ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+    for(const p of pts){const x1=p.X*cosA+p.Z*sinA,z1=-p.X*sinA+p.Z*cosA,y1=p.Y;
+      const y2=y1*cosT-z1*sinT,z2=y1*sinT+z1*cosT,persp=2.6/(2.6-z2);
+      p.sx=cx+x1*R*persp;p.sy=cy+y2*R*persp;p.depth=(z2+1)/2;}
+    // ребра — хаотичне прокреслювання
+    for(const e of edges){const a=e[6]?pts[e[1]]:pts[e[0]],b=e[6]?pts[e[0]]:pts[e[1]];
+      const dep=(a.depth+b.depth)/2,period=e[5],cyc=(t*e[4]+e[3])%period,prog=Math.min(1,cyc);
+      if(cyc>1.0&&period-cyc<0.25)continue;
+      const ex=a.sx+(b.sx-a.sx)*prog,ey=a.sy+(b.sy-a.sy)*prog,isC=e[2];
+      if(isC){const c=(a.org||b.org)?[255,200,120]:[170,255,200];ctx.lineWidth=1.6;ctx.strokeStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+(0.55+0.4*kick).toFixed(3)+')';}
+      else{ctx.lineWidth=1;ctx.strokeStyle='rgba('+G[0]+','+G[1]+','+G[2]+','+(0.18+dep*0.5).toFixed(3)+')';}
+      ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(ex,ey);ctx.stroke();
+      ctx.fillStyle=isC?'rgba(200,255,210,0.9)':'rgba('+G[0]+','+G[1]+','+G[2]+',0.7)';
+      ctx.beginPath();ctx.arc(ex,ey,1.3,0,6.2832);ctx.fill();}
+    ctx.lineWidth=1;
+    // крапки
+    const order=pts.slice().sort((a,b)=>a.depth-b.depth);
+    for(const p of order){const c=p.org?O:G,sz=0.6+p.depth*1.9,al=0.25+p.depth*0.7;
+      ctx.fillStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+al.toFixed(3)+')';ctx.beginPath();ctx.arc(p.sx,p.sy,sz,0,6.2832);ctx.fill();}
+    // біла комета по екватору
+    {const head=(t*0.6)%(Math.PI*2),arc=1.8,M=110;ctx.lineCap='round';let pj=null;
+     for(let k=0;k<=M;k++){const th=head-(k/M)*arc,X=Math.cos(th),Z=Math.sin(th);
+       const x1=X*cosA+Z*sinA,z1=-X*sinA+Z*cosA,y2=-z1*sinT,z2=z1*cosT,persp=2.6/(2.6-z2),sx=cx+x1*R*persp,sy=cy+y2*R*persp;
+       if(pj){const al=(1-k/M)*(0.2+0.8*((z2+1)/2));ctx.strokeStyle='rgba(255,255,255,'+al.toFixed(3)+')';ctx.lineWidth=1.6*(1-k/M)+0.5;ctx.beginPath();ctx.moveTo(pj[0],pj[1]);ctx.lineTo(sx,sy);ctx.stroke();}
+       pj=[sx,sy]; if(k===0){ctx.fillStyle='rgba(255,255,255,0.95)';ctx.beginPath();ctx.arc(sx,sy,2.4,0,6.2832);ctx.fill();}}
+     ctx.lineCap='butt';}
+    raf=requestAnimationFrame(frame);
   }
-  // рендер ПРЯМО у видимий canvas (без офскрін-блітингу) — це справжній 3D-обʼєкт, не картинка-вікно
-  const canvas = targets[0];
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setClearColor(0x000000, 0);
-  const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
-  camera.position.set(0, 1.5, 9); camera.lookAt(0, 0.7, -4); // профіль: пагорби біля горизонту
-  const composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene, camera));
-  composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.16, 0.6, 0.25));
-  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-  let W = 0, H = 0;
-  function sizeTo() {
-    const r = canvas.getBoundingClientRect(), w = Math.max(2, r.width | 0), h = Math.max(2, r.height | 0);
-    if (w !== W || h !== H) { W = w; H = h; renderer.setSize(w * dpr, h * dpr, false); composer.setSize(w * dpr, h * dpr); camera.aspect = w / h; camera.updateProjectionMatrix(); }
-  }
-  const vis = new Set();
-  let acc = 0, raf = 0, running = false;
-  const clock = new THREE.Clock();
-  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function frame() {
-    const dt = Math.min(0.05, clock.getDelta());
-    time += dt;
-    // затихання: energy плавно повертається до базового рівня; сплеск курсора згасає
-    energy += (0.12 - energy) * 0.03;
-    pointerOn *= 0.95;
-    sizeTo();
-    // плавне обертання групи до миші — відчуття 3D-обʼєкта
-    group.rotation.y += (rotY - group.rotation.y) * 0.06;
-    group.rotation.x += (rotX - group.rotation.x) * 0.06;
-    const travel = time * 0.55; // рух зліва направо
-    for (let t = 0; t < HIST; t++) {
-      const arr = lines[t].geometry.attributes.position.array, col = lines[t].geometry.attributes.color.array;
-      const tt = t / (HIST - 1);
-      for (let b = 0; b < BINS; b++) {
-        const u = b / (BINS - 1);
-        // патерн «їде» по X (u - travel); два шари шуму
-        let n = noise3(u * 3.0 - travel, tt * 3.2, time * 0.08) + 0.5 * noise3(u * 6.5 - travel * 1.7, tt * 6.0, 10 + time * 0.12);
-        n = Math.min(1, Math.max(0, n / 1.5));
-        // різкі вершини: степінь робить низ пласким, піки гострими
-        const peak = Math.pow(n, 3.2);
-        const local = Math.exp(-((u - pointerX) ** 2) / 0.015) * pointerOn;
-        const amp = peak * (1.4 + energy) - 0.06 + local * 0.9;
-        arr[b * 3 + 1] = amp * AMP;
-        // градієнт зелений (ліворуч) → оранж (праворуч), піки яскравіші
-        const gx = u, br = 1 + Math.min(0.7, peak * 0.9);
-        col[b * 3] = (EM[0] + (ORG[0] - EM[0]) * gx) * br;
-        col[b * 3 + 1] = (EM[1] + (ORG[1] - EM[1]) * gx) * br;
-        col[b * 3 + 2] = (EM[2] + (ORG[2] - EM[2]) * gx) * br;
-      }
-      lines[t].geometry.attributes.position.needsUpdate = true; lines[t].geometry.attributes.color.needsUpdate = true;
-    }
-    renderer.render(scene, camera);
-  }
-  // реакція на курсор: обертання 3D-обʼєкта (parallax) + локальний сплеск хвилі
-  let rotX = 0, rotY = 0;
-  function pointerMove(e) {
-    const cy = e.touches ? (e.touches[0] && e.touches[0].clientY) : e.clientY;
-    const cxp = e.touches ? (e.touches[0] && e.touches[0].clientX) : e.clientX;
-    if (cxp == null) return;
-    const nx = cxp / Math.max(1, window.innerWidth), ny = cy / Math.max(1, window.innerHeight);
-    rotY = (nx - 0.5) * 0.2;   // ±0.1 рад по горизонталі (слабкий нахил)
-    rotX = (ny - 0.5) * 0.1;   // ±0.05 рад по вертикалі
-    const c = canvas.getBoundingClientRect();
-    pointerX = Math.max(0, Math.min(1, (cxp - c.left) / Math.max(1, c.width)));
-    pointerOn = Math.min(0.6, pointerOn + 0.15);
-    energy = Math.min(0.6, energy + 0.02);
-  }
-  window.addEventListener('pointermove', pointerMove, { passive: true });
-  window.addEventListener('touchmove', pointerMove, { passive: true });
-  window.addEventListener('wheel', () => { energy = Math.min(1.1, energy + 0.07); }, { passive: true });
-  function loop() { frame(); raf = requestAnimationFrame(loop); }
-  // повністю зупиняємо/запускаємо rAF — жодних кадрів, коли блок невидимий або вкладка прихована
-  function start() { if (running || reduce || document.hidden || vis.size === 0) return; running = true; clock.getDelta(); raf = requestAnimationFrame(loop); }
-  function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
-  function sync() { (document.hidden || vis.size === 0) ? stop() : start(); }
-
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver(es => { es.forEach(e => e.isIntersecting ? vis.add(e.target) : vis.delete(e.target)); sync(); }, { rootMargin: '120px' });
-    targets.forEach(c => io.observe(c));
-  } else { targets.forEach(c => vis.add(c)); }
-  document.addEventListener('visibilitychange', sync);
-  if (reduce) { vis.add(targets[0]); sizeTo(targets[0]); frame(); } // статичний кадр без анімації
-  else sync();
-}
+  function start(){if(running||document.hidden||!active)return;running=true;raf=requestAnimationFrame(frame);}
+  function stop(){running=false;if(raf)cancelAnimationFrame(raf);raf=0;}
+  function sync(){(document.hidden||!active)?stop():start();}
+  if('IntersectionObserver' in window){new IntersectionObserver(es=>{active=es[0].isIntersecting;sync();},{rootMargin:'120px'}).observe(canvas);}
+  else{active=true;}
+  document.addEventListener('visibilitychange',sync); sync();
+})();
 </script>
 </body>
 </html>
