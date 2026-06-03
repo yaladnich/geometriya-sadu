@@ -249,6 +249,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 /* потік — у правому контейнері (права колонка грід) */
 .gs-why-dots{position:relative;width:100%;height:78vh;z-index:0;pointer-events:none;align-self:center;}
 .gs-why-dots canvas{display:block;width:100%;height:100%;-webkit-mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);}
+/* зерно (dither/grain) поверх потоку */
+.gs-why-dots::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");background-size:160px 160px;}
 .gs-why-nav{position:absolute;left:50%;bottom:2.25rem;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:3;}
 .gs-why-tick{width:1.75rem;height:0.1875rem;border-radius:62rem;background:rgba(255,255,255,0.22);transition:background 0.3s var(--ease-out);}
 .gs-why-tick.is-on{background:var(--accent-bright);}
@@ -2319,30 +2321,34 @@ if (targets.length) {
   const ctxs = targets.map(c => c.getContext('2d'));
   const BINS = 80, HIST = 70, WIDTH = 16, HEIGHT = 9, AMP = 2.2;
   const scene = new THREE.Scene();
-  const history = []; for (let t = 0; t < HIST; t++) history.push(new Float32Array(BINS));
-  const freq = new Float32Array(BINS);
-  const GENS = [
-    { lo: 0.0, hi: 0.20, prob: 0.02, amp: 0.5, width: 7 },
-    { lo: 0.15, hi: 0.60, prob: 0.05, amp: 0.30, width: 5 },
-    { lo: 0.45, hi: 1.0, prob: 0.03, amp: 0.20, width: 4 },
-  ];
-  let phase = 0;
-  function step() {
-    phase += 0.02;
-    for (let b = 0; b < BINS; b++) freq[b] *= 0.93;
-    for (let b = 0; b < BINS; b++) { const u = b / (BINS - 1), w = Math.exp(-Math.pow((u - 0.5) * 2.4, 2)); freq[b] += w * 0.04 * (0.6 + 0.4 * Math.sin(phase + u * 5)); }
-    for (const g of GENS) if (Math.random() < g.prob) { const c = ((g.lo + Math.random() * (g.hi - g.lo)) * BINS) | 0, a = g.amp * (0.5 + Math.random() * 0.6); for (let k = -g.width; k <= g.width; k++) { const b = c + k; if (b < 0 || b >= BINS) continue; freq[b] += a * Math.exp(-(k * k) / (g.width * g.width * 0.5)); } }
-    for (let p = 0; p < 2; p++) for (let b = 1; b < BINS - 1; b++) freq[b] = (freq[b - 1] + freq[b] * 2 + freq[b + 1]) / 4;
-    history.pop(); history.unshift(Float32Array.from(freq));
+  // Перлін-подібний value-noise (без залежностей)
+  function hash(x, y, z) { const n = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return n - Math.floor(n); }
+  function sstep(t) { return t * t * (3 - 2 * t); }
+  function noise3(x, y, z) {
+    const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+    const u = sstep(x - xi), v = sstep(y - yi), w = sstep(z - zi);
+    const L = (a, b, t) => a + (b - a) * t;
+    const x00 = L(hash(xi, yi, zi), hash(xi + 1, yi, zi), u);
+    const x10 = L(hash(xi, yi + 1, zi), hash(xi + 1, yi + 1, zi), u);
+    const x01 = L(hash(xi, yi, zi + 1), hash(xi + 1, yi, zi + 1), u);
+    const x11 = L(hash(xi, yi + 1, zi + 1), hash(xi + 1, yi + 1, zi + 1), u);
+    return L(L(x00, x10, v), L(x01, x11, v), w); // 0..1
   }
-  const lines = []; const EM = [0.24, 0.60, 0.42], OR = [0.28, 0.66, 0.46]; // ізумрудна, майже рівний тон (мінімальний контраст)
-  const mat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.6 });
+
+  // стан: затихання (energy → базовий рівень) + реакція на курсор/скрол
+  let energy = 0.12, time = 0, pointerX = 0.5, pointerOn = 0;
+  const EM = [0.22, 0.55, 0.40], CR = [0.55, 1.0, 0.72]; // база → яскравий гребінь (підсвітка ЛИШЕ піків)
+
+  const lines = [];
   for (let t = 0; t < HIST; t++) {
     const pos = new Float32Array(BINS * 3), col = new Float32Array(BINS * 3);
-    // вертикальна стіна: X — частоти, Y — час (нові знизу → старі вгорі), Z — амплітуда (у глибину/до глядача)
+    // вертикальна стіна: X — частоти, Y — час (нові знизу → старі вгорі), Z — амплітуда (до глядача)
     for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 1] = (t / (HIST - 1) - 0.5) * HEIGHT; pos[b * 3 + 2] = 0; }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    const ln = new THREE.Line(g, mat); lines.push(ln); scene.add(ln);
+    // прозорість за глибиною: нові лінії (низ) щільніші, старі (верх) розчиняються
+    const depth = 1 - t / (HIST - 1);
+    const m = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.08 + depth * 0.5 });
+    lines.push(new THREE.Line(g, m)); scene.add(lines[t]);
   }
   const off = document.createElement('canvas');
   const renderer = new THREE.WebGLRenderer({ canvas: off, antialias: true, alpha: true });
@@ -2351,7 +2357,7 @@ if (targets.length) {
   camera.position.set(0, 0, 9.5); camera.lookAt(0, 0, 0); // фронтально по центру правого контейнера
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.28, 0.6, 0.2));
+  composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.16, 0.6, 0.25));
   const dpr = Math.min(window.devicePixelRatio || 1, 1.5); // офскрін блітиться+маскується → 2x зайве
   let W = 0, H = 0;
   function sizeTo(c) {
@@ -2364,16 +2370,53 @@ if (targets.length) {
   const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function frame() {
-    acc += clock.getDelta(); let s = 0; while (acc > 0.033 && s++ < 4) { step(); acc -= 0.033; }
+    const dt = Math.min(0.05, clock.getDelta());
+    time += dt;
+    // затихання: energy плавно повертається до базового рівня; сплеск курсора згасає
+    energy += (0.12 - energy) * 0.03;
+    pointerOn *= 0.95;
     sizeTo([...vis][0]);
+    const sc = time * 0.25; // швидкість «підняття» патерну вгору
     for (let t = 0; t < HIST; t++) {
-      const h = history[t], arr = lines[t].geometry.attributes.position.array, col = lines[t].geometry.attributes.color.array;
-      for (let b = 0; b < BINS; b++) { arr[b * 3 + 2] = h[b] * AMP; const m = Math.min(1, h[b] * 1.2); col[b * 3] = EM[0] + (OR[0] - EM[0]) * m; col[b * 3 + 1] = EM[1] + (OR[1] - EM[1]) * m; col[b * 3 + 2] = EM[2] + (OR[2] - EM[2]) * m; }
+      const arr = lines[t].geometry.attributes.position.array, col = lines[t].geometry.attributes.color.array;
+      const tt = t / (HIST - 1);
+      for (let b = 0; b < BINS; b++) {
+        const u = b / (BINS - 1);
+        // двошаровий перлін-шум, що пливе вгору з часом
+        let n = noise3(u * 3.2, tt * 4.5 - sc, time * 0.12) + 0.5 * noise3(u * 7.0, tt * 9.0 - sc * 1.7, time * 0.2);
+        n = (n / 1.5 - 0.5) * 2; // ~ -1..1
+        // локальний сплеск під курсором (gauss по X)
+        const dxp = u - pointerX;
+        const local = Math.exp(-(dxp * dxp) / 0.015) * pointerOn;
+        const amp = n * (0.18 + energy) + local * 0.9;
+        arr[b * 3 + 2] = amp * AMP;
+        // підсвітка ЛИШЕ гребенів: різкий поріг по |amp|
+        const a = Math.min(1, Math.abs(amp) * 1.1);
+        const crest = sstep(Math.max(0, (a - 0.6) / 0.4));
+        col[b * 3] = EM[0] + (CR[0] - EM[0]) * crest;
+        col[b * 3 + 1] = EM[1] + (CR[1] - EM[1]) * crest;
+        col[b * 3 + 2] = EM[2] + (CR[2] - EM[2]) * crest;
+      }
       lines[t].geometry.attributes.position.needsUpdate = true; lines[t].geometry.attributes.color.needsUpdate = true;
     }
     composer.render();
     for (const c of vis) { const cx = ctxs[targets.indexOf(c)]; if (c.width !== off.width || c.height !== off.height) { c.width = off.width; c.height = off.height; } cx.clearRect(0, 0, c.width, c.height); cx.drawImage(off, 0, 0); }
   }
+  // реакція на курсор/скрол: будимо хвилю, інакше вона затихає
+  function pointerMove(e) {
+    const c = [...vis][0]; if (!c) return;
+    const r = c.getBoundingClientRect();
+    const cx = e.touches ? (e.touches[0] && e.touches[0].clientX) : e.clientX;
+    if (cx == null) return;
+    const px = (cx - r.left) / Math.max(1, r.width);
+    if (px < -0.2 || px > 1.2) return;
+    pointerX = Math.max(0, Math.min(1, px));
+    pointerOn = Math.min(1.4, pointerOn + 0.5);
+    energy = Math.min(1.1, energy + 0.05);
+  }
+  window.addEventListener('pointermove', pointerMove, { passive: true });
+  window.addEventListener('touchmove', pointerMove, { passive: true });
+  window.addEventListener('wheel', () => { energy = Math.min(1.1, energy + 0.07); }, { passive: true });
   function loop() { frame(); raf = requestAnimationFrame(loop); }
   // повністю зупиняємо/запускаємо rAF — жодних кадрів, коли блок невидимий або вкладка прихована
   function start() { if (running || reduce || document.hidden || vis.size === 0) return; running = true; clock.getDelta(); raf = requestAnimationFrame(loop); }
