@@ -234,8 +234,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 @media(prefers-reduced-motion:reduce){.gs-pcard::before{display:none;}.gs-pcard-img,.gs-pcard-ph,.gs-pcard-label,.gs-pcard-title,.gs-pcard-sub{transform:none;opacity:1;animation:none;}}
 
 .gs-why{position:relative;background:#0a0b0a;}
-.gs-why-intro{padding-block:clamp(4rem,10vh,9rem) clamp(2rem,5vh,4rem);}
-.gs-why-h{color:#fff;}
+.gs-why-intro{position:relative;z-index:2;padding-block:clamp(4rem,10vh,9rem) clamp(2rem,5vh,4rem);}
+.gs-why-intro .gs-section-head{margin-bottom:0;}
 .gs-why-panels{position:relative;}
 .gs-why-stage{position:relative;z-index:2;height:100vh;min-height:40rem;display:flex;align-items:center;justify-content:center;background:#0a0b0a;overflow:hidden;}
 .gs-why-inner{position:relative;z-index:1;width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:center;}
@@ -898,8 +898,10 @@ html,body{overflow-x:hidden;max-width:100%;}
 <section class="gs-section-orange gs-why" id="why">
   <div class="gs-why-intro">
     <div class="gs-container">
-      <div class="eyebrow"><span class="eb-dash">—</span> Переваги</div>
-      <h2 class="h-display-2 gs-why-h">Чому обирають <span class="gs-accent-italic">нас</span></h2>
+      <div class="gs-section-head">
+        <div class="eyebrow"><span class="eb-dash">—</span> Переваги</div>
+        <h2 class="h-display-2">Чому обирають <span class="gs-accent-italic">нас</span></h2>
+      </div>
     </div>
   </div>
   <div class="gs-why-panels">
@@ -2336,9 +2338,7 @@ if (targets.length) {
 
   // стан: затихання (energy → базовий рівень) + реакція на курсор/скрол
   let energy = 0.12, time = 0, pointerX = 0.5, pointerOn = 0;
-  const EM = [0.22, 0.55, 0.40], CR = [0.55, 1.0, 0.72]; // база → яскравий гребінь (підсвітка ЛИШЕ піків)
-  const ORG = [0.96, 0.55, 0.12]; // помаранчеві спалахи
-  const spark = new Float32Array(HIST * BINS); // інтенсивність помаранчевого на кожній крапці
+  const EM = [0.16, 0.62, 0.36], ORG = [0.97, 0.52, 0.13]; // градієнт ізумруд (ліворуч) → оранж (праворуч)
 
   // мʼяка кругла крапка (текстура для THREE.Points)
   const dotCv = document.createElement('canvas'); dotCv.width = dotCv.height = 64;
@@ -2355,17 +2355,17 @@ if (targets.length) {
     // горизонтальне поле: X — ширина, Z — час/глибина (нові спереду → старі вглиб), Y — амплітуда (вгору)
     for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 1] = 0; pos[b * 3 + 2] = (t / (HIST - 1) - 0.5) * HEIGHT; }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    // прозорість за глибиною: нові крапки (низ) щільніші, старі (верх) розчиняються
+    // контурні лінії рельєфу; прозорість за глибиною (передні щільніші, дальні тануть)
     const depth = 1 - t / (HIST - 1);
-    const m = new THREE.PointsMaterial({ size: 0.11, map: dotTex, vertexColors: true, transparent: true, opacity: 0.10 + depth * 0.55, sizeAttenuation: true, depthWrite: false, blending: THREE.AdditiveBlending });
-    lines.push(new THREE.Points(g, m)); group.add(lines[t]);
+    const m = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.22 + depth * 0.6 });
+    lines.push(new THREE.Line(g, m)); group.add(lines[t]);
   }
   // рендер ПРЯМО у видимий canvas (без офскрін-блітингу) — це справжній 3D-обʼєкт, не картинка-вікно
   const canvas = targets[0];
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setClearColor(0x000000, 0);
   const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
-  camera.position.set(0, 3.2, 8.5); camera.lookAt(0, 0, -0.5); // згори-збоку: поле стелиться вглиб
+  camera.position.set(0, 1.5, 9); camera.lookAt(0, 0.7, -4); // профіль: пагорби біля горизонту
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.16, 0.6, 0.25));
@@ -2390,9 +2390,7 @@ if (targets.length) {
     // плавне обертання групи до миші — відчуття 3D-обʼєкта
     group.rotation.y += (rotY - group.rotation.y) * 0.06;
     group.rotation.x += (rotX - group.rotation.x) * 0.06;
-    // рандомні помаранчеві крапки спалахують (ближче до переду, де крапки щільніші)
-    for (let k = 0; k < 4; k++) if (Math.random() < 0.7) { const ti = ((Math.random() ** 1.6) * HIST) | 0, bi = (Math.random() * BINS) | 0; spark[ti * BINS + bi] = 1; }
-    const sc = time * 0.25; // швидкість «підняття» патерну вгору
+    const sc = time * 0.25; // швидкість «руху» рельєфу
     for (let t = 0; t < HIST; t++) {
       const arr = lines[t].geometry.attributes.position.array, col = lines[t].geometry.attributes.color.array;
       const tt = t / (HIST - 1);
@@ -2404,17 +2402,14 @@ if (targets.length) {
         // локальний сплеск під курсором (gauss по X)
         const dxp = u - pointerX;
         const local = Math.exp(-(dxp * dxp) / 0.015) * pointerOn;
-        const idx = t * BINS + b, og = spark[idx]; spark[idx] = og * 0.965; // помаранчевий спалах згасає
-        const amp = n * (0.18 + energy) + local * 0.9 + og * 0.5; // спарк трохи піднімаємо, щоб було видно
+        const amp = n * (0.20 + energy) + local * 0.9;
         arr[b * 3 + 1] = amp * AMP;
-        // підсвітка ЛИШЕ гребенів: різкий поріг по |amp|
-        const a = Math.min(1, Math.abs(amp) * 1.1);
-        const crest = sstep(Math.max(0, (a - 0.6) / 0.4));
-        const cr = EM[0] + (CR[0] - EM[0]) * crest, cg = EM[1] + (CR[1] - EM[1]) * crest, cb = EM[2] + (CR[2] - EM[2]) * crest;
-        // помаранчевий спалах яскраво додається поверх (additive) — добре видно
-        col[b * 3] = cr + ORG[0] * og * 2.0;
-        col[b * 3 + 1] = cg + ORG[1] * og * 2.0;
-        col[b * 3 + 2] = cb + ORG[2] * og * 2.0;
+        // градієнт зелений (ліворуч) → оранжевий (праворуч), легке підсвічення гребенів
+        const gx = sstep(Math.min(1, Math.max(0, u)));
+        const br = 1 + Math.min(0.5, Math.abs(amp) * 0.5); // гребені трохи яскравіші
+        col[b * 3] = (EM[0] + (ORG[0] - EM[0]) * gx) * br;
+        col[b * 3 + 1] = (EM[1] + (ORG[1] - EM[1]) * gx) * br;
+        col[b * 3 + 2] = (EM[2] + (ORG[2] - EM[2]) * gx) * br;
       }
       lines[t].geometry.attributes.position.needsUpdate = true; lines[t].geometry.attributes.color.needsUpdate = true;
     }
