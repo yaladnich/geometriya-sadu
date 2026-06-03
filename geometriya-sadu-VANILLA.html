@@ -2252,11 +2252,19 @@ updateHeaderAndProgress();
   }
   const slides = texts.length;
   measure(); setSlide(0);
+  const step = 1 / (slides - 1);
   ScrollTrigger.create({
-    trigger: stage, start: 'top top', end: '+=' + (slides * 60) + '%',
-    pin: true, pinSpacing: true, scrub: 0.4, invalidateOnRefresh: true,
-    // защіпка: будь-який скрол-флік доводить до наступного/попереднього слайда
-    snap: { snapTo: 1 / (slides - 1), duration: { min: 0.2, max: 0.5 }, ease: 'power1.inOut' },
+    trigger: stage, start: 'top top', end: '+=' + (slides * 80) + '%',
+    pin: true, pinSpacing: true, scrub: 0.5, invalidateOnRefresh: true,
+    // защіпка: за один рух — максимум ОДИН слайд (не перескакує 2-3 при сильному скролі)
+    snap: {
+      snapTo: (value) => {
+        let target = Math.round(value / step);
+        target = Math.max(cur - 1, Math.min(cur + 1, target)); // обмеження ±1 від поточного
+        return Math.max(0, Math.min(slides - 1, target)) * step;
+      },
+      duration: { min: 0.25, max: 0.5 }, ease: 'power2.inOut'
+    },
     onRefresh: self => { measure(); setSlide(self.progress * (slides - 1)); },
     onUpdate: self => setSlide(self.progress * (slides - 1))
   });
@@ -2353,8 +2361,8 @@ updateHeaderAndProgress();
   window.__whyKick=function(){kick=1;};
   function frame(){
     t+=0.016; kick*=0.94;
-    const mob=W<H;
-    const cx=mob?W*0.5:W*0.70, cy=H*0.55, R=Math.min(W, mob?H*0.5:H)*0.30;
+    const mob=window.innerWidth<=900;
+    const cx=mob?W*0.5:W*0.70, cy=mob?H*0.5:H*0.55, R=mob?Math.min(W*0.42,H*0.46):Math.min(W,H)*0.30;
     ang += SPD/1000*0.5 + kick*0.05;
     const tilt=0.5, cosA=Math.cos(ang),sinA=Math.sin(ang),cosT=Math.cos(tilt),sinT=Math.sin(tilt);
     ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
