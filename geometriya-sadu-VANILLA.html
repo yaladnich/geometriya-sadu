@@ -246,11 +246,11 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-num{font-family:var(--font-display);font-weight:800;font-size:clamp(2.5rem,4vw,3.75rem);line-height:0.9;color:var(--accent-bright);letter-spacing:-0.02em;margin-bottom:0.75rem;}
 .gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.1;margin:0 0 1rem;color:#fff;text-transform:none;}
 .gs-why-desc{margin:0;font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:40ch;}
-/* потік — у правому контейнері (права колонка грід) */
-.gs-why-dots{position:relative;width:100%;height:78vh;z-index:0;pointer-events:none;align-self:center;}
-.gs-why-dots canvas{display:block;width:100%;height:100%;background:transparent;-webkit-mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);}
-/* зерно (dither/grain) поверх потоку — з тією ж маскою, щоб бокс не виділявся прямокутником */
-.gs-why-dots::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");background-size:160px 160px;-webkit-mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);mask-image:radial-gradient(110% 90% at 50% 50%,#000 46%,transparent 86%);}
+/* потік — повноекранний шар stage (без рамки/вікна), яскравіше праворуч, розчиняється ліворуч під текст */
+.gs-why-dots{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+.gs-why-dots canvas{display:block;width:100%;height:100%;background:transparent;-webkit-mask-image:radial-gradient(95% 120% at 74% 58%,#000 26%,transparent 78%);mask-image:radial-gradient(95% 120% at 74% 58%,#000 26%,transparent 78%);}
+/* зерно (dither/grain) — з тією ж віньєткою */
+.gs-why-dots::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");background-size:160px 160px;-webkit-mask-image:radial-gradient(95% 120% at 74% 58%,#000 26%,transparent 78%);mask-image:radial-gradient(95% 120% at 74% 58%,#000 26%,transparent 78%);}
 .gs-why-nav{position:absolute;left:50%;bottom:2.25rem;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:3;}
 .gs-why-tick{width:1.75rem;height:0.1875rem;border-radius:62rem;background:rgba(255,255,255,0.22);transition:background 0.3s var(--ease-out);}
 .gs-why-tick.is-on{background:var(--accent-bright);}
@@ -904,6 +904,7 @@ html,body{overflow-x:hidden;max-width:100%;}
   </div>
   <div class="gs-why-panels">
     <div class="gs-why-stage">
+      <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
       <div class="gs-container gs-why-inner">
         <div class="gs-why-texts">
           <div class="gs-why-side gs-why-text" data-i="0">
@@ -927,7 +928,6 @@ html,body{overflow-x:hidden;max-width:100%;}
             <p class="gs-why-desc">Міні-навантажувачі та обладнання — земляні роботи будь-якої складності точно й у строк.</p>
           </div>
         </div>
-        <div class="gs-why-side gs-why-dots"><canvas></canvas></div>
       </div>
       <div class="gs-why-nav" aria-hidden="true">
         <span class="gs-why-tick is-on"></span>
@@ -2349,6 +2349,7 @@ if (targets.length) {
   dctx.fillStyle = dgrad; dctx.fillRect(0, 0, 64, 64);
   const dotTex = new THREE.CanvasTexture(dotCv);
 
+  const group = new THREE.Group(); scene.add(group); // обертаємо групу від миші
   const lines = [];
   for (let t = 0; t < HIST; t++) {
     const pos = new Float32Array(BINS * 3), col = new Float32Array(BINS * 3);
@@ -2358,21 +2359,22 @@ if (targets.length) {
     // прозорість за глибиною: нові крапки (низ) щільніші, старі (верх) розчиняються
     const depth = 1 - t / (HIST - 1);
     const m = new THREE.PointsMaterial({ size: 0.11, map: dotTex, vertexColors: true, transparent: true, opacity: 0.10 + depth * 0.55, sizeAttenuation: true, depthWrite: false, blending: THREE.AdditiveBlending });
-    lines.push(new THREE.Points(g, m)); scene.add(lines[t]);
+    lines.push(new THREE.Points(g, m)); group.add(lines[t]);
   }
-  const off = document.createElement('canvas');
-  const renderer = new THREE.WebGLRenderer({ canvas: off, antialias: true, alpha: true });
+  // рендер ПРЯМО у видимий canvas (без офскрін-блітингу) — це справжній 3D-обʼєкт, не картинка-вікно
+  const canvas = targets[0];
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setClearColor(0x000000, 0);
   const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
   camera.position.set(0, 3.2, 8.5); camera.lookAt(0, 0, -0.5); // згори-збоку: поле стелиться вглиб
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.16, 0.6, 0.25));
-  const dpr = Math.min(window.devicePixelRatio || 1, 1.5); // офскрін блітиться+маскується → 2x зайве
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
   let W = 0, H = 0;
-  function sizeTo(c) {
-    const r = c.getBoundingClientRect(), w = Math.max(2, r.width | 0), h = Math.max(2, r.height | 0);
-    if (w !== W || h !== H) { W = w; H = h; off.width = w * dpr; off.height = h * dpr; renderer.setSize(w * dpr, h * dpr, false); composer.setSize(w * dpr, h * dpr); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  function sizeTo() {
+    const r = canvas.getBoundingClientRect(), w = Math.max(2, r.width | 0), h = Math.max(2, r.height | 0);
+    if (w !== W || h !== H) { W = w; H = h; renderer.setSize(w * dpr, h * dpr, false); composer.setSize(w * dpr, h * dpr); camera.aspect = w / h; camera.updateProjectionMatrix(); }
   }
   const vis = new Set();
   let acc = 0, raf = 0, running = false;
@@ -2385,7 +2387,10 @@ if (targets.length) {
     // затихання: energy плавно повертається до базового рівня; сплеск курсора згасає
     energy += (0.12 - energy) * 0.03;
     pointerOn *= 0.95;
-    sizeTo([...vis][0]);
+    sizeTo();
+    // плавне обертання групи до миші — відчуття 3D-обʼєкта
+    group.rotation.y += (rotY - group.rotation.y) * 0.06;
+    group.rotation.x += (rotX - group.rotation.x) * 0.06;
     // рандомні помаранчеві крапки спалахують (ближче до переду, де крапки щільніші)
     for (let k = 0; k < 4; k++) if (Math.random() < 0.7) { const ti = ((Math.random() ** 1.6) * HIST) | 0, bi = (Math.random() * BINS) | 0; spark[ti * BINS + bi] = 1; }
     const sc = time * 0.25; // швидкість «підняття» патерну вгору
@@ -2415,18 +2420,19 @@ if (targets.length) {
       lines[t].geometry.attributes.position.needsUpdate = true; lines[t].geometry.attributes.color.needsUpdate = true;
     }
     composer.render();
-    for (const c of vis) { const cx = ctxs[targets.indexOf(c)]; if (c.width !== off.width || c.height !== off.height) { c.width = off.width; c.height = off.height; } cx.clearRect(0, 0, c.width, c.height); cx.drawImage(off, 0, 0); }
   }
-  // реакція на курсор/скрол: будимо хвилю, інакше вона затихає
+  // реакція на курсор: обертання 3D-обʼєкта (parallax) + локальний сплеск хвилі
+  let rotX = 0, rotY = 0;
   function pointerMove(e) {
-    const c = [...vis][0]; if (!c) return;
-    const r = c.getBoundingClientRect();
-    const cx = e.touches ? (e.touches[0] && e.touches[0].clientX) : e.clientX;
-    if (cx == null) return;
-    const px = (cx - r.left) / Math.max(1, r.width);
-    if (px < -0.2 || px > 1.2) return;
-    pointerX = Math.max(0, Math.min(1, px));
-    pointerOn = Math.min(1.4, pointerOn + 0.5);
+    const cy = e.touches ? (e.touches[0] && e.touches[0].clientY) : e.clientY;
+    const cxp = e.touches ? (e.touches[0] && e.touches[0].clientX) : e.clientX;
+    if (cxp == null) return;
+    const nx = cxp / Math.max(1, window.innerWidth), ny = cy / Math.max(1, window.innerHeight);
+    rotY = (nx - 0.5) * 0.5;   // ±0.25 рад по горизонталі
+    rotX = (ny - 0.5) * 0.25;  // ±0.12 рад по вертикалі
+    const c = canvas.getBoundingClientRect();
+    pointerX = Math.max(0, Math.min(1, (cxp - c.left) / Math.max(1, c.width)));
+    pointerOn = Math.min(1.4, pointerOn + 0.4);
     energy = Math.min(1.1, energy + 0.05);
   }
   window.addEventListener('pointermove', pointerMove, { passive: true });
