@@ -2258,6 +2258,17 @@ updateHeaderAndProgress();
     es.forEach(e => { if (e.isIntersecting) activate(slides.indexOf(e.target)); });
   }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
   slides.forEach(s => io.observe(s));
+
+  // Надійне «тримання» сфери через ScrollTrigger pin (не залежить від sticky/overflow/transform)
+  const panels = document.querySelector('.gs-why-panels');
+  const dots = document.querySelector('.gs-why-dots');
+  if (panels && dots && window.gsap && window.ScrollTrigger) {
+    dots.style.position = 'relative'; // прибираємо sticky, пін керує
+    ScrollTrigger.create({
+      trigger: panels, start: 'top top', end: 'bottom bottom',
+      pin: dots, pinSpacing: false, anticipatePin: 1, invalidateOnRefresh: true
+    });
+  }
 })();
 /* #why: візуал — окремий module-скрипт перед </body> (Three.js світний потік, блітинг у .gs-why-dots canvas) */
 
