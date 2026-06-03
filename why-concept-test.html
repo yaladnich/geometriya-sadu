@@ -31,7 +31,7 @@
 </div>
 <div class="name" id="name"></div>
 <div class="wrap"><canvas id="c"></canvas></div>
-<div class="hint">Веди мишею — сфера повертається за курсором</div>
+<div class="hint">Сфера обертається сама</div>
 <div class="panel">
   <label>Вузли <b id="dens-v">200</b><input id="dens" type="range" min="60" max="400" value="200"></label>
   <label>Звʼязки <b id="dist-v">34</b><input id="dist" type="range" min="8" max="50" value="34"></label>
@@ -75,9 +75,8 @@
   }
   function layout(){const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);build();}
   addEventListener('resize',layout);
-  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;
-    tAngV=((mx/W)-0.5)*0.06; tTiltX=0.5+((my/H)-0.5)*1.2;});
-  addEventListener('mouseleave',()=>{mx=-1e4;my=-1e4;tAngV=0;tTiltX=0.5;});
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+  addEventListener('mouseleave',()=>{mx=-1e4;my=-1e4;});
 
   function drawAccent(ac){ctx.strokeStyle='rgba(255,255,255,0.16)';ctx.lineWidth=1;ctx.save();ctx.translate(ac.x,ac.y);ctx.rotate(ac.a);ctx.beginPath();
     if(ac.t===0){ctx.moveTo(0,-ac.s);ctx.lineTo(ac.s*0.9,ac.s*0.7);ctx.lineTo(-ac.s*0.9,ac.s*0.7);ctx.closePath();}
