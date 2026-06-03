@@ -2318,7 +2318,6 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 const targets = Array.from(document.querySelectorAll('.gs-why-dots canvas'));
 if (targets.length) {
-  const ctxs = targets.map(c => c.getContext('2d'));
   const BINS = 80, HIST = 70, WIDTH = 16, HEIGHT = 9, AMP = 2.2;
   const scene = new THREE.Scene();
   // Перлін-подібний value-noise (без залежностей)
