@@ -2282,20 +2282,21 @@ updateHeaderAndProgress();
   const mob = window.matchMedia('(max-width:900px)').matches;
   measure(); setSlide(0);
   const step = 1 / (slides - 1);
-  ScrollTrigger.create({
-    trigger: stage, start: 'top top', end: '+=' + (slides * (mob ? 55 : 80)) + '%',
-    pin: true, pinSpacing: true, scrub: mob ? 0.35 : 0.5, invalidateOnRefresh: true,
-    // защіпка: за один рух — максимум ОДИН слайд (не перескакує 2-3 при сильному скролі)
+  let committed = 0; // зафіксований слайд; рух дозволено лише на ±1 від нього
+  const idx = p => Math.max(0, Math.min(slides - 1, Math.round(p * (slides - 1))));
+  const clampStep = i => Math.max(0, Math.min(slides - 1, Math.max(committed - 1, Math.min(committed + 1, i))));
+  let st = ScrollTrigger.create({
+    trigger: stage, start: 'top top', end: '+=' + (slides * (mob ? 60 : 85)) + '%',
+    pin: true, pinSpacing: true, scrub: mob ? 0.4 : 0.5, invalidateOnRefresh: true,
+    // защіпка: за один рух — рівно ОДИН слайд (навіть при сильному скролі)
     snap: {
-      snapTo: (value) => {
-        let target = Math.round(value / step);
-        target = Math.max(cur - 1, Math.min(cur + 1, target)); // обмеження ±1 від поточного
-        return Math.max(0, Math.min(slides - 1, target)) * step;
-      },
-      duration: { min: 0.2, max: mob ? 0.35 : 0.5 }, ease: 'power2.inOut'
+      snapTo: value => clampStep(Math.round(value / step)) * step,
+      duration: { min: 0.25, max: mob ? 0.4 : 0.55 }, ease: 'power2.inOut',
+      onComplete: () => { committed = idx(st.progress); }
     },
-    onRefresh: self => { measure(); setSlide(self.progress * (slides - 1)); },
-    onUpdate: self => setSlide(self.progress * (slides - 1))
+    onRefresh: self => { measure(); committed = idx(self.progress); setSlide(committed); },
+    // відображення теж обмежене ±1 від зафіксованого — без «мигань» крізь слайди
+    onUpdate: self => setSlide(clampStep(idx(self.progress)))
   });
 })();
 /* #why: візуал — окремий module-скрипт перед </body> (Three.js світний потік, блітинг у .gs-why-dots canvas) */
