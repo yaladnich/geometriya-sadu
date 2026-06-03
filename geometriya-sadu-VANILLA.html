@@ -2419,7 +2419,7 @@ if (targets.length) {
       }
       lines[t].geometry.attributes.position.needsUpdate = true; lines[t].geometry.attributes.color.needsUpdate = true;
     }
-    composer.render();
+    renderer.render(scene, camera);
   }
   // реакція на курсор: обертання 3D-обʼєкта (parallax) + локальний сплеск хвилі
   let rotX = 0, rotY = 0;
