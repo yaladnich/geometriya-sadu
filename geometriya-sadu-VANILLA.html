@@ -2339,7 +2339,7 @@ if (targets.length) {
   const mat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.6 });
   for (let t = 0; t < HIST; t++) {
     const pos = new Float32Array(BINS * 3), col = new Float32Array(BINS * 3);
-    for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 2] = (0.5 - t / (HIST - 1)) * DEPTH; }
+    for (let b = 0; b < BINS; b++) { pos[b * 3] = (b / (BINS - 1) - 0.5) * WIDTH; pos[b * 3 + 2] = (t / (HIST - 1) - 0.5) * DEPTH; }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
     const ln = new THREE.Line(g, mat); ln.position.y = -1.6; lines.push(ln); scene.add(ln);
   }
