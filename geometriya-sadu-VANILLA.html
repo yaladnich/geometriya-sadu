@@ -2335,7 +2335,7 @@ if (targets.length) {
     for (let p = 0; p < 2; p++) for (let b = 1; b < BINS - 1; b++) freq[b] = (freq[b - 1] + freq[b] * 2 + freq[b + 1]) / 4;
     history.pop(); history.unshift(Float32Array.from(freq));
   }
-  const lines = []; const EM = [0.18, 0.61, 0.37], OR = [0.95, 0.55, 0.11];
+  const lines = []; const EM = [0.16, 0.55, 0.34], OR = [0.45, 1.0, 0.66]; // повністю ізумрудна: база → світлий ізумруд на гребенях
   const mat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.6 });
   for (let t = 0; t < HIST; t++) {
     const pos = new Float32Array(BINS * 3), col = new Float32Array(BINS * 3);
