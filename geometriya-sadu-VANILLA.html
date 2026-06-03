@@ -274,9 +274,10 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
   .gs-why-snaps i{scroll-snap-align:start;scroll-snap-stop:always;}
   .gs-why-intro{padding-block:clamp(2rem,6vh,3.5rem) 0.5rem;}
   .gs-why-panels{min-height:500svh;}
-  .gs-why-inner{grid-template-columns:1fr;height:100svh;align-items:center;}
-  .gs-why-slides{grid-column:1;grid-row:1;z-index:1;}
-  .gs-why-dots{grid-column:1;grid-row:1;z-index:0;height:100%;opacity:0.72;}
+  /* мобільний: сфера зверху, текст ПІД нею; уся пара центрована по висоті */
+  .gs-why-inner{grid-template-columns:1fr;grid-template-rows:auto auto;height:100svh;align-content:center;justify-items:center;gap:1.25rem;}
+  .gs-why-dots{grid-column:1;grid-row:1;z-index:0;width:100%;height:40svh;opacity:0.9;}
+  .gs-why-slides{grid-column:1;grid-row:2;z-index:1;width:100%;height:30svh;}
   .gs-why-text{align-items:center;text-align:center;max-width:90%;margin-inline:auto;}
   .gs-why-desc{margin-inline:auto;}
   .gs-why-nav{display:none;}
