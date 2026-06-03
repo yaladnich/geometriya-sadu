@@ -33,7 +33,7 @@
 <div class="hint">Веди мишею — сфера повертається за курсором</div>
 <div class="panel">
   <label>Вузли <input id="dens" type="range" min="60" max="400" value="200"></label>
-  <label>Звʼязки <input id="dist" type="range" min="8" max="40" value="22"></label>
+  <label>Звʼязки <input id="dist" type="range" min="8" max="50" value="34"></label>
   <label>Швидкість <input id="spd" type="range" min="0" max="40" value="10"></label>
   <label>Оранж % <input id="org" type="range" min="0" max="35" value="12"></label>
 </div>
@@ -42,7 +42,7 @@
   const cv=document.getElementById('c'),ctx=cv.getContext('2d');
   const dpr=Math.min(devicePixelRatio||1,2);
   const G=[46,157,95], O=[242,141,27];
-  let W=0,H=0,mode='sphere',N=200,LINK=0.22,SPD=10,ORG=0.12;
+  let W=0,H=0,mode='sphere',N=200,LINK=0.34,SPD=10,ORG=0.12;
   let pts=[],edges=[],accents=[],mx=-1e4,my=-1e4,t=0,ang=0,tiltX=0.5,tTiltX=0.5,tAngV=0;
 
   const names={
@@ -109,7 +109,7 @@
           ctx.lineWidth=1.6;
           ctx.strokeStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+al.toFixed(3)+')';
         }else{
-          const al=0.06+dep*0.32;
+          const al=0.16+dep*0.5;
           ctx.lineWidth=1;
           ctx.strokeStyle='rgba('+G[0]+','+G[1]+','+G[2]+','+al.toFixed(3)+')';
         }
