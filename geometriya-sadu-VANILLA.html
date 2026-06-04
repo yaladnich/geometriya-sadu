@@ -265,7 +265,10 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-desc{margin:0;font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:40ch;}
 .gs-why-nav{position:absolute;left:50%;bottom:2.25rem;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:3;}
 .gs-why-tick{width:1.75rem;height:0.1875rem;border-radius:62rem;background:rgba(255,255,255,0.22);transition:background 0.3s var(--ease-out);}
-.gs-why-tick.is-on{background:var(--accent-bright);}
+.gs-why-tick:nth-child(1).is-on{background:#F28D1B;}
+.gs-why-tick:nth-child(2).is-on{background:#c9a52e;}
+.gs-why-tick:nth-child(3).is-on{background:#6fb84a;}
+.gs-why-tick:nth-child(4).is-on{background:#2e9d5f;}
 @media(max-width:900px){
   /* МОБІЛЬНИЙ: пінований кадр 100svh, 50/50 — сфера зверху (фікс), текст знизу (змінний) */
   .gs-why-intro{padding-block:clamp(2rem,6vh,3.5rem) 0.5rem;}
