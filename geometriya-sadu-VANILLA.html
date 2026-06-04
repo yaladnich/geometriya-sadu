@@ -2306,16 +2306,14 @@ updateHeaderAndProgress();
       onUpdate: self => { activate(Math.round(self.progress * (panels.length - 1))); panels.forEach((p, i) => p.classList.toggle('is-active', i === cur)); }
     });
   } else if (hasGSAP) {
-    // ДЕСКТОП: пін кожної секції + згасання її тексту (baseone); активний — через IntersectionObserver
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) activate(panels.indexOf(e.target)); });
-    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
-    panels.forEach(p => io.observe(p));
-    gsap.utils.toArray('.gs-why-panel').forEach(panel => {
+    // ДЕСКТОП: пін кожної секції + згасання її тексту (baseone).
+    // Активний слайд перемикаємо ТОЧНО в момент піну панелі (onEnter/onEnterBack) — чітко, без IO-band.
+    gsap.utils.toArray('.gs-why-panel').forEach((panel, i) => {
       const text = panel.querySelector('.gs-why-text');
       ScrollTrigger.create({
         trigger: panel, start: 'top top', end: 'bottom top',
         scrub: true, pin: true, pinSpacing: false, invalidateOnRefresh: true,
+        onEnter: () => activate(i), onEnterBack: () => activate(i),
         animation: gsap.timeline().to(text, { opacity: 0, filter: 'blur(10px)', scale: 0.85, y: () => -0.06 * panel.offsetHeight, ease: 'none' })
       });
     });
