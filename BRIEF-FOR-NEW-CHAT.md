@@ -99,9 +99,17 @@ https://yaladnich.github.io/geometriya-sadu/
 - `.gs-why-panels` → `.gs-why-dots` (сфера + `.gs-why-nav` тіки) + **4 окремі `<section class="gs-why-panel" data-i>`**, у кожній `.gs-container.gs-why-inner > .gs-why-text` (num/title/desc).
 
 **Слайдер тексту — `initWhyPin()` (2 окремі гілки!):**
-- **ДЕСКТОП (`min-width:901px`)** = **baseone-патерн** (витягнули з їхнього `app.js` `initServices`): сфера `.gs-why-dots` — `position:sticky;top:0;height:100svh;margin-bottom:-100svh` (фон, тримається весь час); кожна `.gs-why-panel` (`height:100svh`) піниться `ScrollTrigger {pin:true, pinSpacing:false, scrub:true}`, її текст згасає таймлайном (`opacity→0, blur, scale .85, y`). Наступна секція наїжджає поверх. Активний слайд/каскад/тіки — `IntersectionObserver` (`rootMargin:'-45% 0px -45% 0px'`).
+- **ДЕСКТОП (`min-width:901px`)** = **baseone-патерн** (витягнули з їхнього `app.js` `initServices`): сфера `.gs-why-dots` — `position:sticky;top:0;height:100svh;margin-bottom:-100svh` (фон, тримається весь час); кожна `.gs-why-panel` (`height:100svh`) піниться `ScrollTrigger {pin:true, pinSpacing:false, scrub:true}`, її текст згасає таймлайном (`opacity→0, blur, scale .85, y`). Наступна секція наїжджає поверх. **Активний слайд — `onEnter`/`onEnterBack` тригера панелі** (перемикається ТОЧНО в момент піну; раніше був `IntersectionObserver` з band `-45%`, але він давав нечітке перемикання при `pinSpacing:false` — замінено).
 - **МОБІЛЬНИЙ (`max-width:900px`)** = **пінований кадр 100svh, 50/50**: `.gs-why-dots` `position:absolute;top:4.5rem;height:calc(50svh-4.5rem)` (сфера зверху, **нижче хедера** щоб шторка не перекривала); `.gs-why-panel` `position:absolute;top:50svh;height:50svh` (всі накладені, видно лише `.is-active`). Один `ScrollTrigger` на `.gs-why-panels` з `pin + snap{snapTo:1/(N-1)} + scrub:0.25`, `onUpdate→activate(round(progress*(N-1)))`. Снап = **рівно один слайд за жест**, не залежить від сили скролу.
 - `activate(i)`: тіки `.is-on`, перезапуск каскаду `.in` (`gsTextUp`), `__whyKick()`. На мобільному ще тогл `.is-active` на панелі.
+
+**🔧 СЛАЙДЕР — БОРГ / TODO (чесний аудит, ще НЕ зроблено):** поточний `initWhyPin` працює, але «трієчник», варто переписати начисто:
+1. **БАГ адаптивності**: `const isMobile = matchMedia(...).matches` рахується ОДИН раз при ініті → при ресайзі/повороті через 900px логіка НЕ перемикається. Лікувати через **`gsap.matchMedia()`** (desktop/mobile як окремі контексти з авто-cleanup).
+2. **Дубль логіки** desktop vs mobile — звести до спільної `goTo(i)`, різниця лише в layout.
+3. **Нема `kill()`/teardown** ScrollTrigger'ів → витоки при ресайзі. `gsap.matchMedia` дає teardown безкоштовно.
+4. **Desktop без snap** — можна застрягти між слайдами з напівзмазаним текстом. Додати snap на ОБИДВА.
+5. **A11y**: скрол-хайджек без клавіатури/фокусу/aria.
+6. Магічні числа (`+=80%`, `scrub:0.25`, `-0.06*offsetHeight`).
 
 **⚠️ КРИТИЧНО — sticky/pin ламається через `overflow`:** `#why` і `.gs-section-orange` мали `overflow:hidden` → це робить секцію скрол-контейнером і **вбиває `position:sticky`/pin**. Виправлено на **`overflow:clip`** (`#why{overflow:clip}` + `html,body{overflow-x:clip}`) — `clip` обрізає, але НЕ створює скрол-контейнер. **НЕ повертати hidden.**
 
