@@ -14,8 +14,8 @@ https://yaladnich.github.io/geometriya-sadu/
 
 ## Стек
 - Чистий **vanilla HTML/CSS/JS** в одному файлі
-- **GSAP + ScrollTrigger** — скрол-анімації (працює на нативному скролі)
-- ~~Lenis~~ — **видалено** (плавний скрол прибрано, скрол нативний)
+- **GSAP + ScrollTrigger** — скрол-анімації
+- **Lenis** (`lenis@1.1.13`) — плавний скрол **повернуто** (червень 2026): лише десктоп + не `prefers-reduced-motion`; мобільний/тач — нативний (щоб працював слайдер). Інтеграція: `lenis.on('scroll',ScrollTrigger.update)` + `gsap.ticker.add(t=>lenis.raf(t*1000))` + `gsap.ticker.lagSmoothing(0)`. **Обовʼязковий Lenis CSS** є (`html.lenis`, `.lenis-smooth`…) — без нього не працює. `data-lenis-prevent` на випадаючому списку послуг.
 - **Tabler Icons webfont** (`@tabler/icons-webfont@3.19.0`)
 - **EmailJS** — форма заявки
   - publicKey: `jo5qqxaBsOw0U6wKb`
@@ -27,8 +27,8 @@ https://yaladnich.github.io/geometriya-sadu/
 - `geometriya-sadu-VANILLA.html` — **головний робочий файл** (~2000 рядків, всі правки тут)
 - `index.html` — редірект на головний файл
 - `.github/workflows/pages.yml` — деплой на GitHub Pages з гілки `main`
-- Бекапи: `geometriya-sadu-VANILLA-backup-*.html`
-- Демо/превʼю (не в продакшені): `services-photo-preview.html`, `hover-preview.html` та ін.
+- ⚠️ **Бекапи й старі прев'ю ВИДАЛЕНО** (червень 2026, чистка репо): прибрано 2 важкі mp4 (~13МБ), 4 `*-backup-*.html`, 9 `*-preview.html`.
+- Прототипи #why-ефектів (Three.js/canvas експерименти): `three-*.html`, `why-concept-test.html` — у корені, не в проді.
 
 ## Деплой
 - **GitHub Pages** через GitHub Actions, тригер — пуш у `main`
@@ -90,20 +90,21 @@ https://yaladnich.github.io/geometriya-sadu/
 - ⚠️ Раніше пробували scroll-stepper з морфом частинок у силуети (туя/газон) — **відмовились**, бо у baseone насправді проста реактивна сітка крапок (`.dots` з `data-dots-h/v`, `data-k`), а не морф. Старий код степпера прибрано.
 - Можливе допрацювання: підкрутити щільність крапок/радіус; за бажання — додати pin-stack як у baseone (`.pin-spacer`).
 
-### 🌊 НОВЕ (PR #311, червень 2026): світний Three.js «потік» замість крапок
-Сітку крапок **замінили** на світну анімовану хвилю на **Three.js** (стиль аудіо-візуалайзера Dirac / noomoagency).
+### 🌳 #why — АКТУАЛЬНИЙ СТАН (червень 2026, baseone-патерн + мобільний 50/50)
 
-**Як зроблено зараз (АКТУАЛЬНО, червень 2026 — повністю переписано):**
-- Візуал = **обертова 3D-сфера** з крапок+ліній (2D-canvas, БЕЗ Three.js). Plain `<script>` перед `</body>` (`// #why: сфера-планета саду`). Рендер прямо у `.gs-why-dots canvas` (без офскрін-блітингу).
-  - Точки рівномірно по сфері (Фібоначчі), ребра між сусідами (`LINK=0.33`). **Проростання**: гілки ростуть від вузла до сусідів (adjacency + `est[]`), потім тануть. Частина ребер — «сузір'я» (яскравіші). **Сезонний градієнт** `latCol()`: північ зелень `[46,157,95]` → південь охра `[201,156,74]`. **Вузли-іконки** (лінійні, малюються кодом у `icon()`): 12 дерев + 1 сонце. Самообертання; `window.__whyKick()` — поштовх при зміні слайда. Пауза: IntersectionObserver + `document.hidden`.
-  - Параметри: `N=116, LINK=0.33, SPD=4`. Камера-перспектива `persp=4/(4-z2)`, `R=min(W,H)*0.34` (десктоп) / `0.40` (моб).
-- **Слайдер тексту = НАТИВНИЙ sticky-scroll** (НЕ pin/scrub/snap — той підхід глючив, відмовились):
-  - HTML: `.gs-why-panels > .gs-why-inner` (grid 1fr 1fr) → `.gs-why-slides` (col1, 4× `.gs-why-text` по `min-height:100vh`) + `.gs-why-dots` (col2, **`position:sticky;top:0;height:100vh`** — сфера тримається поки текст скролиться).
-  - Активний слайд визначає **IntersectionObserver** (`rootMargin:'-45% 0px -45% 0px'`) — центр блока перетинає центр екрана → додає клас `.in` (reveal-анімація `gsTextUp` як на картках) + `__whyKick()` + індикатор. Нативний скрол = рівно один слайд за екран, без пропусків/стрибків від сили скролу.
-  - Мобільний: `.gs-why-inner` 1 колонка; `.gs-why-slides` і `.gs-why-dots` в одній клітинці (grid-row/col 1) — сфера sticky позаду (z-index 0), текст скролиться поверх (z-index 1).
-  - ⚠️ **ВАЖЛИВО**: `.gs-section-orange` має `overflow:hidden`, що **ламає `position:sticky`**. Для `#why` додано `.gs-why.gs-section-orange{overflow:visible}` — БЕЗ цього sticky не працює (сфера їде, слайдер мертвий).
-- Бейдж `#why` — оранжевий як в інших (`.gs-why .eyebrow{color:#F28D1B}`); h2 білий + зелене «нас» (баг `splitWords`, що фарбував усі слова, виправлено — акцент лише на словах у `.gs-accent-italic`).
-- **Тест-пісочниця** концептів: `why-concept-test.html` (сфера/мережа/хвиля, повзунки).
+**Візуал (НЕ змінювали):** обертова **3D-сфера з крапок+ліній-сузір'я** на 2D-canvas (plain `<script>` перед `</body>`, рендер прямо в `.gs-why-dots canvas`). Точки по Фібоначчі, ребра між сусідами (`LINK=0.33`), «проростання» гілок (adjacency+`est[]`), сезонний градієнт `latCol()` зелень→охра, вузли-іконки (12 дерев + 1 сонце через `icon()`), самообертання, `window.__whyKick()` — поштовх при зміні слайда. Пауза через IntersectionObserver + `document.hidden`. Параметри `N=116, LINK=0.33, SPD=4`; центр `cx=mob?W*0.5:W*0.70`, `cy=mob?H*0.5:H*0.55`.
+
+**HTML-структура (після рефактору):**
+- `.gs-why-panels` → `.gs-why-dots` (сфера + `.gs-why-nav` тіки) + **4 окремі `<section class="gs-why-panel" data-i>`**, у кожній `.gs-container.gs-why-inner > .gs-why-text` (num/title/desc).
+
+**Слайдер тексту — `initWhyPin()` (2 окремі гілки!):**
+- **ДЕСКТОП (`min-width:901px`)** = **baseone-патерн** (витягнули з їхнього `app.js` `initServices`): сфера `.gs-why-dots` — `position:sticky;top:0;height:100svh;margin-bottom:-100svh` (фон, тримається весь час); кожна `.gs-why-panel` (`height:100svh`) піниться `ScrollTrigger {pin:true, pinSpacing:false, scrub:true}`, її текст згасає таймлайном (`opacity→0, blur, scale .85, y`). Наступна секція наїжджає поверх. Активний слайд/каскад/тіки — `IntersectionObserver` (`rootMargin:'-45% 0px -45% 0px'`).
+- **МОБІЛЬНИЙ (`max-width:900px`)** = **пінований кадр 100svh, 50/50**: `.gs-why-dots` `position:absolute;top:4.5rem;height:calc(50svh-4.5rem)` (сфера зверху, **нижче хедера** щоб шторка не перекривала); `.gs-why-panel` `position:absolute;top:50svh;height:50svh` (всі накладені, видно лише `.is-active`). Один `ScrollTrigger` на `.gs-why-panels` з `pin + snap{snapTo:1/(N-1)} + scrub:0.25`, `onUpdate→activate(round(progress*(N-1)))`. Снап = **рівно один слайд за жест**, не залежить від сили скролу.
+- `activate(i)`: тіки `.is-on`, перезапуск каскаду `.in` (`gsTextUp`), `__whyKick()`. На мобільному ще тогл `.is-active` на панелі.
+
+**⚠️ КРИТИЧНО — sticky/pin ламається через `overflow`:** `#why` і `.gs-section-orange` мали `overflow:hidden` → це робить секцію скрол-контейнером і **вбиває `position:sticky`/pin**. Виправлено на **`overflow:clip`** (`#why{overflow:clip}` + `html,body{overflow-x:clip}`) — `clip` обрізає, але НЕ створює скрол-контейнер. **НЕ повертати hidden.**
+
+**Прототипи (в корені, не в проді):** `three-*.html` (Dirac-хвиля, point-cloud морф, лінії), `why-concept-test.html`. Збережені референси проаналізовано: Noomo (Three+GLTF/DRACO+GSAP), Dirac (Three+UnrealBloom спектрограма), **baseone** (`initServices` — джерело поточного патерну).
 
 **⚠️ ВЕРИФІКАЦІЯ**: середовище Claude НЕ має браузера й доступу до `github.io` → візуально перевіряє КОРИСТУВАЧ. Логіку перевіряти статично (трасування коду) + просити скрін.
 
@@ -120,9 +121,9 @@ https://yaladnich.github.io/geometriya-sadu/
 
 ### Навбар (актуальний стан)
 - Пункти: **Послуги · Переваги · Портфоліо · Етапи · Ціни · Поширені питання · Контакти** (`#cta`)
-- Кожен пункт — `<a><span>текст</span><i class="gs-nav-plus">+ SVG</i></a>`
-- Іконка `.gs-nav-plus` — «+» (помаранч. `#F28D1B`); на hover лінія повертається на 90° (стає «×») + глітч `gs-close-glitch`, колір → `var(--accent-bright)`
+- Кожен пункт — `<a><span>текст</span></a>`. **«+» біля пунктів ПРИБРАНО** (червень 2026), бо dropdown'ів поки немає. CSS `.gs-nav-plus` **лишили** в стилях — коли робитимемо випадаючий список, повернути `<i class="gs-nav-plus">+SVG</i>` лише на потрібні пункти.
 - Scramble навішений і на `.gs-nav a` (через внутрішній `<span>`)
+- **Мобільне меню** (`.gs-mobile-menu`): пункти + унизу кнопка «Замовити консультацію» (`openModal()`) + клікабельний телефон `+38 (068) 378-20-03`.
 
 ### Типографіка (глобально)
 - **Навбар** `.gs-nav`: `0.875rem / 1.125rem / 600 / uppercase / color:#fff`, hover `var(--accent-bright)`
@@ -193,7 +194,13 @@ https://yaladnich.github.io/geometriya-sadu/
 | Консервація автополиву | `Обслуговування автополиву.webp` |
 | Корпоративним клієнтам | `Корпоративним клієнтам.webp` |
 
-### #cta — Форма заявки (актуальний стан на гілці `claude/cool-cray-OVT0T`)
+### Модалка-заявка (popup `openModal()`) — БІЛА форма (червень 2026)
+- `.gs-modal` тепер **біла панель** (`background:#fff`, `border-radius:0.125rem` = 2px), без скла/blur.
+- Поля (`.gs-cta-form input/select/textarea`, `.gs-select-trigger`, `.gs-num-btn`, випадаючий список): світлі (`#f3f5f3`, бордер `#dfe3df`, текст `#0c140e`), **кути 2px**, focus — зелений бордер.
+- Кнопка «Відправити» — **суцільна зелена** `#257c4d` (hover `#2e9d5f`), без прозорості.
+- Усі override-и scoped під `.gs-modal` (інлайн-форма #cta не зачеплена).
+
+### #cta — Інлайн-форма заявки (низ сторінки)
 - Секція: клас `.gs-cta-orange`, фон **просто `#0c160e`** (однотонний)
   - ⚠️ **Меш-градієнт анімований ВИДАЛЕНО** (`::after` з 5 radial-gradient + `gs-mesh-flow` 22s) — прибраний
   - ⚠️ **Шум `::before` (SVG fractalNoise) ВИДАЛЕНО**
