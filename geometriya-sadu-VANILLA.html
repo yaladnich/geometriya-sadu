@@ -1016,8 +1016,8 @@ html,body{overflow-x:clip;max-width:100%;}
           <div class="eyebrow gs-pf-feature-tag" id="pf-tag">Газон · Озеленення · Благоустрій</div>
         </div>
         <div class="gs-pf-main-area"><span class="num" id="pf-area">3 500 м²</span></div>
-        <button class="gs-pf-arr gs-pf-arr-l" onclick="pfGo(-1)">&#8592;</button>
-        <button class="gs-pf-arr gs-pf-arr-r" onclick="pfGo(1)">&#8594;</button>
+        <button type="button" class="gs-pf-arr gs-pf-arr-l" aria-label="Попереднє фото">&#8592;</button>
+        <button type="button" class="gs-pf-arr gs-pf-arr-r" aria-label="Наступне фото">&#8594;</button>
       </div>
     </div>
   </div>
@@ -2255,6 +2255,25 @@ if (pfMain) {
     touchStartX = null;
     if (Math.abs(delta) > 40) pfGo(delta < 0 ? 1 : -1);
   }, { passive: true });
+
+  // Стрілки: власні обробники зі stopPropagation, щоб тап на мобільному
+  // не перехоплювався swipe/drag-хендлерами pf-main (і не гасився синтетичний click).
+  pfMain.querySelectorAll('.gs-pf-arr').forEach(btn => {
+    const dir = btn.classList.contains('gs-pf-arr-r') ? 1 : -1;
+    let touched = false;
+    btn.addEventListener('touchend', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      touched = true;
+      pfGo(dir);
+      window.setTimeout(() => { touched = false; }, 500);
+    }, { passive: false });
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (touched) return;   // touchend уже відпрацював — не дублюємо
+      pfGo(dir);
+    });
+  });
 }
 
 window.addEventListener('scroll', updateHeaderAndProgress, { passive: true });
