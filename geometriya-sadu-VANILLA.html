@@ -245,13 +245,14 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why.gs-section-orange .eyebrow,.gs-why.gs-section-orange .eyebrow .eb-dash{color:#F28D1B;}
 .gs-why-intro{position:relative;z-index:2;padding-block:clamp(4rem,10vh,9rem) clamp(2rem,5vh,4rem);}
 .gs-why-intro .gs-section-head{margin-bottom:0;}
-.gs-why-panels{position:relative;}
-/* спільна сфера — sticky-фон на всю секцію (margin-bottom:-100svh, щоб не додавати зайвий екран) */
-.gs-why-dots{position:sticky;top:0;height:100svh;margin-bottom:-100svh;z-index:0;pointer-events:none;}
+.gs-why-panels{position:relative;height:100svh;}
+/* сфера — фон пін-кадру (всередині пінованого .gs-why-panels тримається сама) */
+.gs-why-dots{position:absolute;inset:0;z-index:0;pointer-events:none;}
 .gs-why-dots canvas{display:block;width:100%;height:100%;background:transparent;}
-/* кожен слайд — окрема повноекранна секція (baseone-патерн: pin + pinSpacing:false) */
-.gs-why-panel{position:relative;z-index:1;height:100svh;display:flex;align-items:center;pointer-events:none;}
-.gs-why-inner{width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:center;}
+/* слайди накладені в кадрі, видно лише активний (однаково desktop/mobile — різниця тільки в layout) */
+.gs-why-panel{position:absolute;inset:0;z-index:1;display:flex;align-items:center;pointer-events:none;opacity:0;visibility:hidden;transition:opacity 0.5s var(--ease-out);}
+.gs-why-panel.is-active{opacity:1;visibility:visible;}
+.gs-why-inner{width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;align-items:center;}
 .gs-why-side{will-change:transform,opacity,filter;}
 .gs-why-text{grid-column:1;max-width:34rem;justify-self:center;will-change:opacity,transform,filter;}
 /* текст-каскад: підйом + skew + blur */
@@ -264,19 +265,21 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-title{font-family:var(--font-display);font-weight:600;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.1;margin:0 0 1rem;color:#fff;text-transform:none;}
 .gs-why-desc{margin:0;font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.78);max-width:40ch;}
 .gs-why-nav{position:absolute;left:50%;bottom:2.25rem;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:3;}
-.gs-why-tick{width:1.75rem;height:0.1875rem;border-radius:62rem;background:rgba(255,255,255,0.22);transition:background 0.3s var(--ease-out);}
+.gs-why-tick{width:1.75rem;height:0.1875rem;border-radius:62rem;background:rgba(255,255,255,0.22);transition:background 0.3s var(--ease-out);border:0;padding:0;cursor:pointer;}
 .gs-why-tick.is-on{background:linear-gradient(90deg,#F28D1B,#2e9d5f);}
+.gs-why-tick:focus-visible{outline:2px solid var(--accent-bright);outline-offset:4px;}
+/* fallback: reduced-motion / без JS — панелі статично стовпчиком, сфера sticky */
+.gs-why-panels.gs-why-static{height:auto;}
+.gs-why-panels.gs-why-static .gs-why-dots{position:sticky;top:0;height:100svh;}
+.gs-why-panels.gs-why-static .gs-why-panel{position:relative;inset:auto;opacity:1;visibility:visible;min-height:70svh;}
 @media(max-width:900px){
-  /* МОБІЛЬНИЙ: пінований кадр 100svh, 50/50 — сфера зверху (фікс), текст знизу (змінний) */
   .gs-why-intro{padding-block:clamp(2rem,6vh,3.5rem) 0.5rem;}
-  .gs-why-panels{position:relative;height:100svh;}
-  .gs-why-dots{position:absolute;top:4.5rem;left:0;right:0;height:calc(50svh - 4.5rem);margin:0;opacity:1;z-index:1;}
-  .gs-why-panel{position:absolute;left:0;right:0;top:50svh;height:50svh;display:flex;align-items:center;justify-content:center;padding:0 1.25rem;opacity:0;visibility:hidden;transition:opacity 0.45s var(--ease-out);z-index:2;}
-  .gs-why-panel.is-active{opacity:1;visibility:visible;}
   .gs-why-inner{grid-template-columns:1fr;justify-items:center;text-align:center;}
   .gs-why-text{grid-column:1;justify-self:center;max-width:90%;}
   .gs-why-desc{margin-inline:auto;}
-  .gs-why-nav{position:absolute;top:calc(50svh - 1.75rem);bottom:auto;display:flex;}
+  /* мобільний: сфера по центру кадру, текст нижче */
+  .gs-why-panel{align-items:flex-end;padding-bottom:14svh;}
+  .gs-why-nav{bottom:5svh;}
 }
 
 
@@ -2272,55 +2275,66 @@ updateHeaderAndProgress();
 // Активний слайд визначає IntersectionObserver (центр блока перетинає центр екрана) —
 // рівно один слайд за екран, без пропусків/стрибків від сили скролу.
 // #why: scroll-slider - sphere stays in a sticky frame, text changes by scroll progress.
-// Section height gives each text block about one viewport before the next change.
-// #why: baseone-патерн — кожна секція піниться (pinSpacing:false), текст згасає при прокручуванні.
-// Активний слайд/каскад/тіки визначає IntersectionObserver (центр секції в центрі екрана) →
-// рівно один слайд за екран, без перескоків від сили скролу.
+// #why слайдер (рефактор «по-сеньйорськи»): ОДНА логіка — пін усього кадру + snap (рівно один слайд
+// за жест, незалежно від сили скролу). Різницю desktop/mobile дає CSS, НЕ JS (тому нема баґа адаптивності).
+// + reduced-motion/без-JS fallback (статичні панелі), клавіатура (↑↓←→/Home/End), клікабельні тіки, aria.
 (function initWhyPin() {
+  const wrap = document.querySelector('.gs-why-panels');
   const panels = Array.from(document.querySelectorAll('.gs-why-panel'));
   const ticks = Array.from(document.querySelectorAll('.gs-why-tick'));
-  if (!panels.length) return;
-
+  if (!wrap || !panels.length) return;
+  const N = panels.length;
   let cur = -1;
-  function activate(i) {
-    if (i < 0 || i === cur) return;
-    cur = i;
-    ticks.forEach((el, idx) => el.classList.toggle('is-on', idx === i));
+
+  function render(i) {
+    panels.forEach((p, idx) => p.classList.toggle('is-active', idx === i));
+    ticks.forEach((el, idx) => { el.classList.toggle('is-on', idx === i); el.setAttribute('aria-current', idx === i ? 'true' : 'false'); });
     const txt = panels[i].querySelector('.gs-why-text');
     if (txt) { txt.classList.remove('in'); void txt.offsetWidth; txt.classList.add('in'); } // перезапуск каскаду
     if (window.__whyKick) window.__whyKick(); // сфера реагує на зміну слайда
+    wrap.setAttribute('aria-label', 'Перевага ' + (i + 1) + ' з ' + N);
+  }
+  function goTo(i) { i = Math.max(0, Math.min(N - 1, i)); if (i === cur) return; cur = i; render(i); }
+
+  // aria-розмітка слайдера
+  wrap.setAttribute('role', 'group');
+  wrap.setAttribute('aria-roledescription', 'слайдер');
+  goTo(0);
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!(window.gsap && window.ScrollTrigger) || reduce) {
+    // Fallback: без скрол-хайджеку — усі панелі видно стовпчиком
+    wrap.classList.add('gs-why-static');
+    panels.forEach(p => { p.classList.add('is-active'); const t = p.querySelector('.gs-why-text'); if (t) t.classList.add('in'); });
+    return;
   }
 
-  panels.forEach((p, i) => p.classList.toggle('is-active', i === 0));
+  // Один ScrollTrigger: пін кадру + snap. Layout (desktop/mobile) — суто CSS, тож логіка width-незалежна.
+  const st = ScrollTrigger.create({
+    trigger: wrap, start: 'top top', end: '+=' + ((N - 1) * 100) + '%',
+    pin: true, pinSpacing: true, scrub: 0.4, invalidateOnRefresh: true,
+    snap: { snapTo: 1 / (N - 1), duration: { min: 0.2, max: 0.45 }, ease: 'power1.inOut' },
+    onUpdate: self => goTo(Math.round(self.progress * (N - 1)))
+  });
 
-  const hasGSAP = window.gsap && window.ScrollTrigger;
-  const isMobile = window.matchMedia('(max-width:900px)').matches;
-
-  if (hasGSAP && isMobile) {
-    // МОБІЛЬНИЙ: один пінований кадр 50/50, текст міняється зі снапом (один слайд за жест)
-    activate(0);
-    ScrollTrigger.create({
-      trigger: '.gs-why-panels', start: 'top top', end: '+=' + (panels.length * 80) + '%',
-      pin: true, pinSpacing: true, scrub: 0.25, invalidateOnRefresh: true,
-      snap: { snapTo: 1 / (panels.length - 1), duration: { min: 0.15, max: 0.3 }, ease: 'power1.inOut' },
-      onUpdate: self => { activate(Math.round(self.progress * (panels.length - 1))); panels.forEach((p, i) => p.classList.toggle('is-active', i === cur)); }
-    });
-  } else if (hasGSAP) {
-    // ДЕСКТОП: пін кожної секції + згасання її тексту (baseone).
-    // Активний слайд перемикаємо ТОЧНО в момент піну панелі (onEnter/onEnterBack) — чітко, без IO-band.
-    gsap.utils.toArray('.gs-why-panel').forEach((panel, i) => {
-      const text = panel.querySelector('.gs-why-text');
-      ScrollTrigger.create({
-        trigger: panel, start: 'top top', end: 'bottom top',
-        scrub: true, pin: true, pinSpacing: false, invalidateOnRefresh: true,
-        onEnter: () => activate(i), onEnterBack: () => activate(i),
-        animation: gsap.timeline().to(text, { opacity: 0, filter: 'blur(10px)', scale: 0.85, y: () => -0.06 * panel.offsetHeight, ease: 'none' })
-      });
-    });
-    activate(0);
-  } else {
-    activate(0);
+  // Навігація до слайда (тіки + клавіатура) — плавний скрол до відповідної позиції піну
+  function scrollToSlide(i) {
+    i = Math.max(0, Math.min(N - 1, i));
+    const y = st.start + (i / (N - 1)) * (st.end - st.start);
+    window.scrollTo({ top: y, behavior: 'smooth' });
   }
+  ticks.forEach((el, idx) => {
+    el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); el.setAttribute('aria-label', 'Перевага ' + (idx + 1));
+    el.addEventListener('click', () => scrollToSlide(idx));
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSlide(idx); } });
+  });
+  window.addEventListener('keydown', e => {
+    if (!st.isActive) return; // лише поки слайдер у фокусі екрана
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); scrollToSlide(cur + 1); }
+    else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); scrollToSlide(cur - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); scrollToSlide(0); }
+    else if (e.key === 'End') { e.preventDefault(); scrollToSlide(N - 1); }
+  });
 })();
 /* #why: візуал — окремий module-скрипт перед </body> (Three.js світний потік, блітинг у .gs-why-dots canvas) */
 
