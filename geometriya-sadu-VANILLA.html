@@ -36,6 +36,12 @@
   --w-regular:400;--w-medium:500;--w-semi:600;--w-bold:700;--w-black:800;
 }
 html{background:var(--bg-1);color:var(--fg-1);scroll-behavior:auto;margin:0;padding:0;font-size:var(--root-scale);}
+/* Lenis (плавний скрол) — обовʼязковий CSS */
+html.lenis,html.lenis body{height:auto;}
+.lenis.lenis-smooth{scroll-behavior:auto!important;}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain;}
+.lenis.lenis-stopped{overflow:hidden;}
+.lenis.lenis-smooth iframe{pointer-events:none;}
 /* Глобальне rem-масштабування (як у референсі Redstone): корінь змінюється на брейкпоінтах, усе в rem масштабується пропорційно */
 @media(min-width:1200px) and (max-width:1380px){:root{--root-scale:0.875rem;}}
 @media(min-width:2100px){html{font-size:1.25rem;}}
