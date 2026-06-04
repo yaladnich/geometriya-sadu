@@ -267,15 +267,16 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-tick{width:1.75rem;height:0.1875rem;border-radius:62rem;background:rgba(255,255,255,0.22);transition:background 0.3s var(--ease-out);}
 .gs-why-tick.is-on{background:var(--accent-bright);}
 @media(max-width:900px){
-  /* МОБІЛЬНИЙ: простий стек — сфера зверху, під нею 4 блоки переваг. Без піна/снапа/sticky. */
+  /* МОБІЛЬНИЙ: пінований кадр 100svh, 50/50 — сфера зверху (фікс), текст знизу (змінний) */
   .gs-why-intro{padding-block:clamp(2rem,6vh,3.5rem) 0.5rem;}
-  .gs-why-panels{display:block;}
-  .gs-why-dots{position:relative;top:auto;height:38svh;margin-bottom:0;opacity:1;}
-  .gs-why-panel{height:auto;min-height:0;display:block;padding-block:clamp(1.75rem,5vh,2.75rem);}
+  .gs-why-panels{position:relative;height:100svh;}
+  .gs-why-dots{position:absolute;top:0;left:0;right:0;height:50svh;margin:0;opacity:1;z-index:1;}
+  .gs-why-panel{position:absolute;left:0;right:0;top:50svh;height:50svh;display:flex;align-items:center;justify-content:center;padding:0 1.25rem;opacity:0;visibility:hidden;transition:opacity 0.45s var(--ease-out);z-index:2;}
+  .gs-why-panel.is-active{opacity:1;visibility:visible;}
   .gs-why-inner{grid-template-columns:1fr;justify-items:center;text-align:center;}
   .gs-why-text{grid-column:1;justify-self:center;max-width:90%;}
   .gs-why-desc{margin-inline:auto;}
-  .gs-why-nav{display:none;}
+  .gs-why-nav{position:absolute;top:calc(50svh - 1.75rem);bottom:auto;display:flex;}
 }
 
 
@@ -2284,14 +2285,26 @@ updateHeaderAndProgress();
     if (window.__whyKick) window.__whyKick(); // сфера реагує на зміну слайда
   }
 
-  // активний слайд за тим, чий центр перетнув центр екрана
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) activate(panels.indexOf(e.target)); });
-  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
-  panels.forEach(p => io.observe(p));
+  panels.forEach((p, i) => p.classList.toggle('is-active', i === 0));
 
-  // десктоп: пін кожної секції + згасання її тексту (baseone)
-  if (window.gsap && window.ScrollTrigger && window.matchMedia('(min-width:901px)').matches) {
+  const hasGSAP = window.gsap && window.ScrollTrigger;
+  const isMobile = window.matchMedia('(max-width:900px)').matches;
+
+  if (hasGSAP && isMobile) {
+    // МОБІЛЬНИЙ: один пінований кадр 50/50, текст міняється зі снапом (один слайд за жест)
+    activate(0);
+    ScrollTrigger.create({
+      trigger: '.gs-why-panels', start: 'top top', end: '+=' + (panels.length * 80) + '%',
+      pin: true, pinSpacing: true, scrub: 0.25, invalidateOnRefresh: true,
+      snap: { snapTo: 1 / (panels.length - 1), duration: { min: 0.15, max: 0.3 }, ease: 'power1.inOut' },
+      onUpdate: self => { activate(Math.round(self.progress * (panels.length - 1))); panels.forEach((p, i) => p.classList.toggle('is-active', i === cur)); }
+    });
+  } else if (hasGSAP) {
+    // ДЕСКТОП: пін кожної секції + згасання її тексту (baseone); активний — через IntersectionObserver
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) activate(panels.indexOf(e.target)); });
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+    panels.forEach(p => io.observe(p));
     gsap.utils.toArray('.gs-why-panel').forEach(panel => {
       const text = panel.querySelector('.gs-why-text');
       ScrollTrigger.create({
@@ -2300,9 +2313,10 @@ updateHeaderAndProgress();
         animation: gsap.timeline().to(text, { opacity: 0, filter: 'blur(10px)', scale: 0.85, y: () => -0.06 * panel.offsetHeight, ease: 'none' })
       });
     });
+    activate(0);
+  } else {
+    activate(0);
   }
-
-  activate(0);
 })();
 /* #why: візуал — окремий module-скрипт перед </body> (Three.js світний потік, блітинг у .gs-why-dots canvas) */
 
