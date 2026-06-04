@@ -271,7 +271,9 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
   html{scroll-snap-type:y proximity;}
   .gs-why-panel{scroll-snap-align:start;scroll-snap-stop:always;}
   .gs-why-intro{padding-block:clamp(2rem,6vh,3.5rem) 0.5rem;}
-  .gs-why-dots{opacity:0.5;}
+  /* мобільний: сфера у ВЕРХНІЙ зоні (sticky), текст ПІД нею; усе центровано по висоті */
+  .gs-why-dots{height:46svh;margin-bottom:-46svh;opacity:1;}
+  .gs-why-panel{align-items:flex-end;padding-bottom:9svh;}
   .gs-why-inner{grid-template-columns:1fr;justify-items:center;text-align:center;}
   .gs-why-text{grid-column:1;justify-self:center;max-width:90%;}
   .gs-why-desc{margin-inline:auto;}
