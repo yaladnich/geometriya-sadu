@@ -309,8 +309,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
   .gs-why-desc{margin-inline:auto;}
   /* мобільний: сфера — верхня смуга під хедером; текст — нижня половина, без накладання */
   .gs-why-dots{inset:auto;top:6rem;left:0;right:0;height:40svh;}
-  .gs-why-panel{align-items:flex-end;padding-bottom:8svh;}
-  .gs-why-nav{display:none;}
+  .gs-why-panel{align-items:flex-end;padding-bottom:11svh;}
+  .gs-why-nav{display:flex;bottom:4svh;}
 }
 
 
@@ -989,12 +989,6 @@ html,body{overflow-x:clip;max-width:100%;}
     <!-- спільна сфера-фон: тримається весь час (sticky), не рухається -->
     <div class="gs-why-side gs-why-dots">
       <canvas></canvas>
-      <div class="gs-why-nav" aria-hidden="true">
-        <span class="gs-why-tick is-on"></span>
-        <span class="gs-why-tick"></span>
-        <span class="gs-why-tick"></span>
-        <span class="gs-why-tick"></span>
-      </div>
     </div>
     <!-- 4 окремі секції-слайди (baseone-патерн: pin + pinSpacing:false) -->
     <section class="gs-why-panel" data-i="0">
@@ -1025,6 +1019,12 @@ html,body{overflow-x:clip;max-width:100%;}
         <p class="gs-why-desc">Міні-навантажувачі та обладнання — земляні роботи будь-якої складності точно й у строк.</p>
       </div></div>
     </section>
+    <div class="gs-why-nav" aria-hidden="true">
+      <span class="gs-why-tick is-on"></span>
+      <span class="gs-why-tick"></span>
+      <span class="gs-why-tick"></span>
+      <span class="gs-why-tick"></span>
+    </div>
   </div>
 </section>
 
