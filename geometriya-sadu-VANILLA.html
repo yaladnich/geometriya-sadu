@@ -2003,13 +2003,12 @@ function initCustomAnimations() {
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: title,
-        start: 'top 88%',
-        end: 'top 45%',
-        scrub: 1
+        start: 'top 85%',
+        toggleActions: 'play none none none'
       }
     });
 
-    tl.to(words, { yPercent: 0, skewY: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.08, ease: 'power3.out' });
+    tl.to(words, { yPercent: 0, skewY: 0, opacity: 1, filter: 'blur(0px)', duration: 0.9, stagger: 0.08, ease: 'power3.out' });
   });
 
   function splitWords(el) {
