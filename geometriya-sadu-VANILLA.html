@@ -565,8 +565,8 @@ body{cursor:none;}
 @keyframes pf-kb1{from{transform:scale(1.03) translate3d(-1%,0,0);}to{transform:scale(1.13) translate3d(2%,-1%,0);}}
 @keyframes pf-kb2{from{transform:scale(1.02) translate3d(1%,1%,0);}to{transform:scale(1.12) translate3d(-1%,-2%,0);}}
 @keyframes pf-kb3{from{transform:scale(1.03) translate3d(0,-1%,0);}to{transform:scale(1.13) translate3d(1%,2%,0);}}
-.gs-pf-bg{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;z-index:0;clip-path:inset(0 0 0 100%);filter:grayscale(30%) brightness(.88);will-change:clip-path,transform,opacity;transition:clip-path 700ms cubic-bezier(.77,0,.175,1),filter 700ms var(--ease-out),opacity 0.55s ease;}
-.gs-pf-bg.active{clip-path:inset(0 0 0 0%);filter:grayscale(0%) brightness(1);}
+.gs-pf-bg{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;z-index:0;opacity:0;filter:grayscale(0%) brightness(1);will-change:transform,opacity;transition:opacity 0.5s ease;}
+.gs-pf-bg.active{opacity:1;}
 @media(pointer:coarse){body{cursor:auto;}#gs-dot{display:none;}}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:1ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:1ms!important;}
@@ -1008,8 +1008,8 @@ html,body{overflow-x:clip;max-width:100%;}
     </div>
     <div class="gs-pf-slider">
       <div class="gs-pf-main" id="pf-main">
-        <div class="gs-pf-bg" id="gs-pf-bg-a" style="background-image:url('images/portfolio-1.webp');opacity:1;z-index:1;clip-path:inset(0 0 0 0%)"></div>
-        <div class="gs-pf-bg" id="gs-pf-bg-b" style="opacity:0;z-index:0"></div>
+        <div class="gs-pf-bg active" id="gs-pf-bg-a" style="background-image:url('images/portfolio-1.webp');z-index:1"></div>
+        <div class="gs-pf-bg" id="gs-pf-bg-b" style="z-index:0"></div>
         <div class="gs-pf-main-overlay"></div>
         <div class="gs-pf-main-meta">
           <div class="gs-pf-feature-name" id="pf-name">КМ Green Hills</div>
@@ -1388,17 +1388,13 @@ function initPortfolio() {
 
   if (bgA) {
     bgA.style.backgroundImage = `url('${project.images[currentPortfolioImage]}')`;
-    bgA.style.opacity = '1';
     bgA.style.zIndex = '1';
-    bgA.style.clipPath = 'inset(0 0 0 0%)';
     bgA.classList.add('active');
     runKenBurns(bgA, currentPortfolioImage);
   }
 
   if (bgB) {
-    bgB.style.opacity = '0';
     bgB.style.zIndex = '0';
-    bgB.style.clipPath = 'inset(0 0 0 100%)';
     bgB.classList.remove('active');
   }
 
@@ -1430,27 +1426,16 @@ function updatePortfolio() {
   if (nextBg && activeBg) {
     nextBg.style.backgroundImage = `url('${image}')`;
     nextBg.style.zIndex = '2';
-    nextBg.style.opacity = '1';
-    nextBg.style.clipPath = 'inset(0 0 0 100%)';
-    nextBg.classList.remove('active');
     runKenBurns(nextBg, currentPortfolioImage);
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        nextBg.classList.add('active');
-        nextBg.style.clipPath = 'inset(0 0 0 0%)';
-      });
-    });
+    nextBg.classList.add('active');      // плавна поява через opacity
+    activeBg.classList.remove('active'); // плавне згасання
 
     window.setTimeout(() => {
-      activeBg.classList.remove('active');
       activeBg.style.zIndex = '0';
-      activeBg.style.opacity = '0';
-      activeBg.style.clipPath = 'inset(0 0 0 100%)';
       activeBg.style.animation = 'none';
       nextBg.style.zIndex = '1';
       activePortfolioBg = nextBg === bgA ? 'a' : 'b';
-    }, 760);
+    }, 550);
   }
 
   setText('pf-name', project.name);
