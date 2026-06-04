@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_Шар_2" data-name="Шар 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 86.6 57.65">
+  <defs>
+    <style>
+      .cls-1, .cls-2, .cls-3 {
+        fill: #1fa362;
+      }
+
+      .cls-2 {
+        opacity: .3;
+      }
+
+      .cls-2, .cls-3 {
+        isolation: isolate;
+      }
+
+      .cls-3 {
+        opacity: .6;
+      }
+
+      .cls-4 {
+        fill: none;
+        stroke: #f28d1b;
+        stroke-linecap: round;
+      }
+    </style>
+  </defs>
+  <g id="_Шар_1-2" data-name=" Шар 1">
+    <path class="cls-2" d="M61.11,12l20,42h-40L61.11,12Z"/>
+    <path class="cls-3" d="M45.11,0l26,54H19.11L45.11,0Z"/>
+    <path class="cls-1" d="M25.11,20l20,34H5.11L25.11,20Z"/>
+    <polygon class="cls-4" points="0 57.15 86.6 57.15 86.6 57.15 0 57.15"/>
+  </g>
+</svg>
