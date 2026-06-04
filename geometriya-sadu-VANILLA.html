@@ -303,7 +303,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-pf-feature-img{position:relative;aspect-ratio:16/10;background-size:cover;background-position:center;border-radius:var(--r-lg);overflow:hidden;}
 .gs-pf-feature-img::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,11,10,0) 40%,rgba(10,11,10,0.85) 100%);}
 .gs-pf-feature-meta{position:absolute;left:1.5rem;bottom:1.5rem;z-index:1;}
-.gs-pf-feature-tag{color:rgba(255,255,255,0.7);margin-bottom:0.625rem;}
+.gs-pf-feature-tag{font-family:var(--font-body);font-size:0.8125rem;font-weight:400;letter-spacing:0;text-transform:none;color:var(--accent-bright);line-height:1.4;margin:0.5rem 0 0;}
 .gs-pf-feature-name{font-family:var(--font-display);font-weight:800;font-size:2.25rem;letter-spacing:-0.02em;color:#fff;line-height:1;}
 .gs-pf-feature-area{position:absolute;top:1.5rem;right:1.5rem;z-index:1;font-family:var(--font-display);font-weight:800;font-size:1.375rem;color:#fff;background:rgba(37,124,77,0.85);padding:0.5rem 1rem;border-radius:var(--r-pill);}
 .gs-pf-feature-desc{background:var(--bg-2);border:0.0625rem solid var(--border);border-radius:var(--r-lg);padding:2rem;display:flex;align-items:center;}
@@ -663,7 +663,6 @@ html,body{overflow-x:clip;max-width:100%;}
   .gs-pf-thumbs{grid-template-columns:1fr 1fr;}
   .gs-pf-main{height:auto;aspect-ratio:3/4;}
   .gs-pf-feature-name{font-family:var(--font-display);font-weight:600;font-size:clamp(1.25rem,5.5vw,1.75rem);line-height:1.1;letter-spacing:-0.01em;}
-  .gs-pf-feature-tag{font-family:var(--font-mono);font-size:0.6875rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.55);}
 }
 @media(max-width:400px){
   .gs-pf-thumbs{grid-template-columns:1fr;}
@@ -1013,8 +1012,8 @@ html,body{overflow-x:clip;max-width:100%;}
         <div class="gs-pf-bg" id="gs-pf-bg-b" style="opacity:0;z-index:0"></div>
         <div class="gs-pf-main-overlay"></div>
         <div class="gs-pf-main-meta">
-          <div class="eyebrow gs-pf-feature-tag" id="pf-tag">Газон · Озеленення · Благоустрій</div>
           <div class="gs-pf-feature-name" id="pf-name">КМ Green Hills</div>
+          <div class="eyebrow gs-pf-feature-tag" id="pf-tag">Газон · Озеленення · Благоустрій</div>
         </div>
         <div class="gs-pf-main-area"><span class="num" id="pf-area">3 500 м²</span></div>
         <button class="gs-pf-arr gs-pf-arr-l" onclick="pfGo(-1)">&#8592;</button>
