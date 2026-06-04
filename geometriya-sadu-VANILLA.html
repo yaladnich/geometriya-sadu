@@ -272,9 +272,16 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-dots{position:absolute;inset:0;z-index:0;pointer-events:none;}
 .gs-why-dots canvas{display:block;width:100%;height:100%;background:transparent;}
 /* слайди накладені в кадрі, видно лише активний (однаково desktop/mobile — різниця тільки в layout) */
-/* текст відлітає «вдалечінь» із розмиттям (масштаб ↓ + blur на вхід/вихід) */
-.gs-why-panel{position:absolute;inset:0;z-index:1;display:flex;align-items:center;pointer-events:none;opacity:0;visibility:hidden;transform:scale(0.86);filter:blur(10px);transition:opacity 0.55s var(--ease-out),transform 0.7s var(--ease-out),filter 0.55s var(--ease-out),visibility 0s linear 0.55s;}
-.gs-why-panel.is-active{opacity:1;visibility:visible;transform:none;filter:none;transition:opacity 0.55s var(--ease-out),transform 0.7s var(--ease-out),filter 0.55s var(--ease-out);}
+/* базово: дешевий перехід (opacity + scale) — норм для мобільного/слабких пристроїв */
+.gs-why-panel{position:absolute;inset:0;z-index:1;display:flex;align-items:center;pointer-events:none;opacity:0;visibility:hidden;transform:scale(0.88);transition:opacity 0.55s var(--ease-out),transform 0.7s var(--ease-out),visibility 0s linear 0.55s;}
+.gs-why-panel.is-active{opacity:1;visibility:visible;transform:none;transition:opacity 0.55s var(--ease-out),transform 0.7s var(--ease-out);}
+/* «вдалечінь із розмиттям» — лише десктоп + дозволений рух (blur дорогий: не на моб/reduced) */
+@media(min-width:901px) and (prefers-reduced-motion:no-preference){
+  .gs-why-panel{filter:blur(6px);transition:opacity 0.55s var(--ease-out),transform 0.7s var(--ease-out),filter 0.55s var(--ease-out),visibility 0s linear 0.55s;}
+  .gs-why-panel.is-active{filter:none;will-change:filter,transform;transition:opacity 0.55s var(--ease-out),transform 0.7s var(--ease-out),filter 0.55s var(--ease-out);}
+}
+/* reduced-motion: без масштабу й блюру — лише мʼякий кросфейд */
+@media(prefers-reduced-motion:reduce){.gs-why-panel{transform:none;}}
 .gs-why-inner{width:var(--container-w);margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;align-items:center;}
 .gs-why-side{will-change:transform,opacity,filter;}
 .gs-why-text{grid-column:1;max-width:34rem;justify-self:center;will-change:opacity,transform,filter;}
