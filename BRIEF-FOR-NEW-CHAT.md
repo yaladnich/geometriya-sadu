@@ -24,8 +24,9 @@ https://yaladnich.github.io/geometriya-sadu/
 - Брендові іконки (Telegram/Viber/телефон/форма) — inline SVG
 
 ## Файли
-- `geometriya-sadu-VANILLA.html` — **головний робочий файл** (~2000 рядків, всі правки тут)
-- `index.html` — редірект на головний файл
+- ⚠️ **`index.html` — ТЕПЕР ГОЛОВНИЙ production-файл** (~182 КБ, весь контент + повний SEO: canonical, OG, favicon, preload). **Усі правки робити ТУТ.**
+- ⚠️ **`geometriya-sadu-VANILLA.html` — ТЕПЕР ЛИШЕ РЕДІРЕКТ** (14 рядків, `meta refresh` + `location.replace('./')` → веде на `index.html`). НЕ редагувати контент тут — він мертвий.
+- (Раніше було навпаки: VANILLA робочий, index — редірект. Ролі помінялись у червні 2026.)
 - `.github/workflows/pages.yml` — деплой на GitHub Pages з гілки `main`
 - ⚠️ **Бекапи й старі прев'ю ВИДАЛЕНО** (червень 2026, чистка репо): прибрано 2 важкі mp4 (~13МБ), 4 `*-backup-*.html`, 9 `*-preview.html`.
 - Прототипи #why-ефектів (Three.js/canvas експерименти): `three-*.html`, `why-concept-test.html` — у корені, не в проді.
