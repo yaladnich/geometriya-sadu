@@ -40,14 +40,15 @@ https://yaladnich.github.io/geometriya-sadu/
 
 ### Гілки (стан на червень 2026, після прибирання)
 - **`main`** — прод (деплой на Pages).
-- **`claude/cool-cray-OVT0T`** — активна робоча гілка цієї лінії роботи (#why слайдер). Синхронізована з `main`.
+- **`claude/charming-dirac-GGZaC`** — активна робоча гілка поточної сесії (слайдер портфоліо). Синхронізована з `main`.
+- **`claude/cool-cray-OVT0T`** — попередня робоча гілка (#why слайдер). Синхронізована з `main`.
 - **`claude/zen-brahmagupta-bEWVk`** — гілка паралельної сесії (не чіпати без узгодження).
 - Решта старих гілок (`clever-allen`, `dazzling-dirac`, `beautiful-cannon`, `blissful-faraday`, `codex/*`) — **застарілі**, до видалення вручну в UI GitHub (git-проксі в контейнері НЕ вміє `--delete`, MCP теж не має такого інструмента).
 
 ### Як працювати
-1. Робоча гілка: **`claude/cool-cray-OVT0T`** (узгоджено в цій сесії; раніше в брифі стояла zen — застаріло).
-2. **Перед кожною правкою**: `git fetch origin main && git reset --hard origin/main`.
-3. Внести правку → `git commit` → `git push -u origin claude/cool-cray-OVT0T`.
+1. Робоча гілка: **`claude/charming-dirac-GGZaC`** (поточна сесія).
+2. **Перед кожною правкою**: `git fetch origin main && git reset --hard origin/main`. ⚠️ Reset перезаписує незакомічені правки в робочій теці — роби reset ПЕРЕД редагуванням, не після.
+3. Внести правку → `git commit` → `git push -u origin claude/charming-dirac-GGZaC`.
 4. Заливати в `main` лише на команду «залий»: `git checkout main && git reset --hard origin/main && git merge <branch> && git push origin main`. PR не обовʼязковий (прямий merge у main працює).
 - Claude GitHub App встановлено (write). MCP **не може** створювати/видаляти гілки — лише через `git push`.
 
@@ -103,6 +104,10 @@ https://yaladnich.github.io/geometriya-sadu/
 - `activate(i)`: тіки `.is-on`, перезапуск каскаду `.in` (`gsTextUp`), `__whyKick()`. На мобільному ще тогл `.is-active` на панелі.
 
 **⚠️ КРИТИЧНО — sticky/pin ламається через `overflow`:** `#why` і `.gs-section-orange` мали `overflow:hidden` → це робить секцію скрол-контейнером і **вбиває `position:sticky`/pin**. Виправлено на **`overflow:clip`** (`#why{overflow:clip}` + `html,body{overflow-x:clip}`) — `clip` обрізає, але НЕ створює скрол-контейнер. **НЕ повертати hidden.**
+
+**⚠️ КРИТИЧНО — пінована панель перехоплювала кліки:** на desktop кожна `.gs-why-panel` пінується з `pinSpacing:false` → під час пінінгу `position:fixed` на весь екран. Остання (прозора) панель лишалася зверху й **ловила кліки по табах портфоліо**, що йдуть одразу після #why. Виправлено: `.gs-why-panel{pointer-events:none}` (панелі лише текст, інтерактиву не мають). **НЕ повертати pointer-events.**
+
+**Дрібниці (червень 2026):** заголовок «Чому обирають<br>нас» — «нас» на 2-му рядку. Тіки індикатора `.gs-why-tick.is-on` — **градієнт оранж→зелень** (`linear-gradient(90deg,#F28D1B,#2e9d5f)`), а не суцільний колір.
 
 **Прототипи (в корені, не в проді):** `three-*.html` (Dirac-хвиля, point-cloud морф, лінії), `why-concept-test.html`. Збережені референси проаналізовано: Noomo (Three+GLTF/DRACO+GSAP), Dirac (Three+UnrealBloom спектрограма), **baseone** (`initServices` — джерело поточного патерну).
 
@@ -193,6 +198,15 @@ https://yaladnich.github.io/geometriya-sadu/
 | Догляд за садом | `Сервісне обслуговування.webp` |
 | Консервація автополиву | `Обслуговування автополиву.webp` |
 | Корпоративним клієнтам | `Корпоративним клієнтам.webp` |
+
+### #portfolio — слайдер «Приклади наших робіт» (актуальний стан, червень 2026)
+- **Дані**: масив `portfolioProjects` (2 проєкти: «КМ Green Hills» 4 фото, «Конча Заспа» 5 фото). Таби `.gs-chip` (`pfSelectProject`), активний `.gs-chip-selected`.
+- **Слайдер `.gs-pf-main`**: висота desktop `clamp(20rem,55vw,40rem)`; **на мобільному (≤600px) `aspect-ratio:3/4`** (як картки послуг). Кути **2px** (`border-radius:0.125rem`).
+- **Зміна фото — простий CROSSFADE по `opacity`** (0.5s), 2 шари `.gs-pf-bg` (`#gs-pf-bg-a/b`), активний має клас `.active` (opacity 1). ⚠️ **Старий clip-path слайд ПРИБРАНО** (червень 2026) — він підвисав і давав порожні кадри. Ken Burns-зум на фото лишився (`runKenBurns`). НЕ повертати clip-path.
+- **Автоплей**: `restartPortfolioTimer` (5s, `pfGo(1,false)` — без скидання таймера). Ручні стрілки `pfGo(±1)` скидають таймер. Пауза на `mouseenter`. Перемикання циклічне (`% total`).
+- **Стрілки `.gs-pf-arr`** (`←/→`, z-index 4): мають **власні обробники `touchend`+`click` зі `stopPropagation`** (без inline onclick) — інакше на мобільному tap перехоплювався swipe/drag-хендлерами `pf-main` і не спрацьовував. `:hover,:active` — зелений фон (active потрібен для тапу на мобільному). Прапорець `touched` блокує дубль синтетичного click.
+- **Текст у слайдері** (`.gs-pf-main-meta`): спочатку **назва** `.gs-pf-feature-name`, **під нею тег** `.gs-pf-feature-tag` у стилі `.gs-pcard-sub` (зелений `--accent-bright`, 0.8125rem). На мобільному назва — як `.gs-pcard-title` (вага 600).
+- **Свайп** по фото — `touchstart/touchend` на `pf-main`, поріг 40px.
 
 ### Модалка-заявка (popup `openModal()`) — БІЛА форма (червень 2026)
 - `.gs-modal` тепер **біла панель** (`background:#fff`, `border-radius:0.125rem` = 2px), без скла/blur.
