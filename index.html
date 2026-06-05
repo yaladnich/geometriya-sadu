@@ -2531,7 +2531,7 @@ updateHeaderAndProgress();
 <script>
 (function(){
   const canvas=document.querySelector('.gs-why-dots canvas'); if(!canvas) return;
-  const ctx=canvas.getContext('2d'); const dpr=Math.min(devicePixelRatio||1,2);
+  const ctx=canvas.getContext('2d'); let dpr=Math.min(window.devicePixelRatio||1,2);
   const G=[46,157,95], OCH=[201,156,74];
   const N=116, LINK=0.33, SPD=4;
   function latCol(p){const f=(p.Y+1)/2;return [G[0]+(OCH[0]-G[0])*(1-f),G[1]+(OCH[1]-G[1])*(1-f),G[2]+(OCH[2]-G[2])*(1-f)];}
@@ -2553,8 +2553,27 @@ updateHeaderAndProgress();
     edges.forEach((e,ei)=>{adj[e[0]].push(ei);adj[e[1]].push(ei);});
     for(let k=0;k<12;k++){pts[(Math.random()*N)|0].icon=2;}
   }
-  function layout(){const r=canvas.getBoundingClientRect();W=r.width;H=r.height;canvas.width=Math.max(1,W*dpr);canvas.height=Math.max(1,H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
-  build();layout();addEventListener('resize',layout);
+  const host=canvas.closest('.gs-why-dots')||canvas;
+  let layoutRaf=0, layoutTimer=0;
+  function layout(){
+    layoutRaf=0;
+    const r=host.getBoundingClientRect();
+    const nextW=Math.max(1,Math.round(r.width)), nextH=Math.max(1,Math.round(r.height));
+    const nextDpr=Math.min(window.devicePixelRatio||1,2);
+    W=nextW; H=nextH; dpr=nextDpr;
+    canvas.width=Math.max(1,Math.round(W*dpr));
+    canvas.height=Math.max(1,Math.round(H*dpr));
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function scheduleLayout(){
+    if(!layoutRaf) layoutRaf=requestAnimationFrame(layout);
+    clearTimeout(layoutTimer);
+    layoutTimer=setTimeout(()=>{ layout(); if(window.ScrollTrigger) ScrollTrigger.refresh(); },180);
+  }
+  build();layout();
+  addEventListener('resize',scheduleLayout,{passive:true});
+  if(window.visualViewport) visualViewport.addEventListener('resize',scheduleLayout,{passive:true});
+  if('ResizeObserver' in window) new ResizeObserver(scheduleLayout).observe(host);
   window.__whyKick=function(){kick=1;};
   // наведення курсора на сферу → курсор-крапка більшає ~3× і пульсує
   const dotEl=document.getElementById('gs-dot');
