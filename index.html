@@ -70,7 +70,7 @@
   --error: #FF5C5C; --warn: #F2B95A; --success: var(--accent);
   --space-1:0.25rem;--space-2:0.5rem;--space-3:0.75rem;--space-4:1rem;--space-5:1.5rem;--space-6:2rem;--space-7:3rem;--space-8:4rem;--space-9:6rem;--space-10:8rem;--space-11:12rem;
   --section-y: clamp(5rem,12vw,12rem); --container-w:92vw; --container-px:calc((100vw - var(--container-w)) / 2);
-  --r-xs:0.25rem;--r-sm:0.5rem;--r-md:1rem;--r-lg:1.5rem;--r-xl:2rem;--r-pill:62.4375rem;
+  --r-xs:0.125rem;--r-sm:0.125rem;--r-md:0.125rem;--r-lg:0.125rem;--r-xl:0.125rem;--r-pill:62.4375rem;
   --shadow-card:0 0.0625rem 0 rgba(255,255,255,0.04) inset,0 0 0 0.0625rem rgba(255,255,255,0.06);
   --shadow-card-hover:0 0 0 0.0625rem rgba(255,255,255,0.18),0 0.75rem 2.5rem -0.75rem rgba(0,0,0,0.6);
   --shadow-cta:0 0.5rem 2rem -0.5rem var(--accent-glow); --shadow-cta-hover:0 0.75rem 2.5rem -0.5rem var(--accent-glow);
@@ -409,9 +409,9 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-price-num{text-align:right;font-family:var(--font-display);font-weight:700;font-variant-numeric:tabular-nums;color:var(--fg-1);}
 @media(max-width:700px){.gs-price-row{grid-template-columns:1fr auto;gap:0.5rem;}.gs-price-unit{grid-column:1;font-size:0.75rem;}.gs-price-num{grid-row:1/span 2;grid-column:2;}}
 
-.gs-faq-wrap{display:flex;gap:6rem;align-items:flex-start;}
-.gs-faq-aside{flex-shrink:0;width:22rem;position:sticky;top:6rem;}
-.gs-faq-list{flex:1;display:flex;flex-direction:column;}
+.gs-faq-wrap{display:grid;grid-template-columns:minmax(16rem,1fr) minmax(auto,48rem);gap:4rem;align-items:start;}
+.gs-faq-aside{flex-shrink:0;width:auto;position:sticky;top:6rem;}
+.gs-faq-list{flex:1;display:flex;flex-direction:column;max-width:none;}
 .gs-faq-cat{font-family:var(--font-mono);font-size:0.6875rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);padding:2rem 0 0.875rem;border-top:0.0625rem solid var(--border);}
 .gs-faq-cat:first-child{border-top:0;padding-top:0;}
 .gs-faq-item{display:flex;flex-direction:column;}
@@ -776,7 +776,7 @@ html,body{overflow-x:clip;max-width:100%;}
 /* FAQ */
 #faq>.gs-container{
   background:#EFEDE6;
-  border-radius:1.25rem;
+  border-radius:0.125rem;
   padding:3.5rem;
   position:relative;
   overflow:hidden;
@@ -787,17 +787,15 @@ html,body{overflow-x:clip;max-width:100%;}
 #faq>.gs-container>.gs-faq-wrap{position:relative;z-index:1;}
 .gs-faq-chevron{display:none;}
 .gs-faq-aside .h-display-2{font-size:var(--t-h3);letter-spacing:-0.01em;line-height:1.2;}
-@media(max-width:900px){
-  .gs-faq-wrap{gap:2.5rem;}
-  .gs-faq-aside{width:16rem;}
+@media(max-width:960px){
+  .gs-faq-wrap{grid-template-columns:minmax(12rem,1fr) minmax(auto,44rem);gap:2.5rem;}
 }
 @media(max-width:640px){
-  .gs-faq-wrap{flex-direction:column;gap:1.5rem;}
-  .gs-faq-aside{width:auto;position:static;}
-  .gs-faq-list{max-width:none;}
+  .gs-faq-wrap{grid-template-columns:1fr;gap:1.5rem;}
+  .gs-faq-aside{position:static;}
   .gs-faq-q-text{font-size:0.9375rem;}
   .gs-faq-body-inner{padding:0 0 1.25rem 0;}
-  #faq>.gs-container{padding:1.75rem 1.25rem;border-radius:0.875rem;}
+  #faq>.gs-container{padding:1.75rem 1.25rem;border-radius:0.125rem;}
   #faq>.gs-container::before{width:18rem;height:18rem;}
 }
 
