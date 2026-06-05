@@ -409,7 +409,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-price-num{text-align:right;font-family:var(--font-display);font-weight:700;font-variant-numeric:tabular-nums;color:var(--fg-1);}
 @media(max-width:700px){.gs-price-row{grid-template-columns:1fr auto;gap:0.5rem;}.gs-price-unit{grid-column:1;font-size:0.75rem;}.gs-price-num{grid-row:1/span 2;grid-column:2;}}
 
-.gs-faq-wrap{display:flex;gap:6rem;align-items:flex-start;}
+.gs-faq-wrap{display:flex;gap:6rem;align-items:flex-start;background:rgba(255,255,255,0.55);border-radius:1rem;padding:3rem 3rem;border:0.0625rem solid rgba(20,28,22,0.07);}
 .gs-faq-aside{flex-shrink:0;width:22rem;position:sticky;top:6rem;}
 .gs-faq-list{flex:1;display:flex;flex-direction:column;}
 .gs-faq-cat{font-family:var(--font-mono);font-size:0.6875rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);padding:2rem 0 0.875rem;border-top:0.0625rem solid var(--border);}
@@ -421,7 +421,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-faq-q-text{flex:1;font-family:var(--font-display);font-weight:600;font-size:1.0625rem;line-height:1.4;}
 .gs-faq-chevron{flex-shrink:0;display:grid;place-items:center;color:var(--fg-3);transition:transform 0.35s var(--ease-out),color 0.35s var(--ease-out);}
 .gs-faq-item.is-open .gs-faq-chevron{transform:rotate(180deg);color:var(--fg-1);}
-.gs-faq-list{max-width:44rem;background:rgba(255,255,255,0.60);border-radius:0.75rem;padding:0.5rem 1.75rem;border:0.0625rem solid rgba(20,28,22,0.07);}
+.gs-faq-list{max-width:44rem;}
 .gs-faq-item{border-radius:0.125rem;}
 .gs-faq-body{height:0;overflow:hidden;transition:height 0.38s var(--ease-out);}
 .gs-faq-body-inner{padding:0 2rem 1.5rem 2rem;color:var(--fg-2);font-size:0.9375rem;line-height:1.65;}
