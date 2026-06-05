@@ -409,9 +409,24 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-price-num{text-align:right;font-family:var(--font-display);font-weight:700;font-variant-numeric:tabular-nums;color:var(--fg-1);}
 @media(max-width:700px){.gs-price-row{grid-template-columns:1fr auto;gap:0.5rem;}.gs-price-unit{grid-column:1;font-size:0.75rem;}.gs-price-num{grid-row:1/span 2;grid-column:2;}}
 
-.gs-faq-lines{position:absolute;inset:0;pointer-events:none;z-index:0;display:flex;border:0.0625rem solid rgba(20,28,22,0.10);}
-.gs-faq-lines-left{flex-shrink:0;width:50%;height:100%;border-right:0.0625rem solid rgba(20,28,22,0.10);}
-.gs-faq-lines-right{flex:1;}
+.gs-faq-lines{position:absolute;top:2.5rem;left:2.5rem;right:2.5rem;bottom:2.5rem;pointer-events:none;z-index:0;border:0.0625rem solid #c8cdc9;}
+.gs-faq-lines::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:0.0625rem;background:#c8cdc9;}
+.gs-faq-tick{position:absolute;--tick:2.5rem;}
+.gs-faq-tick::before,.gs-faq-tick::after{content:'';position:absolute;}
+.gs-faq-tick::before{width:0.0625rem;height:var(--tick);}
+.gs-faq-tick::after{height:0.0625rem;width:var(--tick);}
+.gs-faq-tick.tl{top:-0.0625rem;left:-0.0625rem;}
+.gs-faq-tick.tl::before{bottom:100%;left:0;background:linear-gradient(to top,#a6a7a7,transparent);}
+.gs-faq-tick.tl::after{right:100%;top:0;background:linear-gradient(to left,#a6a7a7,transparent);}
+.gs-faq-tick.tr{top:-0.0625rem;right:-0.0625rem;}
+.gs-faq-tick.tr::before{bottom:100%;right:0;background:linear-gradient(to top,#a6a7a7,transparent);}
+.gs-faq-tick.tr::after{left:100%;top:0;background:linear-gradient(to right,#a6a7a7,transparent);}
+.gs-faq-tick.bl{bottom:-0.0625rem;left:-0.0625rem;}
+.gs-faq-tick.bl::before{top:100%;left:0;background:linear-gradient(to bottom,#a6a7a7,transparent);}
+.gs-faq-tick.bl::after{right:100%;bottom:0;background:linear-gradient(to left,#a6a7a7,transparent);}
+.gs-faq-tick.br{bottom:-0.0625rem;right:-0.0625rem;}
+.gs-faq-tick.br::before{top:100%;right:0;background:linear-gradient(to bottom,#a6a7a7,transparent);}
+.gs-faq-tick.br::after{left:100%;bottom:0;background:linear-gradient(to right,#a6a7a7,transparent);}
 .gs-faq-wrap{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:start;position:relative;z-index:1;}
 .gs-faq-aside{display:flex;flex-direction:column;gap:1rem;position:sticky;top:6rem;padding:var(--space-9);}
 .gs-faq-list{display:flex;flex-direction:column;width:100%;padding:var(--space-9);}
@@ -1222,7 +1237,7 @@ html,body{overflow-x:clip;max-width:100%;}
 <!-- FAQ -->
 <section class="gs-section" id="faq">
   <div class="gs-container">
-    <div class="gs-faq-lines" aria-hidden="true"><div class="gs-faq-lines-left"></div><div class="gs-faq-lines-right"></div></div>
+    <div class="gs-faq-lines" aria-hidden="true"><span class="gs-faq-tick tl"></span><span class="gs-faq-tick tr"></span><span class="gs-faq-tick bl"></span><span class="gs-faq-tick br"></span></div>
     <div class="gs-faq-wrap">
       <div class="gs-faq-aside">
         <div class="eyebrow"><span class="eb-dash">—</span> F.A.Q</div>
