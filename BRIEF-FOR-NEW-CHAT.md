@@ -244,6 +244,21 @@ https://yaladnich.github.io/geometriya-sadu/
 ---
 
 ## Незавершені задачі / на майбутнє
+
+### ⏳ Заглушки `href="#"` — ЧЕКАЮТЬ ПОСИЛАНЬ ВІД КЛІЄНТА (червень 2026)
+Поки клієнт не дасть реальні URL — лишаються `href="#"`. Коли надасть — вписати сюди й замінити в `index.html`:
+- **Instagram**: `href="#"` (footer) → _чекає URL_
+- **Telegram**: `href="#"` (footer + FAB) → _чекає username/URL_
+- **WhatsApp**: → _чекає номер_
+- **Політика конфіденційності**: `href="#"` → _чекає тексту/сторінки_
+
+### ✅ Зроблено (a11y + SEO, гілка `claude/busy-cerf-uH3lP`, червень 2026)
+- FAQ: статичний `aria-expanded="false"` у HTML + JS звʼязує `aria-controls`/`aria-hidden`/`role=region` на відповіді.
+- Модалка: focus trap (Tab циклічний) + збереження/повернення фокуса на елемент-trigger після закриття.
+- Кастомний select: повна клавіатура (ArrowUp/Down, Home/End, Enter/Space, Escape), `aria-selected`, `tabindex`, `aria-label` на listbox.
+- JSON-LD: додано `telephone` (+380683782003). ⏳ Бракує адреси/годин роботи — додати коли будуть.
+
+### Інше
 - **Telegram-лінк**: зараз `href="#"` — потрібне посилання від клієнта
 - Реальні фото в секції «Кроки» і 3-му проєкті портфоліо
 - Почистити старий CSS/JS класів `.gs-svc*` (лишився, не використовується)

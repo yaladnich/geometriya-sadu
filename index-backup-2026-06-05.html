@@ -25,7 +25,7 @@
 <meta name="twitter:image" content="https://yaladnich.github.io/geometriya-sadu/images/Backv5.webp">
 <!-- JSON-LD: LocalBusiness -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"LocalBusiness","name":"Геометрія саду","description":"Ландшафтний дизайн під ключ: рулонний газон, автополив, озеленення, земляні роботи.","areaServed":"Київ та Київська область","url":"https://yaladnich.github.io/geometriya-sadu/","image":"https://yaladnich.github.io/geometriya-sadu/images/Backv5.webp","telephone":"+380683782003","priceRange":"$$"}
+{"@context":"https://schema.org","@type":"LocalBusiness","name":"Геометрія саду","description":"Ландшафтний дизайн під ключ: рулонний газон, автополив, озеленення, земляні роботи.","areaServed":"Київ та Київська область","url":"https://yaladnich.github.io/geometriya-sadu/","image":"https://yaladnich.github.io/geometriya-sadu/images/Backv5.webp","priceRange":"$$"}
 </script>
 <style>
 @font-face {
@@ -753,7 +753,7 @@ html,body{overflow-x:clip;max-width:100%;}
 
 /* Модалка */
 @media(max-width:600px){
-  .gs-modal{padding:1.5rem 1.25rem;border-radius:0.125rem;}
+  .gs-modal{padding:1.5rem 1.25rem;border-radius:var(--r-md);}
   .gs-modal-title{font-size:clamp(1.625rem,7vw,2.25rem);}
 }
 
@@ -1202,33 +1202,33 @@ html,body{overflow-x:clip;max-width:100%;}
       <div class="gs-faq-group">
         <div class="gs-faq-group-name">Ландшафтний дизайн</div>
         <div class="gs-faq-list">
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">Що входить у послугу ландшафтного проєктування?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Розробка концепції, генеральний план, підбір рослин, елементів декору, покриттів і зонування. Враховуємо ваші побажання, стиль ділянки та особливості ґрунту.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Скільки коштує ландшафтне проєктування?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Ціна залежить від площі та складності проєкту. Ви отримаєте безкоштовну консультацію та орієнтовний розрахунок після виїзду.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Чи можна замовити проєктування поетапно?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, можлива поетапна розробка: спочатку ескіз, далі робоча документація та 3D-візуалізація.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">Що входить у послугу ландшафтного проєктування?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Розробка концепції, генеральний план, підбір рослин, елементів декору, покриттів і зонування. Враховуємо ваші побажання, стиль ділянки та особливості ґрунту.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Скільки коштує ландшафтне проєктування?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Ціна залежить від площі та складності проєкту. Ви отримаєте безкоштовну консультацію та орієнтовний розрахунок після виїзду.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Чи можна замовити проєктування поетапно?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, можлива поетапна розробка: спочатку ескіз, далі робоча документація та 3D-візуалізація.</div></div>
         </div>
       </div>
       <div class="gs-faq-group">
         <div class="gs-faq-group-name">Газон</div>
         <div class="gs-faq-list">
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">Який газон краще: рулонний чи посівний?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Рулонний — це рівний щільний газон уже за день після укладки. Посівний дешевший, але сходить 1,5–2 місяці й на старті потребує більше уваги: полив, прополка, підсів. На схилах і ділянках з тінню зазвичай радимо рулонний — він приживається стабільніше.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Коли краще укладати рулонний газон?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Найкращий період — весна або осінь. Рулонний газон укладають з квітня по жовтень при температурі вище +5°C.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Яка мінімальна площа для виїзду?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Мінімальна площа для виїзду — від 100 м² для всіх видів робіт.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">Який газон краще: рулонний чи посівний?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Рулонний — це рівний щільний газон уже за день після укладки. Посівний дешевший, але сходить 1,5–2 місяці й на старті потребує більше уваги: полив, прополка, підсів. На схилах і ділянках з тінню зазвичай радимо рулонний — він приживається стабільніше.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Коли краще укладати рулонний газон?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Найкращий період — весна або осінь. Рулонний газон укладають з квітня по жовтень при температурі вище +5°C.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Яка мінімальна площа для виїзду?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Мінімальна площа для виїзду — від 100 м² для всіх видів робіт.</div></div>
         </div>
       </div>
       <div class="gs-faq-group">
         <div class="gs-faq-group-name">Автополив</div>
         <div class="gs-faq-list">
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">З яким обладнанням ви працюєте?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Hunter, Rain Bird, Irritec, K-Rain, SOLEM. Монтаж, весняний запуск та ремонт систем будь-якої складності.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Чи потрібна консервація автополиву на зиму?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, обов'язково. Продування системи запобігає пошкодженню труб при заморозках. Виконуємо консервацію восени та запуск навесні.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Чи обслуговуєте систему, яку монтували не ви?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, виконуємо діагностику, ремонт та обслуговування будь-яких систем незалежно від того, хто їх монтував.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">З яким обладнанням ви працюєте?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Hunter, Rain Bird, Irritec, K-Rain, SOLEM. Монтаж, весняний запуск та ремонт систем будь-якої складності.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Чи потрібна консервація автополиву на зиму?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, обов'язково. Продування системи запобігає пошкодженню труб при заморозках. Виконуємо консервацію восени та запуск навесні.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Чи обслуговуєте систему, яку монтували не ви?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, виконуємо діагностику, ремонт та обслуговування будь-яких систем незалежно від того, хто їх монтував.</div></div>
         </div>
       </div>
       <div class="gs-faq-group">
         <div class="gs-faq-group-name">Загальні</div>
         <div class="gs-faq-list">
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">Як відбувається оплата?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Часткова передоплата після підписання кошторису, залишок — після здачі об'єкта.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Чи відповідаєте за якість робіт?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, ми відповідаємо за якість усіх виконаних робіт і лишаємось на зв'язку після здачі. Умови обговорюються індивідуально.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Чи працюєте з корпоративними клієнтами?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, виконуємо озеленення ЖК, офісів, готелів та комерційних об'єктів.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">Як відбувається оплата?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Часткова передоплата після підписання кошторису, залишок — після здачі об'єкта.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Чи відповідаєте за якість робіт?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, ми відповідаємо за якість усіх виконаних робіт і лишаємось на зв'язку після здачі. Умови обговорюються індивідуально.</div></div>
+          <div class="gs-faq"><button class="gs-faq-q" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Чи працюєте з корпоративними клієнтами?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, виконуємо озеленення ЖК, офісів, готелів та комерційних об'єктів.</div></div>
         </div>
       </div>
     </div>
@@ -1361,7 +1361,7 @@ html,body{overflow-x:clip;max-width:100%;}
             <span data-select-label>Оберіть послугу</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
           </button>
-          <div class="gs-select-menu" role="listbox" aria-label="Оберіть послугу" data-lenis-prevent>
+          <div class="gs-select-menu" role="listbox" data-lenis-prevent>
             <button class="gs-select-option is-selected" type="button" role="option" data-value="">Оберіть послугу</button>
             <button class="gs-select-option" type="button" role="option" data-value="Ландшафтне проєктування">Ландшафтне проєктування</button>
             <button class="gs-select-option" type="button" role="option" data-value="Озеленення та благоустрій">Озеленення та благоустрій</button>
@@ -1591,35 +1591,11 @@ function toggleFaq(button) {
   }
 }
 
-let gsModalReturnFocus = null;
-
-function gsModalTrapFocus(event) {
-  if (event.key !== 'Tab') return;
-  const modal = document.getElementById('gs-modal-overlay');
-  if (!modal || modal.hidden) return;
-  const focusable = modal.querySelectorAll(
-    'a[href], button:not([disabled]), textarea, input:not([type="hidden"]):not([disabled]), select, [tabindex]:not([tabindex="-1"])'
-  );
-  const items = Array.from(focusable).filter(el => el.offsetParent !== null);
-  if (!items.length) return;
-  const first = items[0];
-  const last = items[items.length - 1];
-  if (event.shiftKey && document.activeElement === first) {
-    event.preventDefault();
-    last.focus();
-  } else if (!event.shiftKey && document.activeElement === last) {
-    event.preventDefault();
-    first.focus();
-  }
-}
-
 function openModal(service) {
   const modal = document.getElementById('gs-modal-overlay');
   if (!modal) return;
-  gsModalReturnFocus = document.activeElement;
   modal.hidden = false;
   document.body.style.overflow = 'hidden';
-  document.addEventListener('keydown', gsModalTrapFocus);
   if (service) {
     const option = modal.querySelector(`.gs-select-option[data-value="${service}"]`);
     if (option) {
@@ -1639,11 +1615,6 @@ function closeModal() {
   if (!modal) return;
   modal.hidden = true;
   document.body.style.overflow = '';
-  document.removeEventListener('keydown', gsModalTrapFocus);
-  if (gsModalReturnFocus && typeof gsModalReturnFocus.focus === 'function') {
-    gsModalReturnFocus.focus();
-  }
-  gsModalReturnFocus = null;
 }
 
 function clearFormErrors(prefix) {
@@ -1801,49 +1772,20 @@ function initCustomSelects() {
     const input = select.closest('label')?.querySelector('input[type="hidden"]');
     const options = Array.from(select.querySelectorAll('.gs-select-option'));
 
-    const openSelect = () => {
-      document.querySelectorAll('[data-select].is-open').forEach(s => { if (s !== select) closeCustomSelect(s); });
-      select.classList.add('is-open');
-      trigger.setAttribute('aria-expanded', 'true');
-      const active = options.find(o => o.classList.contains('is-selected')) || options[0];
-      active?.focus();
-    };
-
     trigger?.addEventListener('click', () => {
-      select.classList.contains('is-open') ? closeCustomSelect(select) : openSelect();
+      const isOpen = select.classList.contains('is-open');
+      document.querySelectorAll('[data-select].is-open').forEach(closeCustomSelect);
+      select.classList.toggle('is-open', !isOpen);
+      trigger.setAttribute('aria-expanded', String(!isOpen));
     });
 
-    trigger?.addEventListener('keydown', e => {
-      if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        openSelect();
-      }
-    });
-
-    const selectOption = option => {
-      const value = option.dataset.value || '';
-      if (input) input.value = value;
-      if (label) label.textContent = option.textContent.trim();
-      options.forEach(item => {
-        const on = item === option;
-        item.classList.toggle('is-selected', on);
-        item.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-      closeCustomSelect(select);
-      trigger?.focus();
-    };
-
-    options.forEach((option, idx) => {
-      option.setAttribute('tabindex', '-1');
-      option.setAttribute('aria-selected', option.classList.contains('is-selected') ? 'true' : 'false');
-      option.addEventListener('click', () => selectOption(option));
-      option.addEventListener('keydown', e => {
-        if (e.key === 'ArrowDown') { e.preventDefault(); options[Math.min(idx + 1, options.length - 1)].focus(); }
-        else if (e.key === 'ArrowUp') { e.preventDefault(); options[Math.max(idx - 1, 0)].focus(); }
-        else if (e.key === 'Home') { e.preventDefault(); options[0].focus(); }
-        else if (e.key === 'End') { e.preventDefault(); options[options.length - 1].focus(); }
-        else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectOption(option); }
-        else if (e.key === 'Escape') { e.preventDefault(); closeCustomSelect(select); trigger?.focus(); }
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        const value = option.dataset.value || '';
+        if (input) input.value = value;
+        if (label) label.textContent = option.textContent.trim();
+        options.forEach(item => item.classList.toggle('is-selected', item === option));
+        closeCustomSelect(select);
       });
     });
   });
@@ -2504,16 +2446,8 @@ updateHeaderAndProgress();
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
     });
   });
-  document.querySelectorAll('.gs-faq-q').forEach((btn, i) => {
+  document.querySelectorAll('.gs-faq-q').forEach(btn => {
     if (!btn.hasAttribute('aria-expanded')) btn.setAttribute('aria-expanded', 'false');
-    const answer = btn.closest('.gs-faq')?.querySelector('.gs-faq-a');
-    if (answer) {
-      const id = answer.id || `gs-faq-a-${i + 1}`;
-      answer.id = id;
-      answer.setAttribute('role', 'region');
-      answer.setAttribute('aria-hidden', 'true');
-      btn.setAttribute('aria-controls', id);
-    }
   });
 })();
 
@@ -2597,7 +2531,7 @@ updateHeaderAndProgress();
 <script>
 (function(){
   const canvas=document.querySelector('.gs-why-dots canvas'); if(!canvas) return;
-  const ctx=canvas.getContext('2d'); let dpr=Math.min(window.devicePixelRatio||1,2);
+  const ctx=canvas.getContext('2d'); const dpr=Math.min(devicePixelRatio||1,2);
   const G=[46,157,95], OCH=[201,156,74];
   const N=116, LINK=0.33, SPD=4;
   function latCol(p){const f=(p.Y+1)/2;return [G[0]+(OCH[0]-G[0])*(1-f),G[1]+(OCH[1]-G[1])*(1-f),G[2]+(OCH[2]-G[2])*(1-f)];}
@@ -2619,27 +2553,8 @@ updateHeaderAndProgress();
     edges.forEach((e,ei)=>{adj[e[0]].push(ei);adj[e[1]].push(ei);});
     for(let k=0;k<12;k++){pts[(Math.random()*N)|0].icon=2;}
   }
-  const host=canvas.closest('.gs-why-dots')||canvas;
-  let layoutRaf=0, layoutTimer=0;
-  function layout(){
-    layoutRaf=0;
-    const r=host.getBoundingClientRect();
-    const nextW=Math.max(1,Math.round(r.width)), nextH=Math.max(1,Math.round(r.height));
-    const nextDpr=Math.min(window.devicePixelRatio||1,2);
-    W=nextW; H=nextH; dpr=nextDpr;
-    canvas.width=Math.max(1,Math.round(W*dpr));
-    canvas.height=Math.max(1,Math.round(H*dpr));
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-  }
-  function scheduleLayout(){
-    if(!layoutRaf) layoutRaf=requestAnimationFrame(layout);
-    clearTimeout(layoutTimer);
-    layoutTimer=setTimeout(()=>{ layout(); if(window.ScrollTrigger) ScrollTrigger.refresh(); },180);
-  }
-  build();layout();
-  addEventListener('resize',scheduleLayout,{passive:true});
-  if(window.visualViewport) visualViewport.addEventListener('resize',scheduleLayout,{passive:true});
-  if('ResizeObserver' in window) new ResizeObserver(scheduleLayout).observe(host);
+  function layout(){const r=canvas.getBoundingClientRect();W=r.width;H=r.height;canvas.width=Math.max(1,W*dpr);canvas.height=Math.max(1,H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
+  build();layout();addEventListener('resize',layout);
   window.__whyKick=function(){kick=1;};
   // наведення курсора на сферу → курсор-крапка більшає ~3× і пульсує
   const dotEl=document.getElementById('gs-dot');
