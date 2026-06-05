@@ -409,7 +409,9 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-price-num{text-align:right;font-family:var(--font-display);font-weight:700;font-variant-numeric:tabular-nums;color:var(--fg-1);}
 @media(max-width:700px){.gs-price-row{grid-template-columns:1fr auto;gap:0.5rem;}.gs-price-unit{grid-column:1;font-size:0.75rem;}.gs-price-num{grid-row:1/span 2;grid-column:2;}}
 
-.gs-faq-wrap{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;}
+.gs-faq-wrap{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:start;border-top:0.0625rem solid rgba(20,28,22,0.12);}
+.gs-faq-aside{padding:var(--space-9) var(--space-9) var(--space-9) 0;border-right:0.0625rem solid rgba(20,28,22,0.12);}
+.gs-faq-list{padding:var(--space-9) 0 var(--space-9) var(--space-9);}
 .gs-faq-aside{display:flex;flex-direction:column;gap:1rem;position:sticky;top:6rem;}
 .gs-faq-list{display:flex;flex-direction:column;width:100%;}
 .gs-faq-cat{font-family:var(--font-mono);font-size:0.6875rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);padding:2rem 0 0.875rem;border-top:0.0625rem solid var(--border);}
@@ -782,7 +784,7 @@ html,body{overflow-x:clip;max-width:100%;}
   margin-inline:var(--container-px);
   background:#EFEDE6;
   border-radius:0.125rem;
-  padding:var(--space-9);
+  padding:0;
   position:relative;
   overflow:hidden;
   --fg-1:#141c16;--fg-2:rgba(20,28,22,0.68);--fg-3:rgba(20,28,22,0.44);
@@ -793,14 +795,11 @@ html,body{overflow-x:clip;max-width:100%;}
 .gs-faq-chevron{display:none;}
 .gs-faq-aside .h-display-2{color:#141c16;}
 .gs-faq-aside .gs-accent-italic{color:var(--accent-deep);}
-@media(max-width:960px){
-  .gs-faq-wrap{gap:2rem;}
-}
 @media(max-width:700px){
-  .gs-faq-wrap{grid-template-columns:1fr;gap:1.5rem;}
-  .gs-faq-aside{position:static;}
+  .gs-faq-wrap{grid-template-columns:1fr;border-top:0;}
+  .gs-faq-aside{border-right:0;border-bottom:0.0625rem solid rgba(20,28,22,0.12);padding:var(--space-6) var(--space-5);position:static;}
+  .gs-faq-list{padding:var(--space-6) var(--space-5);}
   .gs-faq-q-text{font-size:0.9375rem;}
-  #faq>.gs-container{padding:var(--section-y) var(--space-5);}
   #faq>.gs-container::before{width:18rem;height:18rem;}
 }
 
