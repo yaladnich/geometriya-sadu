@@ -411,26 +411,26 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 
 .gs-faq-lines{position:absolute;top:2.5rem;left:2.5rem;right:2.5rem;bottom:2.5rem;pointer-events:none;z-index:0;border:0.0625rem solid #c8cdc9;}
 .gs-faq-lines::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:0.0625rem;background:#c8cdc9;}
-.gs-faq-tick{position:absolute;--tick:2rem;}
+.gs-faq-tick{position:absolute;--tick:2rem;z-index:2;}
 .gs-faq-tick::before,.gs-faq-tick::after{content:'';position:absolute;}
-.gs-faq-tick::before{width:0.0625rem;height:var(--tick);}
-.gs-faq-tick::after{height:0.0625rem;width:var(--tick);}
+.gs-faq-tick::before{width:0.09375rem;height:var(--tick);}
+.gs-faq-tick::after{height:0.09375rem;width:var(--tick);}
 .gs-faq-tick.tl{top:-0.0625rem;left:-0.0625rem;}
-.gs-faq-tick.tl::before{bottom:100%;left:0;background:linear-gradient(to top,#585b5d,transparent);}
-.gs-faq-tick.tl::after{right:100%;top:0;background:linear-gradient(to left,#585b5d,transparent);}
+.gs-faq-tick.tl::before{bottom:100%;left:0;background:linear-gradient(to top,#2e9d5f 0,#2e9d5f 35%,transparent 100%);}
+.gs-faq-tick.tl::after{right:100%;top:0;background:linear-gradient(to left,#2e9d5f 0,#2e9d5f 35%,transparent 100%);}
 .gs-faq-tick.tr{top:-0.0625rem;right:-0.0625rem;}
-.gs-faq-tick.tr::before{bottom:100%;right:0;background:linear-gradient(to top,#585b5d,transparent);}
-.gs-faq-tick.tr::after{left:100%;top:0;background:linear-gradient(to right,#585b5d,transparent);}
+.gs-faq-tick.tr::before{bottom:100%;right:0;background:linear-gradient(to top,#2e9d5f 0,#2e9d5f 35%,transparent 100%);}
+.gs-faq-tick.tr::after{left:100%;top:0;background:linear-gradient(to right,#2e9d5f 0,#2e9d5f 35%,transparent 100%);}
 .gs-faq-tick.bl{bottom:-0.0625rem;left:-0.0625rem;}
-.gs-faq-tick.bl::before{top:100%;left:0;background:linear-gradient(to bottom,#585b5d,transparent);}
-.gs-faq-tick.bl::after{right:100%;bottom:0;background:linear-gradient(to left,#585b5d,transparent);}
+.gs-faq-tick.bl::before{top:100%;left:0;background:linear-gradient(to bottom,#2e9d5f 0,#2e9d5f 35%,transparent 100%);}
+.gs-faq-tick.bl::after{right:100%;bottom:0;background:linear-gradient(to left,#2e9d5f 0,#2e9d5f 35%,transparent 100%);}
 .gs-faq-tick.br{bottom:-0.0625rem;right:-0.0625rem;}
-.gs-faq-tick.br::before{top:100%;right:0;background:linear-gradient(to bottom,#585b5d,transparent);}
-.gs-faq-tick.br::after{left:100%;bottom:0;background:linear-gradient(to right,#585b5d,transparent);}
+.gs-faq-tick.br::before{top:100%;right:0;background:linear-gradient(to bottom,#2e9d5f 0,#2e9d5f 35%,transparent 100%);}
+.gs-faq-tick.br::after{left:100%;bottom:0;background:linear-gradient(to right,#2e9d5f 0,#2e9d5f 35%,transparent 100%);}
 .gs-faq-tick.tc{top:-0.0625rem;left:50%;}
-.gs-faq-tick.tc::before{bottom:100%;left:0;background:linear-gradient(to top,#585b5d,transparent);}
+.gs-faq-tick.tc::before{bottom:100%;left:0;background:linear-gradient(to top,#2e9d5f 0,#2e9d5f 35%,transparent 100%);}
 .gs-faq-tick.bc{bottom:-0.0625rem;left:50%;}
-.gs-faq-tick.bc::before{top:100%;left:0;background:linear-gradient(to bottom,#585b5d,transparent);}
+.gs-faq-tick.bc::before{top:100%;left:0;background:linear-gradient(to bottom,#2e9d5f 0,#2e9d5f 35%,transparent 100%);}
 .gs-faq-wrap{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:start;position:relative;z-index:1;}
 .gs-faq-aside{display:flex;flex-direction:column;gap:1rem;position:sticky;top:6rem;padding:var(--space-8) var(--space-7);}
 .gs-faq-list{display:flex;flex-direction:column;width:100%;padding:var(--space-8) 0;}
