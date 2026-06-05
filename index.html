@@ -409,24 +409,22 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-price-num{text-align:right;font-family:var(--font-display);font-weight:700;font-variant-numeric:tabular-nums;color:var(--fg-1);}
 @media(max-width:700px){.gs-price-row{grid-template-columns:1fr auto;gap:0.5rem;}.gs-price-unit{grid-column:1;font-size:0.75rem;}.gs-price-num{grid-row:1/span 2;grid-column:2;}}
 
-.gs-faq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2.5rem;}
-@media(max-width:900px){.gs-faq-grid{grid-template-columns:1fr;}}
-.gs-faq-group{display:flex;flex-direction:column;gap:1rem;}
-.gs-faq-group-name{font-family:var(--font-display);font-weight:700;font-size:1.125rem;color:var(--accent);padding-bottom:0.75rem;border-bottom:0.0625rem solid var(--border);}
-.gs-faq-list{display:flex;flex-direction:column;gap:0.5rem;}
-.gs-faq{background:var(--bg-2);border:0.0625rem solid var(--border);border-radius:var(--r-md);transition:border-color var(--dur-base) var(--ease-out);}
-.gs-faq-open{border-color:var(--border-strong);}
-.gs-faq-q{display:flex;align-items:center;gap:1rem;width:100%;padding:1.125rem 1.375rem;background:transparent;border:0;cursor:pointer;font-family:var(--font-display);font-weight:600;font-size:1rem;color:var(--fg-1);text-align:left;}
-.gs-faq-n{color:var(--accent);font-size:0.75rem;letter-spacing:0.06em;font-family:var(--font-mono);min-width:1.75rem;}
-.gs-faq-q-text{flex:1;}
-.gs-faq-plus{width:1.75rem;height:1.75rem;display:grid;place-items:center;color:var(--fg-3);flex-shrink:0;transition:color var(--dur-base) var(--ease-out);}
-.gs-faq-plus svg line{transition:transform 0.28s var(--ease-in-out);transform-box:fill-box;transform-origin:center;}
-.gs-faq-open .gs-faq-plus{color:var(--accent);}
-.gs-faq-open .gs-faq-plus svg line:last-child{transform:rotate(90deg);}
-.gs-faq-plus.gs-faq-glitch svg{animation:gs-close-glitch 0.44s linear;}
+.gs-faq-wrap{display:flex;gap:6rem;align-items:flex-start;}
+.gs-faq-aside{flex-shrink:0;width:22rem;position:sticky;top:6rem;}
+.gs-faq-list{flex:1;display:flex;flex-direction:column;}
+.gs-faq-cat{font-family:var(--font-mono);font-size:0.6875rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);padding:2rem 0 0.875rem;border-top:0.0625rem solid var(--border);}
+.gs-faq-cat:first-child{border-top:0;padding-top:0;}
+.gs-faq-item{display:flex;flex-direction:column;}
+.gs-faq-row{display:flex;align-items:center;gap:1rem;width:100%;padding:1.25rem 0;background:transparent;border:0;cursor:pointer;text-align:left;color:var(--fg-1);}
+.gs-faq-arr{width:1rem;height:1rem;flex-shrink:0;color:var(--accent);transition:transform 0.35s var(--ease-out);}
+.gs-faq-item.is-open .gs-faq-arr{transform:rotate(45deg);}
+.gs-faq-q-text{flex:1;font-family:var(--font-display);font-weight:600;font-size:1.0625rem;line-height:1.4;}
+.gs-faq-chevron{flex-shrink:0;display:grid;place-items:center;color:var(--fg-3);transition:transform 0.35s var(--ease-out),color 0.35s var(--ease-out);}
+.gs-faq-item.is-open .gs-faq-chevron{transform:rotate(180deg);color:var(--fg-1);}
+.gs-faq-body{height:0;overflow:hidden;transition:height 0.38s var(--ease-out);}
+.gs-faq-body-inner{padding:0 2rem 1.5rem 2rem;color:var(--fg-2);font-size:0.9375rem;line-height:1.65;}
+.gs-faq-line{height:0.0625rem;background:var(--border);}
 .gs-icon-glitch{animation:gs-close-glitch 0.44s linear;}
-.gs-faq-a{max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.35s ease;padding:0 1.375rem 0 4.125rem;color:var(--fg-2);font-size:0.9375rem;line-height:1.6;}
-.gs-faq-open .gs-faq-a{max-height:25rem;padding:0 1.375rem 1.375rem 4.125rem;}
 
 .gs-cta-section{background:var(--bg-2);position:relative;overflow:hidden;}
 .gs-cta-section::before{content:'';position:absolute;top:-50%;right:-10%;width:60vw;height:100vh;background:radial-gradient(circle,var(--accent-dim) 0%,transparent 60%);pointer-events:none;}
@@ -775,9 +773,10 @@ html,body{overflow-x:clip;max-width:100%;}
 
 /* FAQ */
 @media(max-width:600px){
-  .gs-faq-q{padding:0.875rem 1rem;font-size:0.9375rem;}
-  .gs-faq-open .gs-faq-a{padding:0 1rem 1rem 2.75rem;}
-  .gs-faq-a{padding:0 1rem 0 2.75rem;}
+  .gs-faq-wrap{flex-direction:column;gap:2rem;}
+  .gs-faq-aside{width:auto;position:static;}
+  .gs-faq-q-text{font-size:0.9375rem;}
+  .gs-faq-body-inner{padding:0 0 1.25rem 1.75rem;}
 }
 
 /* Футер */
@@ -1197,39 +1196,28 @@ html,body{overflow-x:clip;max-width:100%;}
 <!-- FAQ -->
 <section class="gs-section" id="faq">
   <div class="gs-container">
-    <div class="gs-section-head"><div class="eyebrow"><span class="eb-dash">—</span> F.A.Q</div><h2 class="h-display-2">Поширені<br><span class="gs-accent-italic">запитання</span></h2></div>
-    <div class="gs-faq-grid">
-      <div class="gs-faq-group">
-        <div class="gs-faq-group-name">Ландшафтний дизайн</div>
-        <div class="gs-faq-list">
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">Що входить у послугу ландшафтного проєктування?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Розробка концепції, генеральний план, підбір рослин, елементів декору, покриттів і зонування. Враховуємо ваші побажання, стиль ділянки та особливості ґрунту.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Скільки коштує ландшафтне проєктування?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Ціна залежить від площі та складності проєкту. Ви отримаєте безкоштовну консультацію та орієнтовний розрахунок після виїзду.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Чи можна замовити проєктування поетапно?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, можлива поетапна розробка: спочатку ескіз, далі робоча документація та 3D-візуалізація.</div></div>
-        </div>
+    <div class="gs-faq-wrap">
+      <div class="gs-faq-aside">
+        <div class="eyebrow"><span class="eb-dash">—</span> F.A.Q</div>
+        <h2 class="h-display-2">Поширені<br><span class="gs-accent-italic">запитання</span></h2>
       </div>
-      <div class="gs-faq-group">
-        <div class="gs-faq-group-name">Газон</div>
-        <div class="gs-faq-list">
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">Який газон краще: рулонний чи посівний?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Рулонний — це рівний щільний газон уже за день після укладки. Посівний дешевший, але сходить 1,5–2 місяці й на старті потребує більше уваги: полив, прополка, підсів. На схилах і ділянках з тінню зазвичай радимо рулонний — він приживається стабільніше.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Коли краще укладати рулонний газон?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Найкращий період — весна або осінь. Рулонний газон укладають з квітня по жовтень при температурі вище +5°C.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Яка мінімальна площа для виїзду?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Мінімальна площа для виїзду — від 100 м² для всіх видів робіт.</div></div>
-        </div>
-      </div>
-      <div class="gs-faq-group">
-        <div class="gs-faq-group-name">Автополив</div>
-        <div class="gs-faq-list">
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">З яким обладнанням ви працюєте?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Hunter, Rain Bird, Irritec, K-Rain, SOLEM. Монтаж, весняний запуск та ремонт систем будь-якої складності.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Чи потрібна консервація автополиву на зиму?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, обов'язково. Продування системи запобігає пошкодженню труб при заморозках. Виконуємо консервацію восени та запуск навесні.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Чи обслуговуєте систему, яку монтували не ви?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, виконуємо діагностику, ремонт та обслуговування будь-яких систем незалежно від того, хто їх монтував.</div></div>
-        </div>
-      </div>
-      <div class="gs-faq-group">
-        <div class="gs-faq-group-name">Загальні</div>
-        <div class="gs-faq-list">
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">01</span><span class="gs-faq-q-text">Як відбувається оплата?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Часткова передоплата після підписання кошторису, залишок — після здачі об'єкта.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">02</span><span class="gs-faq-q-text">Чи відповідаєте за якість робіт?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, ми відповідаємо за якість усіх виконаних робіт і лишаємось на зв'язку після здачі. Умови обговорюються індивідуально.</div></div>
-          <div class="gs-faq"><button class="gs-faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)"><span class="num gs-faq-n">03</span><span class="gs-faq-q-text">Чи працюєте з корпоративними клієнтами?</span><span class="gs-faq-plus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></span></button><div class="gs-faq-a">Так, виконуємо озеленення ЖК, офісів, готелів та комерційних об'єктів.</div></div>
-        </div>
+      <div class="gs-faq-list">
+        <div class="gs-faq-cat">Ландшафтний дизайн</div>
+        <div class="gs-faq-item"><button class="gs-faq-row" type="button" aria-expanded="false" aria-controls="faq-b-1" onclick="toggleFaq(this)"><svg class="gs-faq-arr" aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.545 1.255L1.255 3.545L9.91 12.455H1L3.8 15H12.964L15 12.964V3.8L12.455 1V10.164L3.545 1.255Z" fill="currentColor"/></svg><span class="gs-faq-q-text">Що входить у послугу ландшафтного проєктування?</span><span class="gs-faq-chevron" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="gs-faq-body" id="faq-b-1" role="region" aria-hidden="true"><div class="gs-faq-body-inner">Розробка концепції, генеральний план, підбір рослин, елементів декору, покриттів і зонування. Враховуємо ваші побажання, стиль ділянки та особливості ґрунту.</div></div><div class="gs-faq-line" aria-hidden="true"></div></div>
+        <div class="gs-faq-item"><button class="gs-faq-row" type="button" aria-expanded="false" aria-controls="faq-b-2" onclick="toggleFaq(this)"><svg class="gs-faq-arr" aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.545 1.255L1.255 3.545L9.91 12.455H1L3.8 15H12.964L15 12.964V3.8L12.455 1V10.164L3.545 1.255Z" fill="currentColor"/></svg><span class="gs-faq-q-text">Скільки коштує ландшафтне проєктування?</span><span class="gs-faq-chevron" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="gs-faq-body" id="faq-b-2" role="region" aria-hidden="true"><div class="gs-faq-body-inner">Ціна залежить від площі та складності проєкту. Ви отримаєте безкоштовну консультацію та орієнтовний розрахунок після виїзду.</div></div><div class="gs-faq-line" aria-hidden="true"></div></div>
+        <div class="gs-faq-item"><button class="gs-faq-row" type="button" aria-expanded="false" aria-controls="faq-b-3" onclick="toggleFaq(this)"><svg class="gs-faq-arr" aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.545 1.255L1.255 3.545L9.91 12.455H1L3.8 15H12.964L15 12.964V3.8L12.455 1V10.164L3.545 1.255Z" fill="currentColor"/></svg><span class="gs-faq-q-text">Чи можна замовити проєктування поетапно?</span><span class="gs-faq-chevron" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="gs-faq-body" id="faq-b-3" role="region" aria-hidden="true"><div class="gs-faq-body-inner">Так, можлива поетапна розробка: спочатку ескіз, далі робоча документація та 3D-візуалізація.</div></div><div class="gs-faq-line" aria-hidden="true"></div></div>
+        <div class="gs-faq-cat">Газон</div>
+        <div class="gs-faq-item"><button class="gs-faq-row" type="button" aria-expanded="false" aria-controls="faq-b-4" onclick="toggleFaq(this)"><svg class="gs-faq-arr" aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.545 1.255L1.255 3.545L9.91 12.455H1L3.8 15H12.964L15 12.964V3.8L12.455 1V10.164L3.545 1.255Z" fill="currentColor"/></svg><span class="gs-faq-q-text">Який газон краще: рулонний чи посівний?</span><span class="gs-faq-chevron" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="gs-faq-body" id="faq-b-4" role="region" aria-hidden="true"><div class="gs-faq-body-inner">Рулонний — це рівний щільний газон уже за день після укладки. Посівний дешевший, але сходить 1,5–2 місяці й на старті потребує більше уваги: полив, прополка, підсів. На схилах і ділянках з тінню зазвичай радимо рулонний — він приживається стабільніше.</div></div><div class="gs-faq-line" aria-hidden="true"></div></div>
+        <div class="gs-faq-item"><button class="gs-faq-row" type="button" aria-expanded="false" aria-controls="faq-b-5" onclick="toggleFaq(this)"><svg class="gs-faq-arr" aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.545 1.255L1.255 3.545L9.91 12.455H1L3.8 15H12.964L15 12.964V3.8L12.455 1V10.164L3.545 1.255Z" fill="currentColor"/></svg><span class="gs-faq-q-text">Коли краще укладати рулонний газон?</span><span class="gs-faq-chevron" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="gs-faq-body" id="faq-b-5" role="region" aria-hidden="true"><div class="gs-faq-body-inner">Найкращий період — весна або осінь. Рулонний газон укладають з квітня по жовтень при температурі вище +5°C.</div></div><div class="gs-faq-line" aria-hidden="true"></div></div>
+        <div class="gs-faq-item"><button class="gs-faq-row" type="button" aria-expanded="false" aria-controls="faq-b-6" onclick="toggleFaq(this)"><svg class="gs-faq-arr" aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.545 1.255L1.255 3.545L9.91 12.455H1L3.8 15H12.964L15 12.964V3.8L12.455 1V10.164L3.545 1.255Z" fill="currentColor"/></svg><span class="gs-faq-q-text">Яка мінімальна площа для виїзду?</span><span class="gs-faq-chevron" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="gs-faq-body" id="faq-b-6" role="region" aria-hidden="true"><div class="gs-faq-body-inner">Мінімальна площа для виїзду — від 100 м² для всіх видів робіт.</div></div><div class="gs-faq-line" aria-hidden="true"></div></div>
+        <div class="gs-faq-cat">Автополив</div>
+        <div class="gs-faq-item"><button class="gs-faq-row" type="button" aria-expanded="false" aria-controls="faq-b-7" onclick="toggleFaq(this)"><svg class="gs-faq-arr" aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.545 1.255L1.255 3.545L9.91 12.455H1L3.8 15H12.964L15 12.964V3.8L12.455 1V10.164L3.545 1.255Z" fill="currentColor"/></svg><span class="gs-faq-q-text">З яким обладнанням ви працюєте?</span><span class="gs-faq-chevron" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="gs-faq-body" id="faq-b-7" role="region" aria-hidden="true"><div class="gs-faq-body-inner">Hunter, Rain Bird, Irritec, K-Rain, SOLEM. Монтаж, весняний запуск та ремонт систем будь-якої складності.</div></div><div class="gs-faq-line" aria-hidden="true"></div></div>
+        <div class="gs-faq-item"><button class="gs-faq-row" type="button" aria-expanded="false" aria-controls="faq-b-8" onclick="toggleFaq(this)"><svg class="gs-faq-arr" aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.545 1.255L1.255 3.545L9.91 12.455H1L3.8 15H12.964L15 12.964V3.8L12.455 1V10.164L3.545 1.255Z" fill="currentColor"/></svg><span class="gs-faq-q-text">Чи потрібна консервація автополиву на зиму?</span><span class="gs-faq-chevron" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="gs-faq-body" id="faq-b-8" role="region" aria-hidden="true"><div class="gs-faq-body-inner">Так, обов'язково. Продування системи запобігає пошкодженню труб при заморозках. Виконуємо консервацію восени та запуск навесні.</div></div><div class="gs-faq-line" aria-hidden="true"></div></div>
+        <div class="gs-faq-item"><button class="gs-faq-row" type="button" aria-expanded="false" aria-controls="faq-b-9" onclick="toggleFaq(this)"><svg class="gs-faq-arr" aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.545 1.255L1.255 3.545L9.91 12.455H1L3.8 15H12.964L15 12.964V3.8L12.455 1V10.164L3.545 1.255Z" fill="currentColor"/></svg><span class="gs-faq-q-text">Чи обслуговуєте систему, яку монтували не ви?</span><span class="gs-faq-chevron" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="gs-faq-body" id="faq-b-9" role="region" aria-hidden="true"><div class="gs-faq-body-inner">Так, виконуємо діагностику, ремонт та обслуговування будь-яких систем незалежно від того, хто їх монтував.</div></div><div class="gs-faq-line" aria-hidden="true"></div></div>
+        <div class="gs-faq-cat">Загальні</div>
+        <div class="gs-faq-item"><button class="gs-faq-row" type="button" aria-expanded="false" aria-controls="faq-b-10" onclick="toggleFaq(this)"><svg class="gs-faq-arr" aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.545 1.255L1.255 3.545L9.91 12.455H1L3.8 15H12.964L15 12.964V3.8L12.455 1V10.164L3.545 1.255Z" fill="currentColor"/></svg><span class="gs-faq-q-text">Як відбувається оплата?</span><span class="gs-faq-chevron" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="gs-faq-body" id="faq-b-10" role="region" aria-hidden="true"><div class="gs-faq-body-inner">Часткова передоплата після підписання кошторису, залишок — після здачі об'єкта.</div></div><div class="gs-faq-line" aria-hidden="true"></div></div>
+        <div class="gs-faq-item"><button class="gs-faq-row" type="button" aria-expanded="false" aria-controls="faq-b-11" onclick="toggleFaq(this)"><svg class="gs-faq-arr" aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.545 1.255L1.255 3.545L9.91 12.455H1L3.8 15H12.964L15 12.964V3.8L12.455 1V10.164L3.545 1.255Z" fill="currentColor"/></svg><span class="gs-faq-q-text">Чи відповідаєте за якість робіт?</span><span class="gs-faq-chevron" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="gs-faq-body" id="faq-b-11" role="region" aria-hidden="true"><div class="gs-faq-body-inner">Так, ми відповідаємо за якість усіх виконаних робіт і лишаємось на зв'язку після здачі. Умови обговорюються індивідуально.</div></div><div class="gs-faq-line" aria-hidden="true"></div></div>
+        <div class="gs-faq-item"><button class="gs-faq-row" type="button" aria-expanded="false" aria-controls="faq-b-12" onclick="toggleFaq(this)"><svg class="gs-faq-arr" aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.545 1.255L1.255 3.545L9.91 12.455H1L3.8 15H12.964L15 12.964V3.8L12.455 1V10.164L3.545 1.255Z" fill="currentColor"/></svg><span class="gs-faq-q-text">Чи працюєте з корпоративними клієнтами?</span><span class="gs-faq-chevron" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="gs-faq-body" id="faq-b-12" role="region" aria-hidden="true"><div class="gs-faq-body-inner">Так, виконуємо озеленення ЖК, офісів, готелів та комерційних об'єктів.</div></div><div class="gs-faq-line" aria-hidden="true"></div></div>
       </div>
     </div>
   </div>
@@ -1571,24 +1559,14 @@ function showPricing(index, button) {
   if (button) button.classList.add('gs-chip-selected');
 }
 
-function toggleFaq(button) {
-  const item = button.closest('.gs-faq');
-  const answer = item && item.querySelector('.gs-faq-a');
-  if (!item || !answer) return;
-
-  const isOpen = item.classList.toggle('gs-faq-open');
-  button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-  answer.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-  answer.style.maxHeight = isOpen ? `${answer.scrollHeight}px` : '0';
-  answer.style.paddingTop = isOpen ? '0' : '0';
-  answer.style.paddingBottom = isOpen ? '18px' : '0';
-
-  const plus = item.querySelector('.gs-faq-plus');
-  if (plus) {
-    plus.classList.remove('gs-faq-glitch');
-    void plus.offsetWidth;
-    plus.classList.add('gs-faq-glitch');
-  }
+function toggleFaq(btn) {
+  const item = btn.closest('.gs-faq-item');
+  const body = item?.querySelector('.gs-faq-body');
+  if (!item || !body) return;
+  const isOpen = item.classList.toggle('is-open');
+  btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+  body.style.height = isOpen ? body.scrollHeight + 'px' : '0';
 }
 
 let gsModalReturnFocus = null;
@@ -2215,25 +2193,14 @@ function initCustomAnimations() {
     });
   });
 
-  document.querySelectorAll('.gs-faq-group').forEach((row, index) => {
-    const titleEl = row.querySelector('.gs-faq-group-name');
-    if (titleEl) splitWords(titleEl);
-
-    const words = titleEl ? Array.from(titleEl.querySelectorAll('.w')) : [];
-    const others = Array.from(row.querySelectorAll('.gs-faq'));
-
-    gsap.set(row, { opacity: 0, y: 28, filter: 'blur(8px)' });
-    gsap.set(words, { yPercent: 110, opacity: 0 });
-    gsap.set(others, { opacity: 0, y: 10 });
-
+  document.querySelectorAll('.gs-faq-item').forEach((item, index) => {
+    gsap.set(item, { opacity: 0, y: 16 });
     ScrollTrigger.create({
-      trigger: row,
-      start: 'top 90%',
+      trigger: item,
+      start: 'top 92%',
       once: true,
       onEnter: () => {
-        gsap.to(row, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.95, ease: 'power2.out', delay: index * 0.04, onComplete: () => gsap.set(row, { clearProps: 'filter' }) });
-        gsap.to(words, { yPercent: 0, opacity: 1, stagger: 0.07, ease: 'power3.out', duration: 0.55, delay: index * 0.04 + 0.08 });
-        gsap.to(others, { opacity: 1, y: 0, stagger: 0.06, ease: 'power2.out', duration: 0.45, delay: index * 0.04 + 0.2 });
+        gsap.to(item, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: (index % 4) * 0.05 });
       }
     });
   });
@@ -2504,16 +2471,8 @@ updateHeaderAndProgress();
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
     });
   });
-  document.querySelectorAll('.gs-faq-q').forEach((btn, i) => {
+  document.querySelectorAll('.gs-faq-row').forEach(btn => {
     if (!btn.hasAttribute('aria-expanded')) btn.setAttribute('aria-expanded', 'false');
-    const answer = btn.closest('.gs-faq')?.querySelector('.gs-faq-a');
-    if (answer) {
-      const id = answer.id || `gs-faq-a-${i + 1}`;
-      answer.id = id;
-      answer.setAttribute('role', 'region');
-      answer.setAttribute('aria-hidden', 'true');
-      btn.setAttribute('aria-controls', id);
-    }
   });
 })();
 
