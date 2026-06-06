@@ -1502,7 +1502,6 @@ const portfolioProjects = [
 let currentProject = 0;
 let currentPortfolioImage = 0;
 let activePortfolioBg = 'a';
-let portfolioTransitioning = false;
 const KB_ANIMS = ['pf-kb0', 'pf-kb1', 'pf-kb2', 'pf-kb3'];
 const KB_MS = 5000;
 let pfTimer = null;
@@ -1562,13 +1561,13 @@ function updatePortfolio() {
   const nextBg = activePortfolioBg === 'a' ? bgB : bgA;
 
   if (nextBg && activeBg) {
-    portfolioTransitioning = true;
     nextBg.style.backgroundImage = `url('${image}')`;
     nextBg.style.zIndex = '2';
     runKenBurns(nextBg, currentPortfolioImage);
-    nextBg.classList.add('active');
-    activeBg.classList.remove('active');
+    nextBg.classList.add('active');      // плавна поява через opacity
+    activeBg.classList.remove('active'); // плавне згасання
 
+    // завершення кросфейду по фактичному кінцю переходу (не магічний таймер); + запобіжник
     let done = false;
     const finish = () => {
       if (done) return; done = true;
@@ -1577,7 +1576,6 @@ function updatePortfolio() {
       activeBg.style.animation = 'none';
       nextBg.style.zIndex = '1';
       activePortfolioBg = nextBg === bgA ? 'a' : 'b';
-      portfolioTransitioning = false;
     };
     function onEnd(e) { if (e.propertyName === 'opacity') finish(); }
     activeBg.addEventListener('transitionend', onEnd);
@@ -1595,7 +1593,6 @@ function updatePortfolio() {
 }
 
 function pfGo(direction, resetTimer = true) {
-  if (portfolioTransitioning) return;
   const total = portfolioProjects[currentProject].images.length;
   currentPortfolioImage = (currentPortfolioImage + direction + total) % total;
   updatePortfolio();
@@ -1660,7 +1657,7 @@ function openModal(service) {
   document.body.style.overflow = 'hidden';
   document.addEventListener('keydown', gsModalTrapFocus);
   if (service) {
-    const option = Array.from(modal.querySelectorAll('.gs-select-option')).find(o => o.dataset.value === service);
+    const option = modal.querySelector(`.gs-select-option[data-value="${service}"]`);
     if (option) {
       modal.querySelectorAll('.gs-select-option').forEach(o => o.classList.remove('is-selected'));
       option.classList.add('is-selected');
@@ -1722,8 +1719,7 @@ function isValidUaPhone(value) {
 }
 
 function applyPhoneMask(input) {
-  if (!input || input.dataset.maskApplied) return;
-  input.dataset.maskApplied = '1';
+  if (!input) return;
 
   let prevLen = 0;
 
@@ -1778,8 +1774,12 @@ function validateLeadForm(form, prefix) {
 async function submitForm(event, prefix) {
   event.preventDefault();
   const form = event.currentTarget;
-  // анти-спам: honeypot заповнений → тихо відхиляємо, нічого не шлемо і не підтверджуємо
-  if (form.elements.company && form.elements.company.value) return;
+  // анти-спам: honeypot заповнений → тихо «успіх», нічого не шлемо
+  if (form.elements.company && form.elements.company.value) {
+    form.style.display = 'none';
+    const s = document.getElementById(`${prefix}-success`); if (s) s.style.display = 'flex';
+    return;
+  }
   if (!validateLeadForm(form, prefix)) return;
 
   const button = document.getElementById(`${prefix}-btn`);
