@@ -1503,6 +1503,14 @@ let currentProject = 0;
 let currentPortfolioImage = 0;
 let activePortfolioBg = 'a';
 let portfolioTransitioning = false;
+const pfImageCache = new Set();
+
+function pfPreload(src) {
+  if (!src || pfImageCache.has(src)) return;
+  pfImageCache.add(src);
+  const img = new Image();
+  img.src = src;
+}
 const KB_ANIMS = ['pf-kb0', 'pf-kb1', 'pf-kb2', 'pf-kb3'];
 const KB_MS = 5000;
 let pfTimer = null;
@@ -1523,9 +1531,11 @@ function initPortfolio() {
   const project = portfolioProjects[currentProject];
   const bgA = document.getElementById('gs-pf-bg-a');
   const bgB = document.getElementById('gs-pf-bg-b');
+  const firstImage = project.images[0];
+  pfImageCache.add(firstImage);
 
   if (bgA) {
-    bgA.style.backgroundImage = `url('${project.images[currentPortfolioImage]}')`;
+    bgA.style.backgroundImage = `url('${firstImage}')`;
     bgA.style.zIndex = '1';
     bgA.classList.add('active');
     runKenBurns(bgA, currentPortfolioImage);
@@ -1537,6 +1547,7 @@ function initPortfolio() {
   }
 
   activePortfolioBg = 'a';
+  if (project.images[1]) pfPreload(project.images[1]);
   setText('pf-name', project.name);
   setText('pf-tag', project.tag);
   setText('pf-area', project.area);
@@ -1556,6 +1567,8 @@ function updatePortfolio() {
   const project = portfolioProjects[currentProject];
   const total = project.images.length;
   const image = project.images[currentPortfolioImage];
+  const nextImage = project.images[(currentPortfolioImage + 1) % total];
+  pfPreload(nextImage);
   const bgA = document.getElementById('gs-pf-bg-a');
   const bgB = document.getElementById('gs-pf-bg-b');
   const activeBg = activePortfolioBg === 'a' ? bgA : bgB;
