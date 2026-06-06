@@ -809,18 +809,22 @@ html,body{overflow-x:clip;max-width:100%;}
 .gs-faq-aside .h-display-2{color:#141c16;}
 .gs-faq-aside .gs-accent-italic{color:var(--accent-deep);}
 @media(max-width:900px){
-  .gs-faq-lines{display:none;}
+  #faq>.gs-container{padding:1.5rem;}
+  .gs-faq-lines{display:block;}
   .gs-faq-wrap{grid-template-columns:1fr;}
-  .gs-faq-aside{position:static;padding:0 0 var(--space-6);}
-  .gs-faq-list{padding:var(--space-2) 0 0;}
+  .gs-faq-aside{position:static;padding:1.5rem 0 1.25rem;}
+  .gs-faq-aside .h-display-2{font-size:clamp(1.5rem,5vw,2.25rem);}
+  .gs-faq-list{padding:0;max-width:100%;}
   .gs-faq-cat{padding-left:0;padding-right:0;}
   .gs-faq-row{padding-left:0;padding-right:0;}
   .gs-faq-body-inner{padding-left:0;padding-right:0;}
 }
 @media(max-width:600px){
+  #faq>.gs-container{padding:1.25rem;}
   .gs-faq-q-text{font-size:0.9375rem;}
-  #faq>.gs-container{padding:var(--space-5);}
   #faq>.gs-container::before{width:18rem;height:18rem;}
+  .gs-faq-aside{padding:1rem 0 1rem;}
+  .gs-faq-aside .h-display-2{font-size:clamp(1.25rem,6vw,1.75rem);}
 }
 
 /* Футер */
