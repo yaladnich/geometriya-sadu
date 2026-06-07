@@ -1674,12 +1674,6 @@ function openModal(service) {
   const modal = document.getElementById('gs-modal-overlay');
   if (!modal) return;
   gsModalReturnFocus = document.activeElement;
-  // скидаємо стан: приховуємо success, показуємо форму
-  const form = modal.querySelector('form');
-  const success = document.getElementById('modal-success');
-  if (form) { form.reset(); form.style.display = ''; }
-  if (success) success.style.display = 'none';
-  clearFormErrors('modal');
   modal.hidden = false;
   document.body.style.overflow = 'hidden';
   document.addEventListener('keydown', gsModalTrapFocus);
@@ -1700,6 +1694,11 @@ function openModal(service) {
 function closeModal() {
   const modal = document.getElementById('gs-modal-overlay');
   if (!modal) return;
+  const form = modal.querySelector('form');
+  const success = document.getElementById('modal-success');
+  if (form) { form.reset(); form.style.display = ''; }
+  if (success) success.style.display = 'none';
+  clearFormErrors('modal');
   modal.hidden = true;
   document.body.style.overflow = '';
   document.removeEventListener('keydown', gsModalTrapFocus);
@@ -1807,6 +1806,8 @@ async function submitForm(event, prefix) {
   if (!validateLeadForm(form, prefix)) return;
 
   const button = document.getElementById(`${prefix}-btn`);
+  const successEl = document.getElementById(`${prefix}-success`);
+  const onError = () => setText(`${prefix}-submit-err`, 'Помилка відправки. Будь ласка, зателефонуйте нам.');
   if (button) button.disabled = true;
 
   const body = JSON.stringify({
@@ -1828,15 +1829,12 @@ async function submitForm(event, prefix) {
     .then(data => {
       if (data.success) {
         form.style.display = 'none';
-        const success = document.getElementById(`${prefix}-success`);
-        if (success) success.style.display = 'flex';
+        if (successEl) successEl.style.display = 'flex';
       } else {
-        setText(`${prefix}-submit-err`, 'Помилка відправки. Будь ласка, зателефонуйте нам.');
+        onError();
       }
     })
-    .catch(() => {
-      setText(`${prefix}-submit-err`, 'Помилка відправки. Будь ласка, зателефонуйте нам.');
-    })
+    .catch(onError)
     .finally(() => {
       if (button) button.disabled = false;
     });
