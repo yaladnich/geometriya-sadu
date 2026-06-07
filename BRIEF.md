@@ -72,3 +72,45 @@ Performance **93–95** · LCP 2.2с · TBT 100мс · CLS 0
 
 ## Незавершене / на майбутнє
 - 15 невикористаних зображень у `images/` (запасні хіро: `Heroback*.webp`, `hero.webp`, `why-sketch*.webp` та ін.) — лишені як запас, можна прибрати за потреби
+
+---
+
+## 🔐 Безпека — зробити при переїзді на хост
+
+При перенесенні сайту з GitHub Pages на продакшн-хостинг внести такі правки:
+
+### 1. EmailJS — обмежити домен (5 хв, критично)
+У дашборді EmailJS → **Account → Security → Allowed Origins** → додати лише домен продакшну (напр. `geometriya-sadu.com`).  
+Без цього будь-хто може спамити форму напряму через API, минаючи honeypot.
+
+### 2. Content Security Policy (CSP)
+Додати `<meta>` в `<head>` або HTTP-заголовок від хостингу:
+```html
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src https://api.emailjs.com; frame-ancestors 'none';">
+```
+`frame-ancestors 'none'` також закриває clickjacking на формі.
+
+### 3. SRI-хеші для vendored скриптів
+Згенерувати та додати `integrity=` для `vendor/gsap.min.js`, `ScrollTrigger.min.js`, `email.min.js`, `lenis.min.js`:
+```bash
+# генерація хешу
+openssl dgst -sha256 -binary vendor/gsap.min.js | openssl base64 -A
+```
+```html
+<script src="vendor/gsap.min.js" integrity="sha256-XXXX" crossorigin="anonymous"></script>
+```
+
+### 4. Замінити `document.write` на безпечний варіант
+Рядок ~11 в `index.html` — замінити на `createElement`:
+```js
+const preload = document.createElement('link');
+preload.rel = 'preload';
+preload.as = 'image';
+preload.type = 'image/webp';
+preload.href = 'images/' + (window.innerWidth <= 768 ? 'Backv5-m' : 'Backv5') + '.webp';
+document.head.appendChild(preload);
+```
+
+### 5. EmailJS шаблон — перевірити екранування
+У редакторі шаблону EmailJS переконатись, що всі змінні використовують `{{variable}}` (з екранув.), а не `{{{variable}}}` (без екранув.) — інакше XSS в листах.
