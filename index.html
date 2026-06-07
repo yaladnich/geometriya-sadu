@@ -1674,6 +1674,12 @@ function openModal(service) {
   const modal = document.getElementById('gs-modal-overlay');
   if (!modal) return;
   gsModalReturnFocus = document.activeElement;
+  // скидаємо стан: приховуємо success, показуємо форму
+  const form = modal.querySelector('form');
+  const success = document.getElementById('modal-success');
+  if (form) { form.reset(); form.style.display = ''; }
+  if (success) success.style.display = 'none';
+  clearFormErrors('modal');
   modal.hidden = false;
   document.body.style.overflow = 'hidden';
   document.addEventListener('keydown', gsModalTrapFocus);
