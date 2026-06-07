@@ -67,6 +67,44 @@ img.save('images/назва-m.webp', 'WEBP', quality=72, method=6)
 - Форма: **Web3Forms** (fetch POST, без зовнішніх скриптів), honeypot анти-спам
 - Git: автор комітів `Claude <noreply@anthropic.com>`, гілка розробки `claude/busy-cerf-uH3lP` → `main`
 
+## Структура index.html (рядки)
+| Блок | Рядки | Зміст |
+|---|---|---|
+| `<head>` | 1–50 | meta, preload, шрифти. Inline `<script>` з `document.write` на рядку ~11 — **не чіпати** |
+| `<style>` | 51–900 | весь CSS. Префікс класів `gs-`. `:root` змінні. Брейкпоінт `768px` |
+| `<body>` | 900–1445 | Hero → Services → Why → Portfolio → Pricing → FAQ → CTA → Footer → Modal |
+| `<script>` | 1445–2729 | весь JS. `gsap.min.js` + `ScrollTrigger.min.js` без `defer` на рядках 1446–1447 |
+
+## Ключові JS-функції та змінні
+
+| Символ | Рядок | Призначення |
+|---|---|---|
+| `WEB3FORMS_KEY` | ~1466 | Публічний ключ Web3Forms |
+| `portfolioProjects[]` | ~1469 | Масив проєктів з `images[]` та `imagesMobile[]` |
+| `submitForm(event, prefix)` | ~1801 | Відправка форми; `prefix` = `'cta'` або `'modal'` |
+| `openModal(service?)` | ~1673 | Відкриває модалку, опціонально обирає послугу |
+| `closeModal()` | ~1694 | Закриває модалку **і скидає форму** |
+| `initPortfolio()` | ~1533 | Ініціалізує crossfade-слайдер з Ken Burns |
+| `pfGo(direction)` | ~1615 | Перегортає фото портфоліо; захищений флагом `portfolioTransitioning` |
+| `pfSelectProject(index, btn)` | ~1623 | Перемикає проєкт в портфоліо |
+| `getProjectImages(project)` | ~1501 | Повертає `imagesMobile` на мобільному, `images` на десктопі |
+| `loadScriptOnce(src, name)` | ~1449 | Lazy-loader скриптів; дедуплікує по `globalName` |
+| `setText(id, value)` | ~1521 | Безпечний setter `textContent` по id |
+| `applyPhoneMask(input)` | ~1747 | Маска UA-телефону; ідемпотентна через `dataset.maskApplied` |
+
+## Локальний запуск і тести
+
+```bash
+# Сервер
+python3 -m http.server 8900 --directory /home/user/geometriya-sadu
+# http://localhost:8900
+
+# Playwright (headless Chromium)
+node /tmp/your-check.js
+# node: /opt/node22/bin/node
+# playwright: /opt/node22/lib/node_modules/playwright
+```
+
 ## Поточний PageSpeed (mobile)
 Performance **93–95** · LCP 2.2с · TBT 100мс · CLS 0
 
