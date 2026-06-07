@@ -1463,17 +1463,7 @@ function loadScriptOnce(src, globalName) {
   return script._promise;
 }
 
-let emailReady;
-function loadEmailJS() {
-  if (!emailReady) {
-    emailReady = loadScriptOnce('vendor/email.min.js', 'emailjs')
-      .then(api => {
-        api.init('jo5qqxaBsOw0U6wKb');
-        return api;
-      });
-  }
-  return emailReady;
-}
+const WEB3FORMS_KEY = '0216234b-d358-4b66-b315-227631034a62';
 
 const isMobile = () => window.innerWidth <= 768;
 const portfolioProjects = [
@@ -1813,28 +1803,30 @@ async function submitForm(event, prefix) {
   const button = document.getElementById(`${prefix}-btn`);
   if (button) button.disabled = true;
 
-  const params = {
-    from_name: form.elements.name?.value.trim() || '',
+  const body = JSON.stringify({
+    access_key: WEB3FORMS_KEY,
+    name: form.elements.name?.value.trim() || '',
     phone: form.elements.phone?.value.trim() || '',
     service: form.elements.service?.value || '',
     area: form.elements.area?.value || '',
-    message: form.elements.message?.value.trim() || ''
-  };
+    message: form.elements.message?.value.trim() || '',
+    subject: 'Нова заявка — Геометрія саду'
+  });
 
-  let emailApi;
-  try {
-    emailApi = await loadEmailJS();
-  } catch {
-    setText(`${prefix}-submit-err`, 'Помилка завантаження форми. Будь ласка, зателефонуйте нам.');
-    if (button) button.disabled = false;
-    return;
-  }
-
-  emailApi.send('service_blkynfj', 'template_m57n5fv', params)
-    .then(() => {
-      form.style.display = 'none';
-      const success = document.getElementById(`${prefix}-success`);
-      if (success) success.style.display = 'flex';
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        form.style.display = 'none';
+        const success = document.getElementById(`${prefix}-success`);
+        if (success) success.style.display = 'flex';
+      } else {
+        setText(`${prefix}-submit-err`, 'Помилка відправки. Будь ласка, зателефонуйте нам.');
+      }
     })
     .catch(() => {
       setText(`${prefix}-submit-err`, 'Помилка відправки. Будь ласка, зателефонуйте нам.');

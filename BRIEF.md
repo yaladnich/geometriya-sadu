@@ -64,7 +64,7 @@ img.save('images/назва-m.webp', 'WEBP', quality=72, method=6)
 ## Технічне
 - Шрифт: **Onest** (локальний `fonts/`), один на весь сайт
 - Анімації: **GSAP + ScrollTrigger** (`vendor/`) — підключені БЕЗ `defer` (defer ламає hero-анімації)
-- Форма: **EmailJS** (lazy-load), honeypot анти-спам
+- Форма: **Web3Forms** (fetch POST, без зовнішніх скриптів), honeypot анти-спам
 - Git: автор комітів `Claude <noreply@anthropic.com>`, гілка розробки `claude/busy-cerf-uH3lP` → `main`
 
 ## Поточний PageSpeed (mobile)
@@ -79,9 +79,9 @@ Performance **93–95** · LCP 2.2с · TBT 100мс · CLS 0
 
 При перенесенні сайту з GitHub Pages на продакшн-хостинг внести такі правки:
 
-### 1. EmailJS — обмежити домен (5 хв, критично)
-У дашборді EmailJS → **Account → Security → Allowed Origins** → додати лише домен продакшну (напр. `geometriya-sadu.com`).  
-Без цього будь-хто може спамити форму напряму через API, минаючи honeypot.
+### 1. Web3Forms — обмежити домен (5 хв, критично)
+У дашборді Web3Forms → **Settings → Allowed Domains** → додати лише домен продакшну (напр. `geometriya-sadu.com`).  
+Без цього будь-хто може слати запити напряму з іншого домену.
 
 ### 2. Content Security Policy (CSP)
 Додати `<meta>` в `<head>` або HTTP-заголовок від хостингу:
