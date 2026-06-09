@@ -299,6 +299,8 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 /* сфера — фон пін-кадру (всередині пінованого .gs-why-panels тримається сама) */
 .gs-why-dots{position:absolute;inset:0;z-index:0;pointer-events:none;}
 .gs-why-dots canvas{display:block;width:100%;height:100%;background:transparent;}
+/* десктоп: сфера — права половина кадру, текст — ліва; без накладання */
+@media(min-width:901px){.gs-why-dots{left:50%;}}
 /* слайди накладені в кадрі, видно лише активний (однаково desktop/mobile — різниця тільки в layout) */
 /* базово: дешевий перехід (opacity + scale) — норм для мобільного/слабких пристроїв */
 .gs-why-panel{position:absolute;inset:0;z-index:1;display:flex;align-items:center;pointer-events:none;opacity:0;visibility:hidden;transform:scale(0.88);transition:opacity 0.55s var(--ease-out),transform 0.7s var(--ease-out),visibility 0s linear 0.55s;}
@@ -2536,7 +2538,7 @@ updateHeaderAndProgress();
   const st = ScrollTrigger.create({
     trigger: wrap, start: 'top top', end: '+=' + ((N - 1) * 100) + '%',
     pin: true, pinSpacing: true, scrub: 0.4, invalidateOnRefresh: true, refreshPriority: 1,
-    snap: { snapTo: 1 / (N - 1), duration: { min: 0.2, max: 0.45 }, ease: 'power1.inOut' },
+    snap: { snapTo: 1 / (N - 1), duration: { min: 0.3, max: 0.6 }, delay: 0.04, ease: 'power2.inOut', directional: true },
     onUpdate: self => goTo(Math.round(self.progress * (N - 1)))
   });
 
