@@ -198,9 +198,12 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-nav-tx{display:inline-flex;}
 .gs-nav .gs-ch{display:inline-block;overflow:hidden;vertical-align:top;line-height:1.125rem;}
 .gs-nav .gs-ch-sp{width:0.3em;}
-.gs-nav .gs-ch i{display:block;font-style:normal;position:relative;color:#fff;transition:transform 0.46s cubic-bezier(0.22,1,0.36,1),filter 0.22s ease-out;transition-delay:var(--d,0s);will-change:transform,filter;}
-.gs-nav .gs-ch i::after{content:attr(data-c);position:absolute;left:0;top:100%;color:var(--accent-bright);transform:skewY(6deg);transform-origin:left top;}
-.gs-nav a:hover .gs-ch i{transform:translateY(-100%) skewY(-6deg);filter:blur(0.3rem);}
+.gs-nav .gs-ch i{display:block;font-style:normal;position:relative;transition:transform 0.46s cubic-bezier(0.22,1,0.36,1);transition-delay:var(--d,0s);will-change:transform;}
+.gs-nav .gs-ch i b{display:block;font-weight:inherit;}
+.gs-nav .gs-ch-w{color:#fff;transition:filter 0.22s ease-out;transition-delay:var(--d,0s);}
+.gs-nav .gs-ch-g{position:absolute;left:0;top:100%;color:var(--accent-bright);transform:skewY(6deg);transform-origin:left top;}
+.gs-nav a:hover .gs-ch i{transform:translateY(-100%) skewY(-6deg);}
+.gs-nav a:hover .gs-ch-w{filter:blur(0.3rem);}
 .gs-nav-plus{display:inline-grid;place-items:center;color:#fff;line-height:0;transition:color var(--dur-base) var(--ease-out);}
 .gs-nav-plus svg{width:1em;height:1em;display:block;}
 .gs-nav-plus svg line{transition:transform 0.35s var(--ease-in-out);transform-box:fill-box;transform-origin:center;}
@@ -2130,9 +2133,15 @@ function initCustomAnimations() {
         else {
           cell.className = 'gs-ch';
           const inner = document.createElement('i');
-          inner.dataset.c = ch;
-          inner.textContent = ch;
           inner.style.setProperty('--d', (li++ * 0.028) + 's');
+          const white = document.createElement('b');
+          white.className = 'gs-ch-w';
+          white.textContent = ch;
+          const green = document.createElement('b');
+          green.className = 'gs-ch-g';
+          green.textContent = ch;
+          inner.appendChild(white);
+          inner.appendChild(green);
           cell.appendChild(inner);
         }
         tx.appendChild(cell);
