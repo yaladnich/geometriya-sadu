@@ -225,6 +225,7 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-hero-title{color:#fff;margin:0 0 1.75rem;max-width:20ch;font-weight:600;text-transform:none;}
 .gs-hero-sub{color:#fff;max-width:60ch;margin:0 0 2.5rem;}
 .gs-hero-ctas{display:flex;gap:0.875rem;margin-bottom:5rem;flex-wrap:wrap;}
+.gs-hero-cta-mobile{display:none;}
 .gs-hero-ctas .gs-btn{font-size:0.8125rem;}
 .gs-hero-stats{display:flex;align-items:flex-start;gap:clamp(2rem,6vw,5rem);padding-top:2.5rem;border-top:0.0625rem solid rgba(255,255,255,0.12);flex-wrap:wrap;}
 .gs-stat{min-width:7.5rem;}
@@ -704,6 +705,7 @@ body{cursor:none;}
 @media(max-width:1200px){
   .gs-burger{display:flex;}
   .gs-cta-pill-desktop{display:none!important;}
+  .gs-hero-cta-mobile{display:inline-flex;}
 }
 
 /* =============================================
@@ -886,10 +888,10 @@ html,body{overflow-x:clip;max-width:100%;}
       <a href="#faq"><span>Поширені питання</span></a>
       <a href="#cta"><span>Контакти</span></a>
     </nav>
-    <a class="gs-cta-pill gs-cta-pill-desktop" href="tel:+380683782003">
+    <button class="gs-cta-pill gs-cta-pill-desktop" onclick="openModal()">
       <span>Зателефонувати</span>
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><g class="gs-tri-grp"><rect class="gs-tri-bar" x="2" y="4" width="2.4" height="16" fill="#F28D1B"/><path d="M7 4 L21 12 L7 20 Z" fill="#F28D1B"/></g></svg>
-    </a>
+    </button>
     <button class="gs-burger" id="gs-burger" aria-label="Меню" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -921,7 +923,7 @@ html,body{overflow-x:clip;max-width:100%;}
     <h1 class="display-2 gs-hero-title">Ландшафтний дизайн<br>під ключ у Києві</h1>
     <p class="body-lg gs-hero-sub">Ландшафтні роботи під ключ — рулонний газон, автополив, озеленення, земляні роботи. Власна спецтехніка.</p>
     <div class="gs-hero-ctas">
-      <button class="gs-btn gs-btn-primary" onclick="openModal()"><span>Замовити консультацію</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><g class="gs-tri-grp"><rect class="gs-tri-bar" x="2" y="4" width="2.4" height="16" fill="#F28D1B"/><path d="M7 4 L21 12 L7 20 Z" fill="#F28D1B"/></g></svg></button>
+      <button class="gs-btn gs-btn-primary gs-hero-cta-mobile" onclick="openModal()"><span>Замовити консультацію</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><g class="gs-tri-grp"><rect class="gs-tri-bar" x="2" y="4" width="2.4" height="16" fill="#F28D1B"/><path d="M7 4 L21 12 L7 20 Z" fill="#F28D1B"/></g></svg></button>
     </div>
     <div class="gs-hero-stats">
       <div class="gs-stat">
