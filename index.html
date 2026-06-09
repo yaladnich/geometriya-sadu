@@ -195,15 +195,16 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-nav a{display:inline-flex;align-items:center;gap:0.5rem;transition:color var(--dur-base) var(--ease-out);}
 .gs-nav a:hover{color:var(--accent-bright);}
 /* наведення по буквах: масковане «перегортання» вгору з фірмовим skew, сходинкова затримка */
-.gs-nav-tx{display:inline-flex;}
-.gs-nav .gs-ch{display:inline-block;overflow:hidden;vertical-align:top;line-height:1.125rem;}
-.gs-nav .gs-ch-sp{width:0.3em;}
-.gs-nav .gs-ch i{display:block;font-style:normal;position:relative;transition:transform 0.46s cubic-bezier(0.22,1,0.36,1);transition-delay:var(--d,0s);will-change:transform;}
-.gs-nav .gs-ch i b{display:block;font-weight:inherit;}
-.gs-nav .gs-ch-w{color:#fff;transition:filter 0.22s ease-out,opacity 0.3s ease-out;transition-delay:var(--d,0s);}
-.gs-nav .gs-ch-g{position:absolute;left:0;top:100%;color:var(--accent-bright);transform:skewY(6deg);transform-origin:left top;}
-.gs-nav a:hover .gs-ch i{transform:translateY(-100%) skewY(-6deg);}
-.gs-nav a:hover .gs-ch-w{filter:blur(0.3rem);opacity:0;}
+.gs-rl-tx{display:inline-flex;}
+.gs-rl .gs-ch{display:inline-block;overflow:hidden;vertical-align:top;line-height:1.25em;}
+.gs-rl .gs-ch-sp{width:0.3em;}
+.gs-rl .gs-ch i{display:block;font-style:normal;position:relative;transition:transform 0.46s cubic-bezier(0.22,1,0.36,1);transition-delay:var(--d,0s);will-change:transform;}
+.gs-rl .gs-ch i b{display:block;font-weight:inherit;}
+.gs-rl .gs-ch-w{transition:filter 0.22s ease-out,opacity 0.3s ease-out;transition-delay:var(--d,0s);}
+.gs-rl .gs-ch-g{position:absolute;left:0;top:100%;color:var(--rl-c,var(--accent-bright));transform:skewY(6deg);transform-origin:left top;}
+.gs-rl:hover .gs-ch i{transform:translateY(-100%) skewY(-6deg);}
+.gs-rl:hover .gs-ch-w{filter:blur(0.3rem);opacity:0;}
+.gs-btn-primary,.gs-osend,.gs-chip{--rl-c:#fff;}
 .gs-nav-plus{display:inline-grid;place-items:center;color:#fff;line-height:0;transition:color var(--dur-base) var(--ease-out);}
 .gs-nav-plus svg{width:1em;height:1em;display:block;}
 .gs-nav-plus svg line{transition:transform 0.35s var(--ease-in-out);transform-box:fill-box;transform-origin:center;}
@@ -2111,21 +2112,13 @@ function initCustomAnimations() {
       return Array.from(root.childNodes).find(n => n.nodeType === 3 && n.nodeValue.trim());
     }
 
-    document.querySelectorAll('.gs-btn-primary, .gs-cta-pill, .gs-osend').forEach(btn => {
-      const node = getTextNode(btn);
-      if (!node) return;
-      btn.addEventListener('mouseenter', () => {
-        if (node._gs) return;
-        btn.style.width = btn.offsetWidth + 'px';
-        scrambleNode(node);
-        setTimeout(() => { btn.style.width = ''; }, 480);
-      });
-    });
-    // Меню: розбити кожен пункт на літери для масованого «перегортання» при наведенні
-    document.querySelectorAll('.gs-nav a span').forEach(span => {
+    // Наведення по буквах: масковане «перегортання» вгору (біла зникає з blur, прийдешня — чітка).
+    // root — елемент, на :hover якого спрацьовує ефект; span — контейнер з текстом.
+    function rollUpLetters(root, span) {
+      if (!span || span.dataset.rl) return;
       const text = span.textContent;
       const tx = document.createElement('span');
-      tx.className = 'gs-nav-tx';
+      tx.className = 'gs-rl-tx';
       let li = 0; // індекс лише видимих літер — для сходинкової затримки
       [...text].forEach(ch => {
         const cell = document.createElement('span');
@@ -2140,6 +2133,7 @@ function initCustomAnimations() {
           const green = document.createElement('b');
           green.className = 'gs-ch-g';
           green.textContent = ch;
+          green.setAttribute('aria-hidden', 'true');
           inner.appendChild(white);
           inner.appendChild(green);
           cell.appendChild(inner);
@@ -2148,26 +2142,16 @@ function initCustomAnimations() {
       });
       span.textContent = '';
       span.appendChild(tx);
-    });
+      span.dataset.rl = '1';
+      root.classList.add('gs-rl');
+    }
 
-    document.querySelectorAll('.gs-chip').forEach(chip => {
-      const node = getTextNode(chip);
-      if (!node) return;
-      chip.addEventListener('mouseenter', () => {
-        if (node._gs) return;
-        const w = chip.offsetWidth;
-        chip.style.minWidth = w + 'px';
-        chip.style.maxWidth = w + 'px';
-        scrambleNode(node);
-        setTimeout(() => { chip.style.minWidth = ''; chip.style.maxWidth = ''; }, 480);
-        const textEl = chip.querySelector('.gs-chip-text');
-        if (textEl) {
-          textEl.classList.remove('gs-icon-glitch');
-          void textEl.offsetWidth;
-          textEl.classList.add('gs-icon-glitch');
-        }
-      });
-    });
+    // Меню
+    document.querySelectorAll('.gs-nav a').forEach(a => rollUpLetters(a, a.querySelector('span')));
+    // Кнопки
+    document.querySelectorAll('.gs-btn-primary, .gs-cta-pill, .gs-osend').forEach(btn => rollUpLetters(btn, btn.querySelector('span')));
+    // Таби
+    document.querySelectorAll('.gs-chip').forEach(chip => rollUpLetters(chip, chip.querySelector('.gs-chip-text')));
   })();
 
   document.querySelectorAll('.gs-svc, .gs-pcard').forEach(card => {
