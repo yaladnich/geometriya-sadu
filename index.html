@@ -2557,10 +2557,12 @@ updateHeaderAndProgress();
   });
 
   // Навігація до слайда (тіки + клавіатура) — плавний скрол до відповідної позиції піну
+  function slideY(i) { return st.start + (i / (N - 1)) * (st.end - st.start); }
   function scrollToSlide(i) {
     i = Math.max(0, Math.min(N - 1, i));
-    const y = st.start + (i / (N - 1)) * (st.end - st.start);
-    window.scrollTo({ top: y, behavior: 'smooth' });
+    const y = slideY(i);
+    if (window.__lenis) window.__lenis.scrollTo(y, { duration: 0.6 });
+    else window.scrollTo({ top: y, behavior: 'smooth' });
   }
   ticks.forEach((el, idx) => {
     el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); el.setAttribute('aria-label', 'Перевага ' + (idx + 1));
@@ -2574,6 +2576,27 @@ updateHeaderAndProgress();
     else if (e.key === 'Home') { e.preventDefault(); scrollToSlide(0); }
     else if (e.key === 'End') { e.preventDefault(); scrollToSlide(N - 1); }
   });
+
+  // Десктоп (миша/тачпад): жорсткий перехват — один жест колеса = рівно 1 слайд.
+  // На межах (1-й вгору / останній вниз) скрол відпускається далі по сторінці.
+  if (window.matchMedia('(pointer:fine)').matches) {
+    let stepping = false, relock = 0;
+    window.addEventListener('wheel', e => {
+      if (!st.isActive) return;                 // поза піном — звичайний скрол
+      const dir = e.deltaY > 0 ? 1 : -1;
+      const atEdge = (dir > 0 && cur >= N - 1) || (dir < 0 && cur <= 0);
+      if (atEdge) return;                        // межа → не перехоплюємо, скрол іде далі
+      e.preventDefault(); e.stopImmediatePropagation();
+      const now = e.timeStamp;
+      if (stepping || now - relock < 120) return; // один жест = один крок (кулдаун)
+      stepping = true; relock = now;
+      const target = cur + dir;
+      const y = slideY(Math.max(0, Math.min(N - 1, target)));
+      const done = () => { stepping = false; relock = performance.now(); };
+      if (window.__lenis) window.__lenis.scrollTo(y, { duration: 0.6, lock: true, onComplete: done });
+      else { window.scrollTo({ top: y, behavior: 'smooth' }); setTimeout(done, 600); }
+    }, { passive: false, capture: true });
+  }
   requestAnimationFrame(() => {
     if (ScrollTrigger.sort) ScrollTrigger.sort();
     ScrollTrigger.refresh();
