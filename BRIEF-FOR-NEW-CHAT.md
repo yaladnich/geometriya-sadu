@@ -163,10 +163,25 @@ https://yaladnich.github.io/geometriya-sadu/
 
 ### Відомі фікси — НЕ ВИДАЛЯТИ
 
-1. **Обрізання букви "у" (та інших літер з хвостиком) в H1/H2 анімації**
-   - Причина: `.w-wrap` має `overflow:hidden` для slide-up анімації, але це обрізає descender-и (у, р, д, щ тощо)
-   - Рішення: `padding-bottom:0.15em; margin-bottom:-0.15em` на `.w-wrap` — дає місце для хвостика, компенсує відступ
-   - **НЕ ПРИБИРАТИ** ці значення навіть якщо здається що вони зайві
+1. **Обрізання букв (у, й, д тощо) в H1/H2 reveal-анімації — ПОВНЕ РОЗУМІННЯ**
+
+   **Механіка обрізки (root cause):**
+   - `.w-wrap` має `overflow:hidden` як **маску** для slide-up reveal (слово їде знизу вгору з-під краю).
+   - Маска обрізає не лише низ (descender-и: у, р, д, щ), а й **верх**: гострі/похилі термінали (кінчик «у», бреве над «й») роблять **overshoot** — виступають трохи вище плоских верхівок (и, н). Саме цей виступ ріже край маски.
+   - Тому **«в одному заголовку по-різному ріже»**: гострі кінчики (у, й) обрізаються, плоскі (и, н, п) — ні. Це НЕ дизайн шрифта Onest (перевірено: при `overflow:visible` форма повна).
+
+   **⚠️ Пастка з вкладеними масками + негативні margin:**
+   - Колись `.h2-line` І `.w-wrap` обидва мали `overflow:hidden` + `margin-top:-0.18em`. Вони **вкладені**, тож негативний margin внутрішнього `.w-wrap` піднімає його рівно до краю обрізки зовнішнього `.h2-line` → верхній `padding` `.w-wrap` **скасовується**, room=0. Padding-фікси не працювали.
+   - **Тому НЕ роби overflow:hidden на двох вкладених рівнях.** `.h2-line` тепер `overflow:visible`; єдина маска — `.w-wrap`.
+
+   **✅ ПРАВИЛЬНЕ рішення (поточне):** маска потрібна лише **під час** слайду. Після reveal вмикаємо `overflow:visible`:
+   - **H1 (hero, one-shot):** `onComplete: () => gsap.set('.gs-hero-title .w-wrap', { overflow: 'visible' })` у `.to(h1Chars,...)`.
+   - **H2 (scrub):** у `scrollTrigger` → `onUpdate: self => gsap.set(wraps, { overflow: self.progress >= 0.999 ? 'visible' : 'hidden' })`. У спокої — visible (нічого не ріже), під час скролу — hidden (маска працює).
+   - `.w-wrap` зберігає `padding-top/bottom + рівні негативні margin` як підстраховку під час анімації — **НЕ прибирати**.
+
+   **🔬 Як діагностувати (обрізка vs дизайн шрифта):** Playwright піксельний diff — скрін з `overflow:hidden` vs `addStyleTag('.h2-line,.w-wrap{overflow:visible!important}')`. `ImageChops.difference(...).getbbox()`: якщо `None` → обрізки немає (форма шрифта); якщо є bbox → реальна обрізка в тому регіоні. Тісний crop-скрін НЕ годиться — ріже ink поза layout-боксом і дає хибне «обрізання».
+
+   **Дві НЕЗАЛЕЖНІ системи split:** H1 (hero) = `.tl`>`.tl-i`>`.w-wrap`>`.w`; H2 = `.h-display-2`>`.h2-line`>`.w-wrap`>`.w`. Обидві проходять через спільний `splitWords()` → `.w-wrap`.
 
 ---
 
@@ -175,7 +190,8 @@ https://yaladnich.github.io/geometriya-sadu/
 - **Стартовий стан**: `yPercent:120, skewY:14, opacity:0, filter:blur(8px), transformOrigin:'0 bottom'`
 - **H1** (хіро): `duration:0.85s, stagger:0.1, ease:power3.out` — запускається при завантаженні
 - **H2**: `scrub:1, start:'top 88%', end:'top 45%'` — прив'язано до скролу
-- CSS: `.w-wrap{overflow:hidden}` `.w{transform-origin:0 bottom}`
+- CSS: `.w-wrap{overflow:hidden}` `.w{transform-origin:0 bottom}` `.h2-line{overflow:visible}` (НЕ hidden — див. «Відомі фікси» №1)
+- `.w-wrap` overflow перемикається на `visible` після reveal (H1 onComplete, H2 onUpdate progress≥0.999), щоб не різати гострі кінчики (у, й)
 
 ### #hero
 - Фон: `images/Heroback3.webp` (вечірня сцена з туями/самшитом)

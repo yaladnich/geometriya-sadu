@@ -672,7 +672,7 @@ body{cursor:none;}
 .ch-sp{display:inline;white-space:normal;}
 .tl{display:block;padding-bottom:0.15em;}
 .tl-i{display:block;white-space:nowrap;}
-.h2-line{display:block;line-height:1.1;overflow:hidden;padding-top:0.18em;margin-top:-0.18em;}
+.h2-line{display:block;line-height:1.1;overflow:visible;}
 .w-wrap{display:inline-block;vertical-align:bottom;overflow:hidden;padding-top:0.18em;margin-top:-0.18em;padding-bottom:0.24em;margin-bottom:-0.24em;}
 .w{display:inline-block;transform-origin:0 bottom;}
 .gs-num-wrap{position:relative;display:flex;align-items:center;}
@@ -2184,7 +2184,7 @@ function initCustomAnimations() {
     requestAnimationFrame(() => {
       gsap.timeline({ delay: 0.15 })
         .to('.gs-hero-bg', { scale: 1, duration: 1.4 }, 0)
-        .to(h1Chars, { yPercent: 0, skewY: 0, opacity: 1, filter: 'blur(0px)', duration: 0.85, stagger: 0.1, ease: 'power3.out' }, 0)
+        .to(h1Chars, { yPercent: 0, skewY: 0, opacity: 1, filter: 'blur(0px)', duration: 0.85, stagger: 0.1, ease: 'power3.out', onComplete: () => gsap.set('.gs-hero-title .w-wrap', { overflow: 'visible' }) }, 0)
         .to('.gs-hero-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.58)
         .to('.gs-hero-sub', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.72)
         .to('.gs-hero-ctas', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', onComplete: () => gsap.set('.gs-hero-ctas', { clearProps: 'transform' }) }, 0.86)
@@ -2216,6 +2216,7 @@ function initCustomAnimations() {
     title.querySelectorAll('.h2-line').forEach(line => splitWords(line));
 
     const words = title.querySelectorAll('.w');
+    const wraps = title.querySelectorAll('.w-wrap');
     const h2UseBlur = !window.matchMedia('(max-width:900px)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     gsap.set(words, { yPercent: 120, skewY: 14, opacity: 0, filter: h2UseBlur ? 'blur(8px)' : 'none', transformOrigin: '0 bottom' });
 
@@ -2224,7 +2225,10 @@ function initCustomAnimations() {
         trigger: title,
         start: 'top 88%',
         end: 'top 45%',
-        scrub: 1
+        scrub: 1,
+        // Маска (.w-wrap overflow:hidden) потрібна лише під час слайду вгору.
+        // Після reveal вмикаємо overflow:visible, щоб гострі кінчики (у, й тощо) не обрізались.
+        onUpdate: self => gsap.set(wraps, { overflow: self.progress >= 0.999 ? 'visible' : 'hidden' })
       }
     });
 
