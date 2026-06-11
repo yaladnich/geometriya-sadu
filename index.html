@@ -2547,22 +2547,54 @@ updateHeaderAndProgress();
     return;
   }
 
+  // Стан wheel-кроків — оголошений ДО ScrollTrigger.create, бо onUpdate смикається вже при створенні (TDZ).
+  let target = 0, stepTween = null, wheelLockUntil = 0;
+
   // Один ScrollTrigger: пін кадру + snap. Layout (desktop/mobile) — суто CSS, тож логіка width-незалежна.
   const st = ScrollTrigger.create({
     trigger: wrap, start: 'top top', end: '+=' + ((N - 1) * 100) + '%',
     pin: true, pinSpacing: true, scrub: 0.4, invalidateOnRefresh: true, refreshPriority: 1,
-    snap: { snapTo: 1 / (N - 1), duration: { min: 0.3, max: 0.6 }, delay: 0.04, ease: 'power2.inOut', directional: true },
-    onUpdate: self => goTo(Math.round(self.progress * (N - 1)))
+    snap: { snapTo: 1 / (N - 1), duration: { min: 0.2, max: 0.45 }, ease: 'power1.inOut' },
+    onUpdate: self => {
+      const i = Math.round(self.progress * (N - 1));
+      if (!stepTween) target = i; // синхронізуємо ціль при скролі НЕ через wheel-кроки (тач, скролбар)
+      goTo(i);
+    }
   });
 
-  // Навігація до слайда (тіки + клавіатура) — плавний скрол до відповідної позиції піну
-  function slideY(i) { return st.start + (i / (N - 1)) * (st.end - st.start); }
+  // Один жест колеса = рівно один слайд. Кроком керує target (індекс-ціль), а НЕ cur
+  // (cur — відрендерений слайд, він міняється під час руху і дає накопичення кроків).
+  // ВАЖЛИВО: на десктопі скрол віртуалізує Lenis — він має ВЛАСНИЙ wheel-слухач і ігнорує
+  // наш preventDefault, тож крокувати треба через lenis.scrollTo({lock:true}), а не повз нього.
+  function stepDone() { stepTween = null; wheelLockUntil = performance.now() + 300; } // кулдаун: хвіст інерції не стрибає ще раз
   function scrollToSlide(i) {
     i = Math.max(0, Math.min(N - 1, i));
-    const y = slideY(i);
-    if (window.__lenis) window.__lenis.scrollTo(y, { duration: 0.6 });
-    else window.scrollTo({ top: y, behavior: 'smooth' });
+    if (i === target && !stepTween) return;
+    target = i;
+    const y = st.start + (i / (N - 1)) * (st.end - st.start);
+    if (stepTween && stepTween.kill) stepTween.kill();
+    if (window.__lenis) {
+      stepTween = true; // lock у Lenis блокує і wheel-інпут самого Lenis під час кроку
+      window.__lenis.scrollTo(y, { duration: 0.6, lock: true, force: true, onComplete: stepDone });
+    } else {
+      const pos = { y: window.scrollY };
+      stepTween = gsap.to(pos, {
+        y, duration: 0.55, ease: 'power2.out',
+        onUpdate: () => window.scrollTo(0, pos.y),
+        onComplete: stepDone
+      });
+    }
   }
+  // На краях (перший слайд вгору / останній вниз) нічого не робимо — секція відпускає сторінку.
+  window.addEventListener('wheel', e => {
+    if (st.isActive !== true) return;
+    const dir = e.deltaY > 0 ? 1 : -1;
+    const next = target + dir;
+    if (next < 0 || next > N - 1) return;
+    e.preventDefault();
+    if (stepTween || performance.now() < wheelLockUntil) return;
+    scrollToSlide(next);
+  }, { passive: false });
   ticks.forEach((el, idx) => {
     el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); el.setAttribute('aria-label', 'Перевага ' + (idx + 1));
     el.addEventListener('click', () => scrollToSlide(idx));
