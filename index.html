@@ -2563,6 +2563,10 @@ updateHeaderAndProgress();
     }
   });
 
+  // Чи кадр зараз запінений. st.isActive буває undefined рівно на межі (progress=0) —
+  // тому звіряємось із діапазоном скролу, інакше обробники мертві на 1-му слайді.
+  function isPinned() { return st.isActive === true || (window.scrollY >= st.start - 1 && window.scrollY <= st.end + 1); }
+
   // Один жест колеса = рівно один слайд. Кроком керує target (індекс-ціль), а НЕ cur
   // (cur — відрендерений слайд, він міняється під час руху і дає накопичення кроків).
   // ВАЖЛИВО: на десктопі скрол віртуалізує Lenis — він має ВЛАСНИЙ wheel-слухач і ігнорує
@@ -2597,7 +2601,7 @@ updateHeaderAndProgress();
   // CAPTURE + stopImmediatePropagation: глушимо подію ДО Lenis, інакше Lenis зчитує deltaY
   // і накопичує інерцію (за довгий свайп прокрутив би кілька слайдів повз наш крок).
   window.addEventListener('wheel', e => {
-    if (st.isActive !== true) return;
+    if (!isPinned()) return;
     const dir = e.deltaY > 0 ? 1 : -1;
     const next = target + dir;
     if (next < 0 || next > N - 1) return; // край → не чіпаємо, Lenis скролить сторінку далі
@@ -2614,19 +2618,49 @@ updateHeaderAndProgress();
   // На wheel-десктопі крок уже лягає точно на слайд → тут no-op (round === target).
   let snapTimer = 0;
   function idleSnap() {
-    if (!st.isActive || gestureLock || stepTween) return;
+    if (!isPinned() || gestureLock || stepTween) return;
     scrollToSlide(Math.round(st.progress * (N - 1)));
   }
   function queueSnap() { clearTimeout(snapTimer); snapTimer = setTimeout(idleSnap, 140); }
   if (window.__lenis) window.__lenis.on('scroll', queueSnap);
   else window.addEventListener('scroll', queueSnap, { passive: true });
+
+  // Мобільний (тач): один свайп = рівно один слайд. Блокуємо нативний скрол всередині піна
+  // (preventDefault на touchmove) і крокуємо ±1 на touchend. На краях (1-й вниз-палець / останній
+  // вгору-палець) НЕ перехоплюємо — сторінка скролиться далі. Поріг 30px відсікає випадкові тапи.
+  if (window.matchMedia('(pointer:coarse)').matches) {
+    let startY = 0, dir = 0, mode = ''; // mode: '' | 'capture' | 'release'
+    window.addEventListener('touchstart', e => {
+      if (!isPinned() || e.touches.length !== 1) { mode = ''; return; }
+      startY = e.touches[0].clientY; dir = 0; mode = '';
+    }, { passive: true });
+    window.addEventListener('touchmove', e => {
+      if (!isPinned() || mode === 'release') return;
+      const dy = startY - e.touches[0].clientY; // >0 свайп вгору (палець вгору) = наступний слайд
+      if (mode === '') {
+        if (Math.abs(dy) < 6) return;            // ще не визначили напрям
+        dir = dy > 0 ? 1 : -1;
+        const next = target + dir;
+        mode = (next < 0 || next > N - 1) ? 'release' : 'capture'; // край → відпускаємо сторінку
+        if (mode === 'release') return;
+      }
+      e.preventDefault(); // тримаємо палець, нативний скрол не рухає піна
+    }, { passive: false });
+    window.addEventListener('touchend', e => {
+      if (mode !== 'capture') { mode = ''; return; }
+      const dy = startY - e.changedTouches[0].clientY;
+      mode = '';
+      if (Math.abs(dy) < 30 || stepTween) return; // короткий тап або ще йде крок — ігноруємо
+      scrollToSlide(target + dir);
+    }, { passive: true });
+  }
   ticks.forEach((el, idx) => {
     el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); el.setAttribute('aria-label', 'Перевага ' + (idx + 1));
     el.addEventListener('click', () => scrollToSlide(idx));
     el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSlide(idx); } });
   });
   window.addEventListener('keydown', e => {
-    if (!st.isActive) return; // лише поки слайдер у фокусі екрана
+    if (!isPinned()) return; // лише поки слайдер у фокусі екрана
     if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); scrollToSlide(cur + 1); }
     else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); scrollToSlide(cur - 1); }
     else if (e.key === 'Home') { e.preventDefault(); scrollToSlide(0); }
