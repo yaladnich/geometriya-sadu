@@ -2625,9 +2625,12 @@ updateHeaderAndProgress();
   if (window.__lenis) window.__lenis.on('scroll', queueSnap);
   else window.addEventListener('scroll', queueSnap, { passive: true });
 
-  // Мобільний (тач): один свайп = рівно один слайд. Блокуємо нативний скрол всередині піна
-  // (preventDefault на touchmove) і крокуємо ±1 на touchend. На краях (1-й вниз-палець / останній
-  // вгору-палець) НЕ перехоплюємо — сторінка скролиться далі. Поріг 30px відсікає випадкові тапи.
+  // Мобільний (тач): один свайп = рівно один слайд.
+  // КЛЮЧОВЕ: напрям визначаємо й preventDefault викликаємо з НАЙПЕРШОГО руху пальця.
+  // Якщо пропустити навіть кілька перших пікселів без preventDefault — браузер віддає жест
+  // нативному скролу на compositor-потоці, і подальший preventDefault ігнорується (палець гортає вільно).
+  // На краях (1-й вниз-палець / останній вгору-палець) напрям теж відомий з першого руху →
+  // там НЕ блокуємо, і сторінка скролиться далі нативно.
   if (window.matchMedia('(pointer:coarse)').matches) {
     let startY = 0, dir = 0, mode = ''; // mode: '' | 'capture' | 'release'
     window.addEventListener('touchstart', e => {
@@ -2638,13 +2641,12 @@ updateHeaderAndProgress();
       if (!isPinned() || mode === 'release') return;
       const dy = startY - e.touches[0].clientY; // >0 свайп вгору (палець вгору) = наступний слайд
       if (mode === '') {
-        if (Math.abs(dy) < 6) return;            // ще не визначили напрям
-        dir = dy > 0 ? 1 : -1;
+        if (dy === 0) return;                    // ще нема руху — скрол не почався, чекаємо
+        dir = dy > 0 ? 1 : -1;                   // напрям з ПЕРШОГО ж руху
         const next = target + dir;
-        mode = (next < 0 || next > N - 1) ? 'release' : 'capture'; // край → відпускаємо сторінку
-        if (mode === 'release') return;
+        mode = (next < 0 || next > N - 1) ? 'release' : 'capture'; // край → віддаємо нативному скролу
       }
-      e.preventDefault(); // тримаємо палець, нативний скрол не рухає піна
+      if (mode === 'capture') e.preventDefault(); // блокуємо нативний скрол з першого руху
     }, { passive: false });
     window.addEventListener('touchend', e => {
       if (mode !== 'capture') { mode = ''; return; }
