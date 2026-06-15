@@ -2548,13 +2548,14 @@ updateHeaderAndProgress();
   }
 
   // Стан wheel-кроків — оголошений ДО ScrollTrigger.create, бо onUpdate смикається вже при створенні (TDZ).
-  let target = 0, stepTween = null, wheelLockUntil = 0;
+  let target = 0, stepTween = null;
 
-  // Один ScrollTrigger: пін кадру + snap. Layout (desktop/mobile) — суто CSS, тож логіка width-незалежна.
+  // Один ScrollTrigger: пін кадру. БЕЗ вбудованого snap — він овершутив і конкурував
+  // з ручним wheel-кроком (давав flicker «через слайд і назад»). Snap нижче — власний, по паузі.
+  // Layout (desktop/mobile) — суто CSS, тож логіка width-незалежна.
   const st = ScrollTrigger.create({
     trigger: wrap, start: 'top top', end: '+=' + ((N - 1) * 100) + '%',
-    pin: true, pinSpacing: true, scrub: 0.4, invalidateOnRefresh: true, refreshPriority: 1,
-    snap: { snapTo: 1 / (N - 1), duration: { min: 0.2, max: 0.45 }, ease: 'power1.inOut' },
+    pin: true, pinSpacing: true, invalidateOnRefresh: true, refreshPriority: 1,
     onUpdate: self => {
       const i = Math.round(self.progress * (N - 1));
       if (!stepTween) target = i; // синхронізуємо ціль при скролі НЕ через wheel-кроки (тач, скролбар)
@@ -2566,35 +2567,59 @@ updateHeaderAndProgress();
   // (cur — відрендерений слайд, він міняється під час руху і дає накопичення кроків).
   // ВАЖЛИВО: на десктопі скрол віртуалізує Lenis — він має ВЛАСНИЙ wheel-слухач і ігнорує
   // наш preventDefault, тож крокувати треба через lenis.scrollTo({lock:true}), а не повз нього.
-  function stepDone() { stepTween = null; wheelLockUntil = performance.now() + 300; } // кулдаун: хвіст інерції не стрибає ще раз
   function scrollToSlide(i) {
     i = Math.max(0, Math.min(N - 1, i));
-    if (i === target && !stepTween) return;
-    target = i;
     const y = st.start + (i / (N - 1)) * (st.end - st.start);
+    if (!stepTween && Math.abs(window.scrollY - y) < 2) { target = i; return; } // вже точно на слайді
+    target = i;
     if (stepTween && stepTween.kill) stepTween.kill();
+    const done = () => { stepTween = null; };
     if (window.__lenis) {
       stepTween = true; // lock у Lenis блокує і wheel-інпут самого Lenis під час кроку
-      window.__lenis.scrollTo(y, { duration: 0.6, lock: true, force: true, onComplete: stepDone });
+      window.__lenis.scrollTo(y, { duration: 0.6, lock: true, force: true, onComplete: done });
     } else {
       const pos = { y: window.scrollY };
       stepTween = gsap.to(pos, {
         y, duration: 0.55, ease: 'power2.out',
         onUpdate: () => window.scrollTo(0, pos.y),
-        onComplete: stepDone
+        onComplete: done
       });
     }
   }
-  // На краях (перший слайд вгору / останній вниз) нічого не робимо — секція відпускає сторінку.
+  // Один ЖЕСТ = один крок. Тачпад шле події колеса 0.5–1с поспіль, тож фіксований кулдаун
+  // не годиться. Крок дозволяємо лише коли жест ЗАВЕРШИВСЯ — тобто колесо мовчить ≥160мс
+  // (gestureLock тримається, поки події ще «капають», і скидається через паузу).
+  let gestureLock = false, idleTimer = 0;
+  function unlock() {
+    if (stepTween) { idleTimer = setTimeout(unlock, 80); return; } // твін ще йде — чекаємо
+    gestureLock = false;
+  }
+  // CAPTURE + stopImmediatePropagation: глушимо подію ДО Lenis, інакше Lenis зчитує deltaY
+  // і накопичує інерцію (за довгий свайп прокрутив би кілька слайдів повз наш крок).
   window.addEventListener('wheel', e => {
     if (st.isActive !== true) return;
     const dir = e.deltaY > 0 ? 1 : -1;
     const next = target + dir;
-    if (next < 0 || next > N - 1) return;
+    if (next < 0 || next > N - 1) return; // край → не чіпаємо, Lenis скролить сторінку далі
     e.preventDefault();
-    if (stepTween || performance.now() < wheelLockUntil) return;
+    e.stopImmediatePropagation();
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(unlock, 160); // розблокування лише коли колесо мовчить ≥160мс І твін завершено
+    if (gestureLock || stepTween) return;
+    gestureLock = true;
     scrollToSlide(next);
-  }, { passive: false });
+  }, { passive: false, capture: true });
+
+  // Власний snap для тач/скролбара (НЕ wheel): після паузи скролу довертаємо до найближчого слайда.
+  // На wheel-десктопі крок уже лягає точно на слайд → тут no-op (round === target).
+  let snapTimer = 0;
+  function idleSnap() {
+    if (!st.isActive || gestureLock || stepTween) return;
+    scrollToSlide(Math.round(st.progress * (N - 1)));
+  }
+  function queueSnap() { clearTimeout(snapTimer); snapTimer = setTimeout(idleSnap, 140); }
+  if (window.__lenis) window.__lenis.on('scroll', queueSnap);
+  else window.addEventListener('scroll', queueSnap, { passive: true });
   ticks.forEach((el, idx) => {
     el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); el.setAttribute('aria-label', 'Перевага ' + (idx + 1));
     el.addEventListener('click', () => scrollToSlide(idx));
@@ -2608,26 +2633,6 @@ updateHeaderAndProgress();
     else if (e.key === 'End') { e.preventDefault(); scrollToSlide(N - 1); }
   });
 
-  // Десктоп (миша/тачпад): жорсткий перехват — один жест колеса = рівно 1 слайд.
-  // На межах (1-й вгору / останній вниз) скрол відпускається далі по сторінці.
-  if (window.matchMedia('(pointer:fine)').matches) {
-    let stepping = false, relock = 0;
-    window.addEventListener('wheel', e => {
-      if (!st.isActive) return;                 // поза піном — звичайний скрол
-      const dir = e.deltaY > 0 ? 1 : -1;
-      const atEdge = (dir > 0 && cur >= N - 1) || (dir < 0 && cur <= 0);
-      if (atEdge) return;                        // межа → не перехоплюємо, скрол іде далі
-      e.preventDefault(); e.stopImmediatePropagation();
-      const now = e.timeStamp;
-      if (stepping || now - relock < 120) return; // один жест = один крок (кулдаун)
-      stepping = true; relock = now;
-      const target = cur + dir;
-      const y = slideY(Math.max(0, Math.min(N - 1, target)));
-      const done = () => { stepping = false; relock = performance.now(); };
-      if (window.__lenis) window.__lenis.scrollTo(y, { duration: 0.6, lock: true, onComplete: done });
-      else { window.scrollTo({ top: y, behavior: 'smooth' }); setTimeout(done, 600); }
-    }, { passive: false, capture: true });
-  }
   requestAnimationFrame(() => {
     if (ScrollTrigger.sort) ScrollTrigger.sort();
     ScrollTrigger.refresh();
