@@ -344,11 +344,21 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-panels.gs-why-static .gs-why-panel{position:relative;inset:auto;opacity:1;visibility:visible;min-height:70svh;}
 /* мобільний: нативний CSS scroll-snap — рівно один змах = один слайд (без JS-хайджеку тача,
    тож compositor не «краде» жест). overscroll-behavior:contain тримає пастку секції. */
-.gs-why-panels.gs-why-snap{height:100svh;overflow-y:scroll;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.gs-why-panels.gs-why-snap{height:100dvh;overflow-y:scroll;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .gs-why-panels.gs-why-snap::-webkit-scrollbar{display:none;}
-.gs-why-panels.gs-why-snap .gs-why-dots{position:sticky;top:6rem;height:40svh;margin-bottom:-40svh;inset:auto;left:0;right:0;z-index:0;}
-.gs-why-panels.gs-why-snap .gs-why-panel{position:relative;inset:auto;height:100svh;scroll-snap-align:start;opacity:1;visibility:visible;transform:none;filter:none;align-items:flex-end;padding-bottom:11svh;}
-.gs-why-panels.gs-why-snap .gs-why-nav{position:sticky;bottom:4svh;top:auto;left:0;right:0;margin-top:-10svh;transform:none;justify-content:center;z-index:3;}
+/* сфера: НОРМАЛЬНА sticky-смуга (зберігає бокс 40svh → sticky-діапазон цілий і canvas рендериться).
+   Панелі затягуємо вгору негативним margin-top першої, щоб стартували від верху, перекриваючи смугу. */
+.gs-why-panels.gs-why-snap .gs-why-dots{position:sticky;top:5rem;bottom:auto;left:0;right:0;height:32svh;margin:0;z-index:0;pointer-events:none;}
+/* панель = рівно висота контейнера (px через JS = innerHeight), border-box → padding у висоті */
+.gs-why-panels.gs-why-snap .gs-why-panel{position:relative;inset:auto;height:100%;box-sizing:border-box;scroll-snap-align:start;opacity:1;visibility:visible;transform:none;filter:none;align-items:flex-end;padding-bottom:7svh;}
+.gs-why-panels.gs-why-snap .gs-why-panel:first-of-type{margin-top:-32svh;}
+/* трохи компактніший текст на снап-мобільному, щоб довгі описи вміщалися в екран */
+.gs-why-panels.gs-why-snap .gs-why-num{margin-bottom:0.4rem;}
+.gs-why-panels.gs-why-snap .gs-why-title{margin-bottom:0.6rem;}
+.gs-why-panels.gs-why-snap .gs-why-desc{font-size:1rem;line-height:1.5;}
+/* тіки: sticky bottom — поки nav (останній у потоці) ще нижче в'юпорта, він липне на bottom:4svh,
+   тож видимий на кожному слайді. height:0 → не додає зайвого скрол-простору. */
+.gs-why-panels.gs-why-snap .gs-why-nav{position:sticky;bottom:4svh;top:auto;left:0;right:0;height:0;margin:0;align-items:center;transform:none;justify-content:center;z-index:3;}
 @media(max-width:900px){
   .gs-why-intro{padding-block:clamp(2rem,6vh,3.5rem) 0.5rem;}
   .gs-why-inner{grid-template-columns:1fr;justify-items:center;text-align:center;}
@@ -2590,6 +2600,12 @@ updateHeaderAndProgress();
   // Активний слайд (тіки/каскад тексту/реакція сфери) ловимо IntersectionObserver-ом.
   if (window.matchMedia('(pointer:coarse)').matches) {
     wrap.classList.add('gs-why-snap');
+    // Висота слайда МУСИТЬ дорівнювати реально видимому екрану (innerHeight), інакше панель
+    // вища за в'юпорт і низ тексту ріжеться. CSS-одиниці (svh/dvh/vh) у деяких рушіях не
+    // збігаються з фактичним innerHeight — тому задаємо піксель явно й оновлюємо на resize.
+    const setSnapH = () => { wrap.style.height = window.innerHeight + 'px'; };
+    setSnapH();
+    window.addEventListener('resize', setSnapH);
     const io = new IntersectionObserver(entries => {
       let best = null;
       entries.forEach(e => { if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) best = e; });
