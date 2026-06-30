@@ -1659,6 +1659,7 @@ function pfGo(direction, resetTimer = true) {
 
 function pfSelectProject(index, button) {
   if (!portfolioProjects[index]) return;
+  if (portfolioTransitioning) return; // як у pfGo: накладання двох кросфейдів лишає видимим стейл-шар
   currentProject = index;
   currentPortfolioImage = 0;
   document.querySelectorAll('#pf-tabs .gs-chip').forEach(chip => chip.classList.remove('gs-chip-selected'));
@@ -1684,6 +1685,20 @@ function toggleFaq(btn) {
   body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
   body.style.height = isOpen ? body.scrollHeight + 'px' : '0';
 }
+
+// Висота відкритого FAQ — фіксований піксель, знятий у мить кліку. При зміні ширини вікна
+// текст переноситься інакше → стейл-висота обрізає вміст або лишає діру. Перераховуємо.
+let faqResizeTimer = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(faqResizeTimer);
+  faqResizeTimer = setTimeout(() => {
+    document.querySelectorAll('.gs-faq-item.is-open .gs-faq-body').forEach(body => {
+      body.style.height = 'auto';
+      const h = body.scrollHeight;
+      body.style.height = h + 'px';
+    });
+  }, 120);
+}, { passive: true });
 
 let gsModalReturnFocus = null;
 
@@ -1735,6 +1750,16 @@ function closeModal() {
   const success = document.getElementById('modal-success');
   if (form) { form.reset(); form.style.display = ''; }
   if (success) success.style.display = 'none';
+  // form.reset() скидає лише прихований <input>, але НЕ візуальний стан кастом-селекта.
+  // Без цього мітка/підсвітка залишаються від попередньої послуги, а відправляється вже "" —
+  // мітка й реально надіслане значення розходяться. Повертаємо селект на плейсхолдер.
+  const opts = modal.querySelectorAll('.gs-select-option');
+  opts.forEach(o => o.classList.toggle('is-selected', o.dataset.value === ''));
+  const label = modal.querySelector('[data-select-label]');
+  const placeholder = Array.from(opts).find(o => o.dataset.value === '');
+  if (label && placeholder) label.textContent = placeholder.textContent;
+  const hidden = document.getElementById('modal-service');
+  if (hidden) hidden.value = ''; // form.reset() не завжди скидає hidden-інпут — робимо явно
   clearFormErrors('modal');
   modal.hidden = true;
   document.body.style.overflow = '';
