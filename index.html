@@ -342,6 +342,13 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-panels.gs-why-static{height:auto;}
 .gs-why-panels.gs-why-static .gs-why-dots{position:sticky;top:0;height:100svh;}
 .gs-why-panels.gs-why-static .gs-why-panel{position:relative;inset:auto;opacity:1;visibility:visible;min-height:70svh;}
+/* мобільний: нативний CSS scroll-snap — рівно один змах = один слайд (без JS-хайджеку тача,
+   тож compositor не «краде» жест). overscroll-behavior:contain тримає пастку секції. */
+.gs-why-panels.gs-why-snap{height:100svh;overflow-y:scroll;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.gs-why-panels.gs-why-snap::-webkit-scrollbar{display:none;}
+.gs-why-panels.gs-why-snap .gs-why-dots{position:sticky;top:6rem;height:40svh;margin-bottom:-40svh;inset:auto;left:0;right:0;z-index:0;}
+.gs-why-panels.gs-why-snap .gs-why-panel{position:relative;inset:auto;height:100svh;scroll-snap-align:start;opacity:1;visibility:visible;transform:none;filter:none;align-items:flex-end;padding-bottom:11svh;}
+.gs-why-panels.gs-why-snap .gs-why-nav{position:sticky;bottom:4svh;top:auto;left:0;right:0;margin-top:-10svh;transform:none;justify-content:center;z-index:3;}
 @media(max-width:900px){
   .gs-why-intro{padding-block:clamp(2rem,6vh,3.5rem) 0.5rem;}
   .gs-why-inner{grid-template-columns:1fr;justify-items:center;text-align:center;}
@@ -1543,6 +1550,7 @@ let currentProject = 0;
 let currentPortfolioImage = 0;
 let activePortfolioBg = 'a';
 let portfolioTransitioning = false;
+let pfFinish = null; // завершувач поточного кросфейду — щоб новий клік міг миттєво «доклацнути» попередній
 const pfImageCache = new Set();
 
 function pfPreload(src) {
@@ -1605,6 +1613,9 @@ function restartPortfolioTimer() {
 }
 
 function updatePortfolio() {
+  // Якщо попередній кросфейд ще йде — миттєво завершуємо його, аби новий клік не губився
+  // (на мобільному тапи йдуть швидше за 700мс анімації → інакше кожен 2-3 тап ігнорувався).
+  if (portfolioTransitioning && pfFinish) pfFinish();
   const project = portfolioProjects[currentProject];
   const imgs = getProjectImages(project);
   const total = imgs.length;
@@ -1627,16 +1638,19 @@ function updatePortfolio() {
     let done = false;
     const finish = () => {
       if (done) return; done = true;
+      window.clearTimeout(finishTimer);
       activeBg.removeEventListener('transitionend', onEnd);
       activeBg.style.zIndex = '0';
       activeBg.style.animation = 'none';
       nextBg.style.zIndex = '1';
       activePortfolioBg = nextBg === bgA ? 'a' : 'b';
       portfolioTransitioning = false;
+      pfFinish = null;
     };
+    pfFinish = finish;
     function onEnd(e) { if (e.propertyName === 'opacity') finish(); }
     activeBg.addEventListener('transitionend', onEnd);
-    window.setTimeout(finish, 700);
+    const finishTimer = window.setTimeout(finish, 700);
   }
 
   setText('pf-name', project.name);
@@ -1650,7 +1664,6 @@ function updatePortfolio() {
 }
 
 function pfGo(direction, resetTimer = true) {
-  if (portfolioTransitioning) return;
   const total = getProjectImages(portfolioProjects[currentProject]).length;
   currentPortfolioImage = (currentPortfolioImage + direction + total) % total;
   updatePortfolio();
@@ -1659,7 +1672,6 @@ function pfGo(direction, resetTimer = true) {
 
 function pfSelectProject(index, button) {
   if (!portfolioProjects[index]) return;
-  if (portfolioTransitioning) return; // як у pfGo: накладання двох кросфейдів лишає видимим стейл-шар
   currentProject = index;
   currentPortfolioImage = 0;
   document.querySelectorAll('#pf-tabs .gs-chip').forEach(chip => chip.classList.remove('gs-chip-selected'));
@@ -2570,6 +2582,27 @@ updateHeaderAndProgress();
     wrap.classList.add('gs-why-static');
     panels.forEach(p => { p.classList.add('is-active'); const t = p.querySelector('.gs-why-text'); if (t) t.classList.add('in'); });
     return;
+  }
+
+  // Мобільний (тач): НАТИВНИЙ scroll-snap замість ScrollTrigger-піна + JS-хайджеку тача.
+  // Хайджек на мобільному ненадійний — compositor стартує нативний скрол до того, як JS встигне
+  // preventDefault, тож «один змах = один слайд» зривався. Нативний snap робить це сам, надійно.
+  // Активний слайд (тіки/каскад тексту/реакція сфери) ловимо IntersectionObserver-ом.
+  if (window.matchMedia('(pointer:coarse)').matches) {
+    wrap.classList.add('gs-why-snap');
+    const io = new IntersectionObserver(entries => {
+      let best = null;
+      entries.forEach(e => { if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) best = e; });
+      if (best) { const i = panels.indexOf(best.target); if (i >= 0) goTo(i); }
+    }, { root: wrap, threshold: 0.55 });
+    panels.forEach(p => io.observe(p));
+    ticks.forEach((el, idx) => {
+      el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); el.setAttribute('aria-label', 'Перевага ' + (idx + 1));
+      const jump = () => panels[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el.addEventListener('click', jump);
+      el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(); } });
+    });
+    return; // мобільна гілка самодостатня — десктопний ScrollTrigger/wheel/touch нижче не потрібен
   }
 
   // Стан wheel-кроків — оголошений ДО ScrollTrigger.create, бо onUpdate смикається вже при створенні (TDZ).
