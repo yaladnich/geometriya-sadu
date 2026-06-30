@@ -342,23 +342,6 @@ a.text-link:hover{color:var(--fg-1);border-bottom-color:var(--accent);}
 .gs-why-panels.gs-why-static{height:auto;}
 .gs-why-panels.gs-why-static .gs-why-dots{position:sticky;top:0;height:100svh;}
 .gs-why-panels.gs-why-static .gs-why-panel{position:relative;inset:auto;opacity:1;visibility:visible;min-height:70svh;}
-/* мобільний: нативний CSS scroll-snap — рівно один змах = один слайд (без JS-хайджеку тача,
-   тож compositor не «краде» жест). overscroll-behavior:contain тримає пастку секції. */
-.gs-why-panels.gs-why-snap{height:100dvh;overflow-y:scroll;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-.gs-why-panels.gs-why-snap::-webkit-scrollbar{display:none;}
-/* сфера: НОРМАЛЬНА sticky-смуга (зберігає бокс 40svh → sticky-діапазон цілий і canvas рендериться).
-   Панелі затягуємо вгору негативним margin-top першої, щоб стартували від верху, перекриваючи смугу. */
-.gs-why-panels.gs-why-snap .gs-why-dots{position:sticky;top:5rem;bottom:auto;left:0;right:0;height:32svh;margin:0;z-index:0;pointer-events:none;}
-/* панель = рівно висота контейнера (px через JS = innerHeight), border-box → padding у висоті */
-.gs-why-panels.gs-why-snap .gs-why-panel{position:relative;inset:auto;height:100%;box-sizing:border-box;scroll-snap-align:start;opacity:1;visibility:visible;transform:none;filter:none;align-items:flex-end;padding-bottom:7svh;}
-.gs-why-panels.gs-why-snap .gs-why-panel:first-of-type{margin-top:-32svh;}
-/* трохи компактніший текст на снап-мобільному, щоб довгі описи вміщалися в екран */
-.gs-why-panels.gs-why-snap .gs-why-num{margin-bottom:0.4rem;}
-.gs-why-panels.gs-why-snap .gs-why-title{margin-bottom:0.6rem;}
-.gs-why-panels.gs-why-snap .gs-why-desc{font-size:1rem;line-height:1.5;}
-/* тіки: sticky bottom — поки nav (останній у потоці) ще нижче в'юпорта, він липне на bottom:4svh,
-   тож видимий на кожному слайді. height:0 → не додає зайвого скрол-простору. */
-.gs-why-panels.gs-why-snap .gs-why-nav{position:sticky;bottom:4svh;top:auto;left:0;right:0;height:0;margin:0;align-items:center;transform:none;justify-content:center;z-index:3;}
 @media(max-width:900px){
   .gs-why-intro{padding-block:clamp(2rem,6vh,3.5rem) 0.5rem;}
   .gs-why-inner{grid-template-columns:1fr;justify-items:center;text-align:center;}
@@ -1560,7 +1543,6 @@ let currentProject = 0;
 let currentPortfolioImage = 0;
 let activePortfolioBg = 'a';
 let portfolioTransitioning = false;
-let pfFinish = null; // завершувач поточного кросфейду — щоб новий клік міг миттєво «доклацнути» попередній
 const pfImageCache = new Set();
 
 function pfPreload(src) {
@@ -1623,9 +1605,6 @@ function restartPortfolioTimer() {
 }
 
 function updatePortfolio() {
-  // Якщо попередній кросфейд ще йде — миттєво завершуємо його, аби новий клік не губився
-  // (на мобільному тапи йдуть швидше за 700мс анімації → інакше кожен 2-3 тап ігнорувався).
-  if (portfolioTransitioning && pfFinish) pfFinish();
   const project = portfolioProjects[currentProject];
   const imgs = getProjectImages(project);
   const total = imgs.length;
@@ -1648,19 +1627,16 @@ function updatePortfolio() {
     let done = false;
     const finish = () => {
       if (done) return; done = true;
-      window.clearTimeout(finishTimer);
       activeBg.removeEventListener('transitionend', onEnd);
       activeBg.style.zIndex = '0';
       activeBg.style.animation = 'none';
       nextBg.style.zIndex = '1';
       activePortfolioBg = nextBg === bgA ? 'a' : 'b';
       portfolioTransitioning = false;
-      pfFinish = null;
     };
-    pfFinish = finish;
     function onEnd(e) { if (e.propertyName === 'opacity') finish(); }
     activeBg.addEventListener('transitionend', onEnd);
-    const finishTimer = window.setTimeout(finish, 700);
+    window.setTimeout(finish, 700);
   }
 
   setText('pf-name', project.name);
@@ -1674,6 +1650,7 @@ function updatePortfolio() {
 }
 
 function pfGo(direction, resetTimer = true) {
+  if (portfolioTransitioning) return;
   const total = getProjectImages(portfolioProjects[currentProject]).length;
   currentPortfolioImage = (currentPortfolioImage + direction + total) % total;
   updatePortfolio();
@@ -1707,20 +1684,6 @@ function toggleFaq(btn) {
   body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
   body.style.height = isOpen ? body.scrollHeight + 'px' : '0';
 }
-
-// Висота відкритого FAQ — фіксований піксель, знятий у мить кліку. При зміні ширини вікна
-// текст переноситься інакше → стейл-висота обрізає вміст або лишає діру. Перераховуємо.
-let faqResizeTimer = 0;
-window.addEventListener('resize', () => {
-  clearTimeout(faqResizeTimer);
-  faqResizeTimer = setTimeout(() => {
-    document.querySelectorAll('.gs-faq-item.is-open .gs-faq-body').forEach(body => {
-      body.style.height = 'auto';
-      const h = body.scrollHeight;
-      body.style.height = h + 'px';
-    });
-  }, 120);
-}, { passive: true });
 
 let gsModalReturnFocus = null;
 
@@ -1772,16 +1735,6 @@ function closeModal() {
   const success = document.getElementById('modal-success');
   if (form) { form.reset(); form.style.display = ''; }
   if (success) success.style.display = 'none';
-  // form.reset() скидає лише прихований <input>, але НЕ візуальний стан кастом-селекта.
-  // Без цього мітка/підсвітка залишаються від попередньої послуги, а відправляється вже "" —
-  // мітка й реально надіслане значення розходяться. Повертаємо селект на плейсхолдер.
-  const opts = modal.querySelectorAll('.gs-select-option');
-  opts.forEach(o => o.classList.toggle('is-selected', o.dataset.value === ''));
-  const label = modal.querySelector('[data-select-label]');
-  const placeholder = Array.from(opts).find(o => o.dataset.value === '');
-  if (label && placeholder) label.textContent = placeholder.textContent;
-  const hidden = document.getElementById('modal-service');
-  if (hidden) hidden.value = ''; // form.reset() не завжди скидає hidden-інпут — робимо явно
   clearFormErrors('modal');
   modal.hidden = true;
   document.body.style.overflow = '';
@@ -2594,35 +2547,8 @@ updateHeaderAndProgress();
     return;
   }
 
-  // Мобільний (тач): НАТИВНИЙ scroll-snap замість ScrollTrigger-піна + JS-хайджеку тача.
-  // Хайджек на мобільному ненадійний — compositor стартує нативний скрол до того, як JS встигне
-  // preventDefault, тож «один змах = один слайд» зривався. Нативний snap робить це сам, надійно.
-  // Активний слайд (тіки/каскад тексту/реакція сфери) ловимо IntersectionObserver-ом.
-  if (window.matchMedia('(pointer:coarse)').matches) {
-    wrap.classList.add('gs-why-snap');
-    // Висота слайда МУСИТЬ дорівнювати реально видимому екрану (innerHeight), інакше панель
-    // вища за в'юпорт і низ тексту ріжеться. CSS-одиниці (svh/dvh/vh) у деяких рушіях не
-    // збігаються з фактичним innerHeight — тому задаємо піксель явно й оновлюємо на resize.
-    const setSnapH = () => { wrap.style.height = window.innerHeight + 'px'; };
-    setSnapH();
-    window.addEventListener('resize', setSnapH);
-    const io = new IntersectionObserver(entries => {
-      let best = null;
-      entries.forEach(e => { if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) best = e; });
-      if (best) { const i = panels.indexOf(best.target); if (i >= 0) goTo(i); }
-    }, { root: wrap, threshold: 0.55 });
-    panels.forEach(p => io.observe(p));
-    ticks.forEach((el, idx) => {
-      el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); el.setAttribute('aria-label', 'Перевага ' + (idx + 1));
-      const jump = () => panels[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
-      el.addEventListener('click', jump);
-      el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(); } });
-    });
-    return; // мобільна гілка самодостатня — десктопний ScrollTrigger/wheel/touch нижче не потрібен
-  }
-
   // Стан wheel-кроків — оголошений ДО ScrollTrigger.create, бо onUpdate смикається вже при створенні (TDZ).
-  let target = 0, stepTween = null, stepId = 0;
+  let target = 0, stepTween = null;
 
   // Один ScrollTrigger: пін кадру. БЕЗ вбудованого snap — він овершутив і конкурував
   // з ручним wheel-кроком (давав flicker «через слайд і назад»). Snap нижче — власний, по паузі.
@@ -2650,12 +2576,8 @@ updateHeaderAndProgress();
     const y = st.start + (i / (N - 1)) * (st.end - st.start);
     if (!stepTween && Math.abs(window.scrollY - y) < 2) { target = i; return; } // вже точно на слайді
     target = i;
-    if (stepTween && stepTween.kill) stepTween.kill(); // gsap-твін (не-Lenis шлях)
-    // Токен кроку: тільки онкомпліт НАЙновішого кроку має право скинути stepTween.
-    // Інакше старий Lenis-scrollTo (його скасовує новий) усе одно смикне onComplete і
-    // розблокує посеред нового кроку — слайдер скаче між двома позиціями.
-    const myStep = ++stepId;
-    const done = () => { if (myStep === stepId) stepTween = null; };
+    if (stepTween && stepTween.kill) stepTween.kill();
+    const done = () => { stepTween = null; };
     if (window.__lenis) {
       stepTween = true; // lock у Lenis блокує і wheel-інпут самого Lenis під час кроку
       window.__lenis.scrollTo(y, { duration: 0.6, lock: true, force: true, onComplete: done });
@@ -2741,8 +2663,8 @@ updateHeaderAndProgress();
   });
   window.addEventListener('keydown', e => {
     if (!isPinned()) return; // лише поки слайдер у фокусі екрана
-    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); scrollToSlide(target + 1); }
-    else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); scrollToSlide(target - 1); }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); scrollToSlide(cur + 1); }
+    else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); scrollToSlide(cur - 1); }
     else if (e.key === 'Home') { e.preventDefault(); scrollToSlide(0); }
     else if (e.key === 'End') { e.preventDefault(); scrollToSlide(N - 1); }
   });

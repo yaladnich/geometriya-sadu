@@ -57,50 +57,9 @@ img.save('images/назва-m.webp', 'WEBP', quality=72, method=6)
 ## Структура секцій
 - **Hero** — `Backv5.webp` фон (мобільний `Backv5-m.webp`)
 - **Послуги** (`#services`) — 8 карток `.gs-pcard`, кожна з `<picture>`
-- **Why** (`#why`) — слайдер: десктоп = GSAP ScrollTrigger-пін, мобільний = нативний CSS scroll-snap (див. ⚠️ Інваріанти)
+- **Why** (`#why`) — горизонтальний слайдер на GSAP ScrollTrigger (canvas-крапки, без фото-фону)
 - **Портфоліо** (`#portfolio`) — слайдер фонів, масиви `portfolioProjects[].images` / `.imagesMobile`
 - **Ціни** (`#pricing`), **FAQ** (`#faq`), **Footer**
-
-## ⚠️ Інваріанти слайдерів — НЕ ЛАМАТИ при правках
-
-Обидва слайдери крихкі до гонок і конфлікту з браузерним скролом. Перед правкою прочитай це.
-
-### Слайдер «Переваги» (#why, `initWhyPin`, ~рядок 2549)
-- **Дві РІЗНІ реалізації за типом пристрою — НЕ об'єднувати:**
-  - **Десктоп (`pointer:fine`)**: ScrollTrigger-пін кадру + ручний wheel-крок. Lenis віртуалізує
-    скрол і має ВЛАСНИЙ wheel-слухач → крокувати лише через `lenis.scrollTo({lock:true,force:true})`,
-    а сам wheel глушити в `capture`-фазі + `stopImmediatePropagation()` (інакше Lenis накопичує інерцію
-    і прокручує кілька слайдів повз крок).
-  - **Мобільний (`pointer:coarse`)**: НАТИВНИЙ CSS `scroll-snap` (клас `gs-why-snap`), БЕЗ піна й БЕЗ
-    JS-хайджеку тача. Гілка робить `return` до створення ScrollTrigger. Активний слайд ловить
-    `IntersectionObserver`. **НЕ повертати JS-перехоплення `touchmove` на мобільному** — compositor
-    стартує нативний скрол раніше за `preventDefault`, і «один змах = один слайд» зривається.
-- **Один жест = один слайд**: крок ведеться по `target` (індекс-ціль), НЕ по `cur` (відрендерений слайд).
-  Розблокування жесту — лише коли колесо мовчить ≥160мс **І** `stepTween` завершено.
-- **`stepId`-токен**: тільки онкомпліт НАЙновішого кроку скидає `stepTween` (старий Lenis-scrollTo,
-  скасований новим, інакше розблокує посеред кроку).
-- **`isPinned()`** звіряється з діапазоном `scrollY`, бо `st.isActive` буває `undefined` на `progress=0`.
-- НЕ додавати вбудований ScrollTrigger `snap` — конкурує з ручним кроком, дає flicker «через слайд і назад».
-- CSS `gs-why-snap`: `scroll-snap-type:y mandatory` + `overscroll-behavior-y:contain` (тримає «пастку» секції).
-- **Граблі snap-режиму (на яких уже наступали — НЕ повторювати):**
-  - Висота слайда задається `wrap.style.height = innerHeight + 'px'` через JS (`setSnapH`, оновлюється на
-    `resize`). CSS `svh/dvh/vh` у деяких рушіях ≠ фактичному `innerHeight` → панель вища за екран, низ тексту
-    ріжеться. НЕ замінювати на чисті CSS-одиниці.
-  - Панель: `height:100%` + **`box-sizing:border-box`** (інакше `padding-bottom` додається ЗВЕРХУ → панель
-    вища за в'юпорт).
-  - Сфера `.gs-why-dots` — **нормальна** `sticky`-смуга (`top:5rem;height:32svh`), НЕ zero-height (canvas міряє
-    `height:0` → вертикальна лінія). Панелі затягнуто вгору `:first-of-type{margin-top:-32svh}` (= висоті смуги).
-  - У правилі sticky НЕ ставити `inset:auto` ПІСЛЯ `top` — воно скидає `top` назад в auto, sticky перестає липнути.
-  - «Зріз» тексту в тесті часто = каскад `gsTextUp` ще летить (translateY 120%). Міряти/скринити ПІСЛЯ ~1.5с.
-
-### Слайдер портфоліо (#portfolio, `updatePortfolio`/`pfGo`, ~рядок 1607)
-- **Один клік = одне зображення**: новий клік під час кросфейду (700мс) МИТТЄВО доклацує попередній
-  перехід через `pfFinish()`, а не ігнорується. **НЕ повертати `if (portfolioTransitioning) return`**
-  у `pfGo`/`pfSelectProject` — на мобільному тапи швидші за 700мс і кожен 2-3 губився б.
-- `pfFinish` тримає завершувач поточного кросфейду; `finish()` чистить `finishTimer` і обнуляє `pfFinish`.
-- `portfolioTransitioning` лишається як прапор стану, але вже НЕ блокує нові кліки.
-
----
 
 ## Технічне
 - Шрифт: **Onest** (локальний `fonts/`), один на весь сайт
@@ -126,7 +85,7 @@ img.save('images/назва-m.webp', 'WEBP', quality=72, method=6)
 | `openModal(service?)` | ~1673 | Відкриває модалку, опціонально обирає послугу |
 | `closeModal()` | ~1694 | Закриває модалку **і скидає форму** |
 | `initPortfolio()` | ~1533 | Ініціалізує crossfade-слайдер з Ken Burns |
-| `pfGo(direction)` | ~1615 | Перегортає фото портфоліо; новий клік доклацує поточний кросфейд (`pfFinish`), не блокується |
+| `pfGo(direction)` | ~1615 | Перегортає фото портфоліо; захищений флагом `portfolioTransitioning` |
 | `pfSelectProject(index, btn)` | ~1623 | Перемикає проєкт в портфоліо |
 | `getProjectImages(project)` | ~1501 | Повертає `imagesMobile` на мобільному, `images` на десктопі |
 | `loadScriptOnce(src, name)` | ~1449 | Lazy-loader скриптів; дедуплікує по `globalName` |
