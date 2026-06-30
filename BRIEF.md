@@ -81,8 +81,17 @@ img.save('images/назва-m.webp', 'WEBP', quality=72, method=6)
   скасований новим, інакше розблокує посеред кроку).
 - **`isPinned()`** звіряється з діапазоном `scrollY`, бо `st.isActive` буває `undefined` на `progress=0`.
 - НЕ додавати вбудований ScrollTrigger `snap` — конкурує з ручним кроком, дає flicker «через слайд і назад».
-- CSS `gs-why-snap`: `scroll-snap-type:y mandatory` + `overscroll-behavior-y:contain` (тримає «пастку»
-  секції). Сфера `.gs-why-dots` — `sticky` з `margin-bottom:-40svh`. Панелі `height:100svh; scroll-snap-align:start`.
+- CSS `gs-why-snap`: `scroll-snap-type:y mandatory` + `overscroll-behavior-y:contain` (тримає «пастку» секції).
+- **Граблі snap-режиму (на яких уже наступали — НЕ повторювати):**
+  - Висота слайда задається `wrap.style.height = innerHeight + 'px'` через JS (`setSnapH`, оновлюється на
+    `resize`). CSS `svh/dvh/vh` у деяких рушіях ≠ фактичному `innerHeight` → панель вища за екран, низ тексту
+    ріжеться. НЕ замінювати на чисті CSS-одиниці.
+  - Панель: `height:100%` + **`box-sizing:border-box`** (інакше `padding-bottom` додається ЗВЕРХУ → панель
+    вища за в'юпорт).
+  - Сфера `.gs-why-dots` — **нормальна** `sticky`-смуга (`top:5rem;height:32svh`), НЕ zero-height (canvas міряє
+    `height:0` → вертикальна лінія). Панелі затягнуто вгору `:first-of-type{margin-top:-32svh}` (= висоті смуги).
+  - У правилі sticky НЕ ставити `inset:auto` ПІСЛЯ `top` — воно скидає `top` назад в auto, sticky перестає липнути.
+  - «Зріз» тексту в тесті часто = каскад `gsTextUp` ще летить (translateY 120%). Міряти/скринити ПІСЛЯ ~1.5с.
 
 ### Слайдер портфоліо (#portfolio, `updatePortfolio`/`pfGo`, ~рядок 1607)
 - **Один клік = одне зображення**: новий клік під час кросфейду (700мс) МИТТЄВО доклацує попередній
