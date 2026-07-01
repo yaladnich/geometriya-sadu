@@ -1542,7 +1542,7 @@ function getProjectImages(project) {
 let currentProject = 0;
 let currentPortfolioImage = 0;
 let activePortfolioBg = 'a';
-let portfolioTransitioning = false;
+let pfFinish = null; // миттєво довершує поточний crossfade — щоб швидкі кліки не губились
 const pfImageCache = new Set();
 
 function pfPreload(src) {
@@ -1613,11 +1613,11 @@ function updatePortfolio() {
   pfPreload(nextImage);
   const bgA = document.getElementById('gs-pf-bg-a');
   const bgB = document.getElementById('gs-pf-bg-b');
+  if (pfFinish) pfFinish(); // клік під час переходу: довершуємо старий crossfade ДО вибору шарів
   const activeBg = activePortfolioBg === 'a' ? bgA : bgB;
   const nextBg = activePortfolioBg === 'a' ? bgB : bgA;
 
   if (nextBg && activeBg) {
-    portfolioTransitioning = true;
     nextBg.style.backgroundImage = `url('${image}')`;
     nextBg.style.zIndex = '2';
     runKenBurns(nextBg, currentPortfolioImage);
@@ -1632,10 +1632,11 @@ function updatePortfolio() {
       activeBg.style.animation = 'none';
       nextBg.style.zIndex = '1';
       activePortfolioBg = nextBg === bgA ? 'a' : 'b';
-      portfolioTransitioning = false;
+      pfFinish = null;
     };
     function onEnd(e) { if (e.propertyName === 'opacity') finish(); }
     activeBg.addEventListener('transitionend', onEnd);
+    pfFinish = finish;
     window.setTimeout(finish, 700);
   }
 
@@ -1650,7 +1651,6 @@ function updatePortfolio() {
 }
 
 function pfGo(direction, resetTimer = true) {
-  if (portfolioTransitioning) return;
   const total = getProjectImages(portfolioProjects[currentProject]).length;
   currentPortfolioImage = (currentPortfolioImage + direction + total) % total;
   updatePortfolio();

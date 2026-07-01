@@ -85,7 +85,7 @@ img.save('images/назва-m.webp', 'WEBP', quality=72, method=6)
 | `openModal(service?)` | ~1673 | Відкриває модалку, опціонально обирає послугу |
 | `closeModal()` | ~1694 | Закриває модалку **і скидає форму** |
 | `initPortfolio()` | ~1533 | Ініціалізує crossfade-слайдер з Ken Burns |
-| `pfGo(direction)` | ~1615 | Перегортає фото портфоліо; захищений флагом `portfolioTransitioning` |
+| `pfGo(direction)` | ~1615 | Перегортає фото портфоліо; швидкий клік миттєво довершує попередній crossfade через `pfFinish` (кліки не губляться) |
 | `pfSelectProject(index, btn)` | ~1623 | Перемикає проєкт в портфоліо |
 | `getProjectImages(project)` | ~1501 | Повертає `imagesMobile` на мобільному, `images` на десктопі |
 | `loadScriptOnce(src, name)` | ~1449 | Lazy-loader скриптів; дедуплікує по `globalName` |
