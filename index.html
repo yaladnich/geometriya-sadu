@@ -2549,6 +2549,7 @@ updateHeaderAndProgress();
 
   // Стан wheel-кроків — оголошений ДО ScrollTrigger.create, бо onUpdate смикається вже при створенні (TDZ).
   let target = 0, stepTween = null;
+  const coarse = window.matchMedia('(pointer:coarse)').matches;
 
   // Один ScrollTrigger: пін кадру. БЕЗ вбудованого snap — він овершутив і конкурував
   // з ручним wheel-кроком (давав flicker «через слайд і назад»). Snap нижче — власний, по паузі.
@@ -2560,12 +2561,36 @@ updateHeaderAndProgress();
       const i = Math.round(self.progress * (N - 1));
       if (!stepTween) target = i; // синхронізуємо ціль при скролі НЕ через wheel-кроки (тач, скролбар)
       goTo(i);
+    },
+    // МОБІЛЬНИЙ, гасіння інерції на вході в пін: миттєво ставимо скрол точно на крайній слайд —
+    // сильний свайп із сусідньої секції не пролітає слайди (стрибка не видно: під час піна кадр
+    // зафіксований, позиція скролу проявляється лише через індекс слайда). Гард stepTween
+    // ОБОВ'ЯЗКОВИЙ: без нього цей scrollTo воює з власним кроковим твіном і фризить слайдер.
+    onToggle: self => {
+      if (!coarse || !self.isActive || stepTween) return;
+      const i = Math.round(self.progress * (N - 1));
+      window.scrollTo(0, self.start + (i / (N - 1)) * (self.end - self.start));
+      target = i;
     }
   });
 
   // Чи кадр зараз запінений. st.isActive буває undefined рівно на межі (progress=0) —
   // тому звіряємось із діапазоном скролу, інакше обробники мертві на 1-му слайді.
   function isPinned() { return st.isActive === true || (window.scrollY >= st.start - 1 && window.scrollY <= st.end + 1); }
+
+  // МОБІЛЬНИЙ: поки кадр запінений — touch-action:none. Браузер ВЗАГАЛІ не починає нативний
+  // скрол/інерцію з жестів по кадру, тож крок робить лише наш touchend: один жест = один слайд
+  // незалежно від сили свайпу (preventDefault-гонка з compositor'ом неможлива).
+  // Синхронізуємо по діапазону скролу (НЕ по onToggle: на точній межі piна isActive=false,
+  // і слайд 0 лишився б без захисту).
+  if (coarse) {
+    const syncTA = () => {
+      const v = isPinned() ? 'none' : '';
+      if (wrap.style.touchAction !== v) wrap.style.touchAction = v;
+    };
+    window.addEventListener('scroll', syncTA, { passive: true });
+    syncTA();
+  }
 
   // Один жест колеса = рівно один слайд. Кроком керує target (індекс-ціль), а НЕ cur
   // (cur — відрендерений слайд, він міняється під час руху і дає накопичення кроків).
@@ -2625,13 +2650,12 @@ updateHeaderAndProgress();
   if (window.__lenis) window.__lenis.on('scroll', queueSnap);
   else window.addEventListener('scroll', queueSnap, { passive: true });
 
-  // Мобільний (тач): один свайп = рівно один слайд.
-  // КЛЮЧОВЕ: напрям визначаємо й preventDefault викликаємо з НАЙПЕРШОГО руху пальця.
-  // Якщо пропустити навіть кілька перших пікселів без preventDefault — браузер віддає жест
-  // нативному скролу на compositor-потоці, і подальший preventDefault ігнорується (палець гортає вільно).
-  // На краях (1-й вниз-палець / останній вгору-палець) напрям теж відомий з першого руху →
-  // там НЕ блокуємо, і сторінка скролиться далі нативно.
-  if (window.matchMedia('(pointer:coarse)').matches) {
+  // Мобільний (тач): один свайп = рівно один слайд НЕЗАЛЕЖНО від сили свайпу.
+  // Гарантію дає touch-action:none на запіненому кадрі (ставиться/знімається в onToggle вище):
+  // нативний скрол із жестів по кадру не стартує ВЗАГАЛІ, тож ніякої інерції — крок робимо
+  // тільки ми, рівно один на жест. (Стара схема «preventDefault з першого touchmove» на
+  // реальних девайсах програвала гонку compositor'у — сильний свайп пролітав кілька слайдів.)
+  if (coarse) {
     let startY = 0, dir = 0, mode = ''; // mode: '' | 'capture' | 'release'
     window.addEventListener('touchstart', e => {
       if (!isPinned() || e.touches.length !== 1) { mode = ''; return; }
@@ -2641,19 +2665,24 @@ updateHeaderAndProgress();
       if (!isPinned() || mode === 'release') return;
       const dy = startY - e.touches[0].clientY; // >0 свайп вгору (палець вгору) = наступний слайд
       if (mode === '') {
-        if (dy === 0) return;                    // ще нема руху — скрол не почався, чекаємо
+        if (dy === 0) return;                    // ще нема руху — чекаємо
         dir = dy > 0 ? 1 : -1;                   // напрям з ПЕРШОГО ж руху
         const next = target + dir;
-        mode = (next < 0 || next > N - 1) ? 'release' : 'capture'; // край → віддаємо нативному скролу
+        mode = (next < 0 || next > N - 1) ? 'release' : 'capture'; // край → жест на вихід із секції
       }
-      if (mode === 'capture') e.preventDefault(); // блокуємо нативний скрол з першого руху
+      if (mode === 'capture') e.preventDefault(); // страховка на випадок жесту повз touch-action
     }, { passive: false });
     window.addEventListener('touchend', e => {
-      if (mode !== 'capture') { mode = ''; return; }
+      const m = mode; mode = '';
+      if (m !== 'capture' && m !== 'release') return;
       const dy = startY - e.changedTouches[0].clientY;
-      mode = '';
-      if (Math.abs(dy) < 30 || stepTween) return; // короткий тап або ще йде крок — ігноруємо
-      scrollToSlide(target + dir);
+      if (Math.abs(dy) < 30) return;                            // короткий тап — ігноруємо
+      if (m === 'capture') { if (!stepTween) scrollToSlide(target + dir); return; }
+      // 'release': нативний скрол заглушений touch-action:none, тож край покидаємо самі —
+      // один свайп = плавний вихід на сусідню секцію; пін знімається, скрол знову нативний.
+      const pos = { y: window.scrollY };
+      gsap.to(pos, { y: pos.y + dir * window.innerHeight * 0.85, duration: 0.5, ease: 'power2.out',
+        onUpdate: () => window.scrollTo(0, pos.y) });
     }, { passive: true });
   }
   ticks.forEach((el, idx) => {
